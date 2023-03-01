@@ -1,0 +1,139 @@
+.wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+    width: 15vw;
+    max-width: 15vw;
+    flex-basis: 15vw;
+
+    padding: 0 10px;
+    border-right: 1px solid rgba(114, 132, 159, 0.3);
+    background-color: white;
+
+    z-index: 10;
+
+    animation: scrollWidth1 0.1s ease forwards;
+}
+
+@keyframes scrollWidth1 {
+    from {
+        width: 5vw;
+    }
+    to {
+        width: 15vw;
+    }
+}
+
+.logo {
+    padding: 40px 20px 30px 20px;
+    cursor: pointer;
+}
+// .list {
+// }
+.item {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    font-size: 16px;
+
+    & .icon {
+        font-size: 22px;
+    }
+    & span {
+        padding-left: 15px;
+        margin-top: -5px;
+        color: black;
+    }
+    & img {
+        width: 30px;
+        height: 30px;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+    &:hover {
+        cursor: pointer;
+        border-radius: 30px;
+        background-color: rgba(114, 132, 159, 0.05);
+
+        .icon,
+        img {
+            scale: 1.05;
+        }
+    }
+}
+.see-more {
+    position: relative;
+    padding-bottom: 20px;
+    color: black;
+}
+.active {
+    font-weight: 700;
+    font-size: 17px;
+}
+.active .item.personalPage img {
+    border-radius: 50%;
+    border: 1px solid black;
+}
+
+.activeModal {
+    div {
+        margin: -10px;
+        .icon {
+            padding: 10px;
+            font-size: 10px;
+            border: 1px solid rgb(209, 203, 203);
+            border-radius: 50%;
+        }
+    }
+}
+.logo-icon {
+    display: none;
+}
+
+// click vao search hoac notify navbar se trong giong nhu ipad
+.openModal.wrapper {
+    // width: 50px;
+    // max-width: 50px;
+    padding: 0 20px 0 0;
+
+    animation: scrollWidth2 0.1s ease forwards;
+}
+@keyframes scrollWidth2 {
+    from {
+        width: 15vw;
+    }
+    to {
+        width: 50px;
+    }
+}
+.openModal .logo-icon {
+    display: block;
+}
+.openModal .logo-letter {
+    display: none;
+}
+.openModal .item span {
+    display: none;
+}
+
+@media (max-width: 1240px) {
+    .wrapper {
+        width: 50px;
+        max-width: 50px;
+        padding: 0 20px 0 0;
+    }
+    .logo-icon {
+        display: block;
+    }
+    .logo-letter {
+        display: none;
+    }
+    .item span {
+        display: none;
+    }
+}

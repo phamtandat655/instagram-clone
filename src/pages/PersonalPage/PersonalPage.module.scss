@@ -1,0 +1,85 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.personalPage-top {
+    display: flex;
+    align-items: center;
+
+    padding: 30px 70px;
+    border-bottom: 1px solid rgba(114, 132, 159, 0.3);
+}
+.avatar-container {
+    width: 150px;
+    height: 150px;
+
+    margin-right: 100px;
+}
+.avatar-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+    border-radius: 50%;
+}
+// .infomation-container {}
+
+.info-top {
+    display: flex;
+    align-items: center;
+}
+.info-top--email {
+    font-size: 18px;
+}
+.info-top div {
+    font-weight: 600;
+
+    margin: 0 15px;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: rgba(114, 132, 159, 0.15);
+    cursor: pointer;
+}
+.info-top--setting {
+    cursor: pointer;
+}
+.info-mid {
+    margin: 15px 0;
+}
+.info-mid span {
+    font-weight: 600;
+}
+.info-bottom--name {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.personalPage-bottom {
+    display: flex;
+    justify-content: center;
+
+    padding-top: 10px;
+}
+.post-container {
+    cursor: pointer;
+}
+.post-container--icon {
+    margin-right: 5px;
+}
+.post-container.active {
+    position: relative;
+
+    font-weight: 600;
+}
+.post-container.active::before {
+    content: '';
+
+    position: absolute;
+    top: -11px;
+    left: -3px;
+    width: calc(100% + 6px);
+    height: 1px;
+
+    background-color: rgba(114, 132, 159, 1);
+}

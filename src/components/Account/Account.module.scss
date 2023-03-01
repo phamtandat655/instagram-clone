@@ -1,0 +1,61 @@
+.wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    height: 40px;
+    width: 315px;
+}
+
+.account {
+    display: flex;
+    align-items: center;
+
+    cursor: pointer;
+}
+
+.avatar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 40px;
+    height: 40px;
+
+    border-radius: 50%;
+    border: 2px solid transparent;
+}
+.avatar img {
+    width: calc(100% - 2px);
+    height: calc(100% - 2px);
+    object-fit: cover;
+
+    border-radius: 50%;
+}
+.havestr {
+    border-color: red;
+}
+
+.about {
+    margin-left: 10px;
+    max-height: 40px;
+}
+.about p {
+    margin: 0;
+    font-size: 12px;
+
+    margin-bottom: 4px;
+}
+.name {
+    color: black;
+    font-weight: 700;
+}
+.desc {
+    color: rgba(114, 132, 159, 0.9);
+}
+
+.follow p {
+    font-size: 12px;
+    font-weight: 700;
+    color: rgb(0, 149, 246);
+}
