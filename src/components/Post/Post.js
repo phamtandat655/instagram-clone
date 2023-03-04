@@ -10,12 +10,18 @@ import {
     SaveIcon,
     SavedIcon,
     EmotionIcon,
+    VolumeIcon,
+    VolumeMutedIcon,
+    PlayIcon,
 } from '../../assets/Icons/Icons';
 
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
-import { useEffect, useState } from 'react';
+
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { onSnapshot, doc } from 'firebase/firestore';
+import { db } from '../../firebase';
 
 const cx = classNames.bind(styles);
 
@@ -23,6 +29,10 @@ function Post({ post }) {
     const [liked, setLiked] = useState(false);
     const [saved, setSaved] = useState(false);
     const [time, setTime] = useState('');
+    const [avatar, setAvatar] = useState('');
+    const [muted, setMuted] = useState(true);
+    const [pause, setPause] = useState(true);
+    const videoRef = useRef();
 
     const responsive = {
         desktop: {
@@ -44,8 +54,7 @@ function Post({ post }) {
 
     useEffect(() => {
         const timestamp = {
-            nanoseconds: post?.timestamp.nanoseconds,
-            seconds: post?.timestamp.seconds,
+            seconds: post?.timestampSecond || '',
         };
         const postDate = new Date(timestamp.seconds * 1000);
         const nowDate = new Date();
@@ -65,15 +74,17 @@ function Post({ post }) {
             nowDate.getMonth() !== postDate.getMonth() &&
             nowDate.getDate() !== postDate.getDate()
         ) {
-            setTime(`THANG ${nowDate.getMonth() - postDate.getMonth()}${nowDate.getDate() - postDate.getDate()}`);
+            setTime(`THANG ${postDate.getMonth()} ${postDate.getDate()}`);
         } else {
-            setTime(
-                `NAM ${nowDate.getFullYear() - postDate.getFullYear()} THANG ${
-                    nowDate.getMonth() - postDate.getMonth()
-                }${nowDate.getDate() - postDate.getDate()}`,
-            );
+            setTime(`NAM ${postDate.getFullYear()} THANG ${postDate.getMonth()} ${postDate.getDate()}`);
         }
-    }, []);
+    }, [post?.timestampSecond]);
+
+    useEffect(() => {
+        onSnapshot(doc(db, 'users', `${post?.useremail}`), (doc) => {
+            setAvatar(doc.data()?.information.avatar);
+        });
+    }, [post?.useremail]);
 
     const handleDesc = (desc) => {
         if (desc.length > 50) {
@@ -89,21 +100,81 @@ function Post({ post }) {
         return <p>{desc}</p>;
     };
 
+    const handleClickVideo = (e) => {
+        if (videoRef.current.paused === false) {
+            videoRef.current.pause();
+            setPause(true);
+        } else {
+            videoRef.current.play();
+            setPause(false);
+        }
+    };
+    const handleVolume = (e) => {
+        if (videoRef.current.muted === true) {
+            setMuted(false);
+        } else {
+            setMuted(true);
+        }
+    };
+    // useEffect(() => {
+    //     const srollEvent = window.addEventListener('scroll', () => {
+    //         let isElInViewPort = (el) => {
+    //             let rect = el.getBoundingClientRect() || { top: 0, bottom: 0 };
+    //             let viewHeight = window.innerHeight || document.documentElement.clientHeight;
+
+    //             return (
+    //                 (rect.top <= 0 && rect.bottom >= 0) ||
+    //                 (rect.bottom >= viewHeight && rect.top <= viewHeight) ||
+    //                 (rect.top >= 0 && rect.bottom <= viewHeight)
+    //             );
+    //         };
+    //         if (isElInViewPort(videoRef.current)) {
+    //             videoRef.current.play();
+    //         } else {
+    //             videoRef.current.pause();
+    //         }
+    //     });
+
+    //     return () => srollEvent;
+    // }, []);
+
     return (
         <div className={cx('wrapper')}>
             <div className={cx('user')}>
                 <Account
                     name={post?.username}
-                    img="http://phunuvietnam.mediacdn.vn/media/news/33abffcedac43a654ac7f501856bf700/anh-profile-tiet-lo-g-ve-ban-1.jpg"
-                    story
+                    img={
+                        avatar ||
+                        'http://phunuvietnam.mediacdn.vn/media/news/33abffcedac43a654ac7f501856bf700/anh-profile-tiet-lo-g-ve-ban-1.jpg'
+                    }
+                    // story
                 />
                 <i className={cx('post-option')}>{ThreeDotsIcon}</i>
             </div>
             <div className={cx('img-slider')} onDoubleClick={(e) => setLiked(true)}>
-                {Array.isArray(post?.imageUrl) === false ? (
-                    <div>
-                        <img src={post?.imageUrl} alt="post img" />
-                    </div>
+                {Array.isArray(post?.url) === false ? (
+                    post?.url.type === 'image' ? (
+                        <div>
+                            <img src={post?.url.src} alt="post img" />
+                        </div>
+                    ) : (
+                        <div className={cx('video-container')}>
+                            {pause === true && <p className={cx('pause-icon')}>{PlayIcon}</p>}
+                            <p className={cx('volume-icon')} onClick={handleVolume}>
+                                {muted ? VolumeMutedIcon : VolumeIcon}
+                            </p>
+                            <video
+                                ref={videoRef}
+                                width="400"
+                                // autoPlay
+                                onClick={handleClickVideo}
+                                loop
+                                muted={muted}
+                            >
+                                <source src={post?.url.src} type="video/mp4" />
+                            </video>
+                        </div>
+                    )
                 ) : (
                     <Carousel responsive={responsive} showDots={true}>
                         {post?.imageUrl.map((img, index) => (

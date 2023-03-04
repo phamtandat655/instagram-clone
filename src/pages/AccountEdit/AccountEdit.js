@@ -4,7 +4,9 @@ import styles from './AccountEdit.module.scss';
 import { useState, useEffect, useRef } from 'react';
 import { UserAuth } from '../../components/Context/AuthContext';
 import { onSnapshot, doc, updateDoc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { db } from '../../firebase';
+
 import { useNavigate } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
@@ -13,7 +15,6 @@ function AccountEdit() {
     const [avatar, setAvatar] = useState('');
     const [name, setName] = useState('');
     const [desc, setDesc] = useState('');
-    const [file, setFile] = useState();
     const { user } = UserAuth();
 
     const fileRef = useRef();
@@ -42,8 +43,44 @@ function AccountEdit() {
     const handleImgUpload = () => {
         fileRef.current.click();
     };
+
+    const storage = getStorage();
     const handleChangeImg = (e) => {
-        const file = e.target.files[0];
+        const imgFile = e.target.files[0];
+        const storageRef = ref(storage, `images/${imgFile.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, imgFile);
+
+        uploadTask.on(
+            'state_changed',
+            (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log(progress);
+                switch (snapshot.state) {
+                    case 'paused':
+                        // console.log('Upload is paused');
+                        break;
+                    case 'running':
+                        // console.log('Upload is running');
+                        break;
+                    default:
+                        break;
+                }
+            },
+            (error) => {
+                alert(error.message);
+            },
+            () => {
+                getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+                    await updateDoc(doc(db, 'users', `${user?.email}`), {
+                        information: {
+                            avatar: downloadURL,
+                            name,
+                            desc,
+                        },
+                    });
+                });
+            },
+        );
     };
 
     return (
@@ -56,7 +93,7 @@ function AccountEdit() {
                     <p>{user?.email}</p>
                     <div onClick={handleImgUpload}>
                         <span>Thay đổi ảnh đại diện</span>
-                        <input type="file" value={file} onChange={(e) => handleChangeImg(e)} hidden ref={fileRef} />
+                        <input type="file" onChange={handleChangeImg} hidden ref={fileRef} />
                     </div>
                 </div>
             </div>
