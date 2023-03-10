@@ -126,32 +126,49 @@ textarea::-webkit-scrollbar-thumb:hover {
     z-index: 5;
 
     color: black;
-    border: 1px solid red;
     background-color: black;
     border-radius: 50%;
-}
-video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
 }
 .img-slider {
     display: flex;
 
-    overflow: scroll;
+    overflow-x: scroll;
     overflow-y: hidden;
+    scroll-snap-type: x mandatory;
 
     scroll-behavior: smooth;
 
     width: 100%;
     height: 100%;
 }
+.upload-wrapper {
+    position: relative;
+    flex: 0 0 calc(100% - 40px);
+    scroll-snap-align: start;
+}
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.btn-delete {
+    position: absolute;
+    top: 50%;
+    transform: translateX(-50%);
+    left: 50px;
+
+    background-color: red !important;
+    cursor: pointer;
+}
 .img-slider img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
+
+    border-right: 1px solid black;
+    border-left: 1px solid black;
 }
 .image-zone header {
     margin: 10px 0;

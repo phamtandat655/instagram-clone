@@ -1,6 +1,8 @@
 .wrapper {
     padding: 0 2px;
     cursor: pointer;
+
+    scroll-snap-align: start;
 }
 
 // .wrapper {

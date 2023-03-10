@@ -96,7 +96,13 @@ function MiniMenu({ clickSeeMore, setClickSeeMore }) {
                         </div>
                     </div>
                     <div className={cx('menu-item', 'signout')}>
-                        <div onClick={handleSignOut} className={cx('menu-item-wrapper')}>
+                        <div
+                            onClick={() => {
+                                setClickSeeMore(false);
+                                handleSignOut();
+                            }}
+                            className={cx('menu-item-wrapper')}
+                        >
                             <p>Đăng xuất</p>
                         </div>
                     </div>

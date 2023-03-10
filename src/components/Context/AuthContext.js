@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
-
+import avatarClone from '../../assets/image/anh-profile-tiet-lo-g-ve-ban-1.webp';
 import { setDoc, doc } from 'firebase/firestore';
 
 import { auth, db } from '../../firebase';
@@ -20,7 +20,7 @@ export function AuthContextProvider({ children }) {
             information: {
                 email,
                 name: handleName(email),
-                avatar: 'http://phunuvietnam.mediacdn.vn/media/news/33abffcedac43a654ac7f501856bf700/anh-profile-tiet-lo-g-ve-ban-1.jpg',
+                avatar: avatarClone,
                 desc: '',
             },
         });

@@ -14,6 +14,7 @@ import { UserAuth } from './components/Context/AuthContext';
 import { useState } from 'react';
 import AccountEdit from './pages/AccountEdit/AccountEdit';
 import CreatePost from './components/CreatePost/CreatePost';
+import PostDetail from './components/PostDetail/PostDetail';
 
 const cx = classNames.bind(styles);
 
@@ -27,7 +28,7 @@ function App() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
-    const { user, signUp, login, logout } = UserAuth();
+    const { user, signUp, login } = UserAuth();
 
     const [page, setPage] = useState(() => {
         return pathname.slice(1) === '' ? 'home' : pathname.slice(1);
@@ -98,6 +99,7 @@ function App() {
                             <Route path="/inbox" element={<Inbox />} />
                             <Route path="/personalpage" element={<PersonalPage />} />
                             <Route path="/account/edit" element={<AccountEdit />} />
+                            <Route path="/:idPost" element={<PostDetail />} />
                         </Routes>
                     </div>
                     {page === 'create' && <CreatePost page={page} pathname={pathname} setPage={setPage} />}

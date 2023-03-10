@@ -20,8 +20,9 @@ import 'react-multi-carousel/lib/styles.css';
 
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { onSnapshot, doc } from 'firebase/firestore';
+import { onSnapshot, doc, collection, orderBy, query, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebase';
+import { UserAuth } from '../Context/AuthContext';
 
 const cx = classNames.bind(styles);
 
@@ -32,7 +33,13 @@ function Post({ post }) {
     const [avatar, setAvatar] = useState('');
     const [muted, setMuted] = useState(true);
     const [pause, setPause] = useState(true);
+
+    const [username, setUsername] = useState('');
+    const [comment, setComment] = useState('');
+    const [comments, setComments] = useState([]);
+
     const videoRef = useRef();
+    const { user } = UserAuth();
 
     const responsive = {
         desktop: {
@@ -86,6 +93,39 @@ function Post({ post }) {
         });
     }, [post?.useremail]);
 
+    useEffect(() => {
+        const q = query(collection(db, `posts/${post?.id}/comments`), orderBy('timestamp', 'desc'));
+        const unsubcribe = onSnapshot(q, (snapshot) => {
+            let newComments = [];
+            snapshot.forEach((doc) => {
+                newComments.push({
+                    id: doc.id,
+                    ...doc.data(),
+                });
+            });
+            setComments(newComments);
+        });
+
+        const unsubcribe2 = onSnapshot(doc(db, 'users', `${user?.email}`), (doc) => {
+            setUsername(doc.data()?.information.name);
+        });
+
+        return () => {
+            unsubcribe();
+            unsubcribe2();
+        };
+    }, [user?.email, post?.id]);
+
+    const handleUploadComment = (e) => {
+        addDoc(collection(db, `posts/${post?.id}/comments`), {
+            timestampSecond: Math.floor(Date.now() / 1000),
+            timestamp: serverTimestamp(),
+            comment: comment,
+            username: username,
+        });
+        setComment('');
+    };
+
     const handleDesc = (desc) => {
         if (desc.length > 50) {
             return (
@@ -116,27 +156,31 @@ function Post({ post }) {
             setMuted(true);
         }
     };
-    // useEffect(() => {
-    //     const srollEvent = window.addEventListener('scroll', () => {
-    //         let isElInViewPort = (el) => {
-    //             let rect = el.getBoundingClientRect() || { top: 0, bottom: 0 };
-    //             let viewHeight = window.innerHeight || document.documentElement.clientHeight;
+    useEffect(() => {
+        if (post?.url[0]?.type === 'video' && pause === true) {
+            const srollEvent = window.addEventListener('scroll', () => {
+                let isElInViewPort = (el) => {
+                    let rect = el.getBoundingClientRect();
+                    let viewHeight = window.innerHeight || document.documentElement.clientHeight;
 
-    //             return (
-    //                 (rect.top <= 0 && rect.bottom >= 0) ||
-    //                 (rect.bottom >= viewHeight && rect.top <= viewHeight) ||
-    //                 (rect.top >= 0 && rect.bottom <= viewHeight)
-    //             );
-    //         };
-    //         if (isElInViewPort(videoRef.current)) {
-    //             videoRef.current.play();
-    //         } else {
-    //             videoRef.current.pause();
-    //         }
-    //     });
+                    return (
+                        (rect.top <= 200 && rect.bottom >= 200) ||
+                        (rect.bottom >= viewHeight - 200 && rect.top <= viewHeight - 200) ||
+                        (rect.top >= 200 && rect.bottom <= viewHeight - 200)
+                    );
+                };
+                if (isElInViewPort(videoRef.current)) {
+                    videoRef.current.play();
+                    setPause(false);
+                } else {
+                    videoRef.current.pause();
+                    setPause(true);
+                }
+            });
 
-    //     return () => srollEvent;
-    // }, []);
+            return () => srollEvent;
+        }
+    }, [post?.url, pause]);
 
     return (
         <div className={cx('wrapper')}>
@@ -151,16 +195,28 @@ function Post({ post }) {
                 />
                 <i className={cx('post-option')}>{ThreeDotsIcon}</i>
             </div>
-            <div className={cx('img-slider')} onDoubleClick={(e) => setLiked(true)}>
-                {Array.isArray(post?.url) === false ? (
-                    post?.url.type === 'image' ? (
+            <div className={cx('files-slider')} onDoubleClick={(e) => setLiked(true)}>
+                {post?.url.length === 1 ? (
+                    post?.url[0].type.includes('image') ? (
                         <div>
-                            <img src={post?.url.src} alt="post img" />
+                            <img src={post?.url[0].src} alt="post img" />
                         </div>
                     ) : (
                         <div className={cx('video-container')}>
-                            {pause === true && <p className={cx('pause-icon')}>{PlayIcon}</p>}
-                            <p className={cx('volume-icon')} onClick={handleVolume}>
+                            {pause === true && (
+                                <p
+                                    className={cx('pause-icon')}
+                                    onClick={handleClickVideo}
+                                    onDoubleClick={(e) => e.stopPropagation()}
+                                >
+                                    {PlayIcon}
+                                </p>
+                            )}
+                            <p
+                                className={cx('volume-icon')}
+                                onClick={handleVolume}
+                                onDoubleClick={(e) => e.stopPropagation()}
+                            >
                                 {muted ? VolumeMutedIcon : VolumeIcon}
                             </p>
                             <video
@@ -170,18 +226,64 @@ function Post({ post }) {
                                 onClick={handleClickVideo}
                                 loop
                                 muted={muted}
+                                className={cx('video')}
                             >
-                                <source src={post?.url.src} type="video/mp4" />
+                                <source src={post?.url[0].src} type="video/mp4" />
                             </video>
                         </div>
                     )
                 ) : (
                     <Carousel responsive={responsive} showDots={true}>
-                        {post?.imageUrl.map((img, index) => (
-                            <div key={index}>
-                                <img src={img} alt="post img" />
-                            </div>
-                        ))}
+                        {post?.url.map((file, index) => {
+                            if (file.type.includes('image')) {
+                                return (
+                                    <div
+                                        key={file.src}
+                                        style={{ height: '100%' }}
+                                        className={'item-wrapper'}
+                                        onDoubleClick={(e) => setLiked(true)}
+                                    >
+                                        <img src={file.src} alt="post img" />
+                                    </div>
+                                );
+                            } else if (file.type.includes('video')) {
+                                return (
+                                    <div className={cx('video-container')} key={file.src}>
+                                        <div className={cx('video-wrapper')}>
+                                            {pause === true && (
+                                                <p
+                                                    className={cx('pause-icon')}
+                                                    onClick={handleClickVideo}
+                                                    onDoubleClick={(e) => e.stopPropagation()}
+                                                >
+                                                    {PlayIcon}
+                                                </p>
+                                            )}
+                                            <p
+                                                className={cx('volume-icon')}
+                                                onClick={handleVolume}
+                                                onDoubleClick={(e) => e.stopPropagation()}
+                                            >
+                                                {muted ? VolumeMutedIcon : VolumeIcon}
+                                            </p>
+                                            <video
+                                                ref={videoRef}
+                                                width="400"
+                                                // autoPlay
+                                                onClick={handleClickVideo}
+                                                loop
+                                                muted={muted}
+                                                className={cx('video')}
+                                            >
+                                                <source src={file.src} type="video/mp4" />
+                                            </video>
+                                        </div>
+                                    </div>
+                                );
+                            } else {
+                                return <p key={index}>Hinh anh hoac video bi loi!</p>;
+                            }
+                        })}
                     </Carousel>
                 )}
             </div>
@@ -208,15 +310,22 @@ function Post({ post }) {
                     <p className={cx('caption-user')}>{post?.username}</p>
                     {handleDesc(post?.caption)}
                 </div>
-                <Link className={cx('see-all-cmt')} to="#">
-                    <p>Xem tất cả bình luận</p>
+                <Link className={cx('see-all-cmt')} to={`/${post?.id}`}>
+                    <p>Xem tất cả {comments && comments.length} bình luận</p>
                 </Link>
                 <p className={cx('time-post')}>{time}</p>
             </div>
             <div className={cx('comment')}>
                 <span>{EmotionIcon}</span>
-                <input type="text" placeholder="Thêm bình luận..." />
-                <button>Đăng</button>
+                <input
+                    type="text"
+                    placeholder="Thêm bình luận..."
+                    value={comment}
+                    onChange={(e) => {
+                        setComment(e.target.value);
+                    }}
+                />
+                <button onClick={handleUploadComment}>Đăng</button>
             </div>
         </div>
     );
