@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
-import avatarClone from '../../assets/image/anh-profile-tiet-lo-g-ve-ban-1.webp';
+import avatarClone from '../assets/image/anh-profile-tiet-lo-g-ve-ban-1.webp';
 import { setDoc, doc } from 'firebase/firestore';
 
-import { auth, db } from '../../firebase';
+import { auth, db } from '../firebase';
 
 const AuthContext = createContext();
 

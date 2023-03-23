@@ -10,7 +10,7 @@
     align-items: center;
 
     background-color: rgba(2, 2, 2, 0.5);
-    z-index: 100;
+    z-index: 20;
 }
 .hide {
     display: none;
@@ -54,6 +54,10 @@
     background-color: unset;
     color: rgb(0, 149, 246);
     cursor: pointer;
+}
+.account-wrap button.wait {
+    user-select: none;
+    color: rgb(110, 192, 247);
 }
 .input-wrapper {
     width: 100%;

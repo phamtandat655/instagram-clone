@@ -4,17 +4,20 @@ import './index.css';
 import App from './App';
 
 import { BrowserRouter } from 'react-router-dom';
-import { AuthContextProvider } from './components/Context/AuthContext';
+import { AuthContextProvider } from './Context/AuthContext';
+import { FireBaseContextProvider } from './Context/FireBaseContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <AuthContextProvider>
-        <React.StrictMode>
-            <BrowserRouter>
-                <App />
-            </BrowserRouter>
-        </React.StrictMode>
-    </AuthContextProvider>,
+    <FireBaseContextProvider>
+        <AuthContextProvider>
+            <React.StrictMode>
+                <BrowserRouter>
+                    <App />
+                </BrowserRouter>
+            </React.StrictMode>
+        </AuthContextProvider>
+    </FireBaseContextProvider>,
 );
 
 // If you want to start measuring performance in your app, pass a function

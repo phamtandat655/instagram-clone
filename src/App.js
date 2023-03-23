@@ -1,6 +1,6 @@
 import styles from './App.module.scss';
 import classNames from 'classnames/bind';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, useParams } from 'react-router-dom';
 
 import Navbar from './components/Navbar/Navbar';
 import Home from './pages/Home/Home';
@@ -9,9 +9,9 @@ import Inbox from './pages/Inbox/Inbox';
 import Reels from './pages/Reels/Reels';
 import PersonalPage from './pages/PersonalPage/PersonalPage';
 import { logo } from './assets/image/instagram';
-import { UserAuth } from './components/Context/AuthContext';
+import { UserAuth } from './Context/AuthContext';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AccountEdit from './pages/AccountEdit/AccountEdit';
 import CreatePost from './components/CreatePost/CreatePost';
 import PostDetail from './components/PostDetail/PostDetail';
@@ -20,6 +20,7 @@ const cx = classNames.bind(styles);
 
 function App() {
     let { pathname } = useLocation();
+    const [idpost, setIdpost] = useState('');
     const [clickSeeMore, setClickSeeMore] = useState(false);
 
     const [form, setForm] = useState('login');
@@ -29,10 +30,20 @@ function App() {
     const [confirmPassword, setConfirmPassword] = useState('');
 
     const { user, signUp, login } = UserAuth();
-
     const [page, setPage] = useState(() => {
         return pathname.slice(1) === '' ? 'home' : pathname.slice(1);
     });
+
+    useEffect(() => {
+        let path = pathname.slice(1) === '' ? 'home' : pathname.slice(1);
+        if (path !== idpost) {
+            if (page === 'search' || page === 'create') {
+                return;
+            } else {
+                setPage(path);
+            }
+        }
+    }, [page, pathname]);
 
     const handleLogin = async () => {
         setError('');
@@ -93,13 +104,23 @@ function App() {
                     />
                     <div className={cx('page-wrapper')}>
                         <Routes>
-                            <Route path="/" element={<Home />} />
+                            <Route path="/" element={<Home setPage={setPage} />} />
                             <Route path="/explore" element={<Explore />} />
                             <Route path="/videos" element={<Reels />} />
                             <Route path="/inbox" element={<Inbox />} />
-                            <Route path="/personalpage" element={<PersonalPage />} />
+                            <Route path="/personalpage/:email" element={<PersonalPage />} />
                             <Route path="/account/edit" element={<AccountEdit />} />
-                            <Route path="/:idPost" element={<PostDetail />} />
+                            <Route
+                                path="/:idPost"
+                                element={
+                                    <PostDetail
+                                        page={page}
+                                        setPage={setPage}
+                                        setIdpost={setIdpost}
+                                        pathname={pathname}
+                                    />
+                                }
+                            />
                         </Routes>
                     </div>
                     {page === 'create' && <CreatePost page={page} pathname={pathname} setPage={setPage} />}

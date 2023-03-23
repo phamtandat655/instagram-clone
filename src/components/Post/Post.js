@@ -15,18 +15,24 @@ import {
     PlayIcon,
 } from '../../assets/Icons/Icons';
 
-import Carousel from 'react-multi-carousel';
-import 'react-multi-carousel/lib/styles.css';
+// Import Swiper React components
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper';
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import '../../swiper.scss';
 
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { onSnapshot, doc, collection, orderBy, query, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebase';
-import { UserAuth } from '../Context/AuthContext';
+import { UserAuth } from '../../Context/AuthContext';
 
 const cx = classNames.bind(styles);
 
-function Post({ post }) {
+function Post({ post, setPage }) {
     const [liked, setLiked] = useState(false);
     const [saved, setSaved] = useState(false);
     const [time, setTime] = useState('');
@@ -40,24 +46,7 @@ function Post({ post }) {
 
     const videoRef = useRef();
     const { user } = UserAuth();
-
-    const responsive = {
-        desktop: {
-            breakpoint: { max: 3000, min: 1024 },
-            items: 1,
-            slidesToSlide: 1, // optional, default to 1.
-        },
-        tablet: {
-            breakpoint: { max: 1024, min: 464 },
-            items: 1,
-            slidesToSlide: 1, // optional, default to 1.
-        },
-        mobile: {
-            breakpoint: { max: 464, min: 0 },
-            items: 1,
-            slidesToSlide: 1, // optional, default to 1.
-        },
-    };
+    const nav = useNavigate();
 
     useEffect(() => {
         const timestamp = {
@@ -122,6 +111,7 @@ function Post({ post }) {
             timestamp: serverTimestamp(),
             comment: comment,
             username: username,
+            useremail: user?.email,
         });
         setComment('');
     };
@@ -182,9 +172,14 @@ function Post({ post }) {
         }
     }, [post?.url, pause]);
 
+    const handleClickAccount = (e) => {
+        setPage(`personalpage/${post?.useremail}`);
+        nav(`/personalpage/${post?.useremail}`);
+    };
+
     return (
         <div className={cx('wrapper')}>
-            <div className={cx('user')}>
+            <div className={cx('user')} onClick={handleClickAccount}>
                 <Account
                     name={post?.username}
                     img={
@@ -233,58 +228,65 @@ function Post({ post }) {
                         </div>
                     )
                 ) : (
-                    <Carousel responsive={responsive} showDots={true}>
+                    <Swiper
+                        modules={[Navigation, Pagination]}
+                        slidesPerView={1}
+                        navigation
+                        pagination={{ clickable: true }}
+                    >
                         {post?.url.map((file, index) => {
                             if (file.type.includes('image')) {
                                 return (
-                                    <div
+                                    <SwiperSlide
                                         key={file.src}
                                         style={{ height: '100%' }}
                                         className={'item-wrapper'}
                                         onDoubleClick={(e) => setLiked(true)}
                                     >
                                         <img src={file.src} alt="post img" />
-                                    </div>
+                                    </SwiperSlide>
                                 );
                             } else if (file.type.includes('video')) {
                                 return (
-                                    <div className={cx('video-container')} key={file.src}>
-                                        <div className={cx('video-wrapper')}>
-                                            {pause === true && (
+                                    <SwiperSlide key={file.src}>
+                                        <div className={cx('video-container')}>
+                                            <div className={cx('video-wrapper')}>
+                                                {pause === true && (
+                                                    <p
+                                                        className={cx('pause-icon')}
+                                                        onClick={handleClickVideo}
+                                                        onDoubleClick={(e) => e.stopPropagation()}
+                                                    >
+                                                        {PlayIcon}
+                                                    </p>
+                                                )}
                                                 <p
-                                                    className={cx('pause-icon')}
-                                                    onClick={handleClickVideo}
+                                                    className={cx('volume-icon')}
+                                                    onClick={handleVolume}
                                                     onDoubleClick={(e) => e.stopPropagation()}
                                                 >
-                                                    {PlayIcon}
+                                                    {muted ? VolumeMutedIcon : VolumeIcon}
                                                 </p>
-                                            )}
-                                            <p
-                                                className={cx('volume-icon')}
-                                                onClick={handleVolume}
-                                                onDoubleClick={(e) => e.stopPropagation()}
-                                            >
-                                                {muted ? VolumeMutedIcon : VolumeIcon}
-                                            </p>
-                                            <video
-                                                ref={videoRef}
-                                                width="400"
-                                                // autoPlay
-                                                onClick={handleClickVideo}
-                                                loop
-                                                muted={muted}
-                                                className={cx('video')}
-                                            >
-                                                <source src={file.src} type="video/mp4" />
-                                            </video>
+                                                <video
+                                                    ref={videoRef}
+                                                    width="400"
+                                                    // autoPlay
+                                                    onClick={handleClickVideo}
+                                                    loop
+                                                    muted={muted}
+                                                    className={cx('video')}
+                                                >
+                                                    <source src={file.src} type="video/mp4" />
+                                                </video>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </SwiperSlide>
                                 );
                             } else {
-                                return <p key={index}>Hinh anh hoac video bi loi!</p>;
+                                return <SwiperSlide key={index}>Hinh anh hoac video bi loi!</SwiperSlide>;
                             }
                         })}
-                    </Carousel>
+                    </Swiper>
                 )}
             </div>
             <div className={cx('info')}>
@@ -293,7 +295,14 @@ function Post({ post }) {
                         <div className={cx('icon')} onClick={(e) => setLiked(!liked)}>
                             {liked === true ? LikedIcon : LikeIcon}
                         </div>
-                        <div className={cx('icon')}>{CmtIcon}</div>
+                        <div
+                            className={cx('icon')}
+                            onClick={(e) => {
+                                nav(`/${post?.id}`);
+                            }}
+                        >
+                            {CmtIcon}
+                        </div>
                         <div className={cx('icon')}>{ShareIcon}</div>
                     </div>
                     <div

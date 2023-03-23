@@ -4,7 +4,7 @@ import { ImageUploadIcon, PlusIcon } from '../../assets/Icons/Icons';
 import Account from '../Account/Account';
 import styles from './CreatePost.module.scss';
 
-import { UserAuth } from '../../components/Context/AuthContext';
+import { UserAuth } from '../../Context/AuthContext';
 import { onSnapshot, doc, addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { db } from '../../firebase';
@@ -18,6 +18,7 @@ function CreatePost({ page, setPage, pathname }) {
     const [uploadArray, setUploadArray] = useState([]);
     const [files, setFiles] = useState([]);
     const [progress, setProgress] = useState(0);
+    const [waitLoad, setWaitLoad] = useState(true);
 
     const { user } = UserAuth();
     useEffect(() => {
@@ -38,6 +39,9 @@ function CreatePost({ page, setPage, pathname }) {
     };
 
     const handleShowImg = (e) => {
+        if (e.target.files) {
+            setWaitLoad(false);
+        }
         const selectedFiles = e.target.files;
         const selectedFilesArray = Array.from(selectedFiles);
 
@@ -59,6 +63,7 @@ function CreatePost({ page, setPage, pathname }) {
 
     const storage = getStorage();
     const handleUpload = async (e) => {
+        setWaitLoad(true);
         const arrUrls = [];
 
         files.map((file) => {
@@ -154,8 +159,13 @@ function CreatePost({ page, setPage, pathname }) {
     };
 
     return (
-        <div className={cx('wrapper', page === 'create' ? 'show' : 'hide')}>
-            <div className={cx('upload-container')}>
+        <div className={cx('wrapper', page === 'create' ? 'show' : 'hide')} onClick={handleClose}>
+            <div
+                className={cx('upload-container')}
+                onClick={(e) => {
+                    e.stopPropagation();
+                }}
+            >
                 <span
                     className={cx('progress')}
                     style={{
@@ -168,7 +178,9 @@ function CreatePost({ page, setPage, pathname }) {
                 <div className={cx('caption-zone')}>
                     <div className={cx('account-wrap')}>
                         <Account name={name} img={avatar} />
-                        <button onClick={handleUpload}>Chia sẻ</button>
+                        <button onClick={handleUpload} className={cx({ wait: waitLoad })} disabled={waitLoad}>
+                            Chia sẻ
+                        </button>
                     </div>
                     <div className={cx('input-wrapper')} onClick={handleTextAraeClick}>
                         <textarea
@@ -177,6 +189,8 @@ function CreatePost({ page, setPage, pathname }) {
                             value={textValue}
                             onChange={(e) => {
                                 setTextValue(e.target.value);
+                                if (e.target.value.length > 0) setWaitLoad(false);
+                                else if (files.length === 0) setWaitLoad(true);
                             }}
                         />
                     </div>

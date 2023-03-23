@@ -1,7 +1,7 @@
 import classNames from 'classnames/bind';
 import { useNavigate } from 'react-router-dom';
 import { ClockIcon, MoonIcon, SaveIcon, SettingIcon, WarningIcon } from '../../assets/Icons/Icons';
-import { UserAuth } from '../Context/AuthContext';
+import { UserAuth } from '../../Context/AuthContext';
 import styles from './MiniMenu.module.scss';
 
 const cx = classNames.bind(styles);

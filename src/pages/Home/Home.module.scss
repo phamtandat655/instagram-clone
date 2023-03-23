@@ -1,20 +1,7 @@
-// .wrapper {
-// }
-
-// newsfeed
-// .newsfeed {
-// }
 .story-wrapper {
     position: relative;
 }
 .story-container {
-    display: flex;
-
-    overflow: scroll;
-    overflow-y: hidden;
-
-    scroll-behavior: smooth;
-    scroll-snap-type: x mandatory;
     width: 430px;
     height: 80px;
 
@@ -24,44 +11,4 @@
     border: 1px solid rgba(114, 132, 159, 0.2);
     border-radius: 10px;
     background-color: white;
-}
-.story-container::-webkit-scrollbar {
-    display: none;
-}
-.button {
-    position: absolute;
-    top: 45%;
-    transform: translateY(-50%);
-
-    border: none;
-    padding: 0;
-    outline: none;
-
-    border-radius: 50%;
-    background-color: gray;
-
-    cursor: pointer;
-}
-.icon {
-    border-radius: 50%;
-    font-size: 25px;
-    color: white;
-    box-shadow: 2px 0px 2px rgba(114, 132, 159, 0.5);
-}
-.button:hover .icon {
-    color: rgb(233, 230, 230);
-}
-.btn-left {
-    left: 20px;
-}
-.btn-right {
-    right: 20px;
-}
-.hide {
-    display: none;
-}
-@media (max-width: 1240px) {
-    .button {
-        display: none;
-    }
 }

@@ -2,7 +2,7 @@ import classNames from 'classnames/bind';
 import styles from './AccountEdit.module.scss';
 
 import { useState, useEffect, useRef } from 'react';
-import { UserAuth } from '../../components/Context/AuthContext';
+import { UserAuth } from '../../Context/AuthContext';
 import { onSnapshot, doc, updateDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { db } from '../../firebase';

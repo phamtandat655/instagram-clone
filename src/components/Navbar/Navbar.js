@@ -28,7 +28,7 @@ import { Link, NavLink } from 'react-router-dom';
 import Modal from '../Modal/Modal';
 import MiniMenu from '../MiniMenu/MiniMenu';
 import { useState, useEffect } from 'react';
-import { UserAuth } from '../Context/AuthContext';
+import { UserAuth } from '../../Context/AuthContext';
 import { onSnapshot, doc } from 'firebase/firestore';
 import { db } from '../../firebase';
 
@@ -145,13 +145,13 @@ function Navbar({ page, setPage, clickSeeMore, setClickSeeMore, pathname }) {
                         </div>
                     </NavLink>
                     <NavLink
-                        to="/personalpage"
-                        className={(nav) => cx({ active: nav.isActive && page === 'personalpage' })}
+                        to={`/personalpage/${user.email}`}
+                        className={(nav) => cx({ active: nav.isActive && page === `personalpage/${user.email}` })}
                     >
                         <div
                             className={cx('item', 'personalPage')}
                             onClick={(e) => {
-                                setPage('personalpage');
+                                setPage(`personalpage/${user.email}`);
                             }}
                         >
                             <img src={avatar} alt="avatar bi loi" />
