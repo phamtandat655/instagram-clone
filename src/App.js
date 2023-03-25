@@ -1,6 +1,6 @@
 import styles from './App.module.scss';
 import classNames from 'classnames/bind';
-import { Routes, Route, useLocation, useParams } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 
 import Navbar from './components/Navbar/Navbar';
 import Home from './pages/Home/Home';
@@ -22,7 +22,6 @@ function App() {
     let { pathname } = useLocation();
     const [idpost, setIdpost] = useState('');
     const [clickSeeMore, setClickSeeMore] = useState(false);
-
     const [form, setForm] = useState('login');
     const [error, setError] = useState('');
     const [email, setEmail] = useState('');
@@ -37,7 +36,7 @@ function App() {
     useEffect(() => {
         let path = pathname.slice(1) === '' ? 'home' : pathname.slice(1);
         if (path !== idpost) {
-            if (page === 'search' || page === 'create') {
+            if (page === 'search' || page === 'notify') {
                 return;
             } else {
                 setPage(path);

@@ -38,7 +38,7 @@ function AccountEdit() {
                 avatar,
             },
         });
-        nav('/personalpage');
+        nav(`/personalpage/${user?.email}`);
     };
     const handleImgUpload = () => {
         fileRef.current.click();

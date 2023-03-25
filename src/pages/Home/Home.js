@@ -11,11 +11,43 @@ import classNames from 'classnames/bind';
 import Story from '../../components/Story/Story';
 import Post from '../../components/Post/Post';
 import { UseFireBase } from '../../Context/FireBaseContext';
+import Account from '../../components/Account/Account';
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { UserAuth } from '../../Context/AuthContext';
+import { onSnapshot, collection, doc } from 'firebase/firestore';
+import { db } from '../../firebase';
 
 const cx = classNames.bind(styles);
 
 function Home({ setPage }) {
     const { posts } = UseFireBase();
+    const nav = useNavigate();
+    const [followings, setFollowings] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [seeAll, setSeeAll] = useState(false);
+    const [likeds, setLikeds] = useState([]);
+
+    const { user } = UserAuth();
+
+    useEffect(() => {
+        onSnapshot(doc(db, 'users', `${user?.email}`), (doc) => {
+            setFollowings(doc.data()?.follows);
+            setLikeds(doc.data()?.likeds);
+        });
+
+        onSnapshot(collection(db, 'users'), (snapshot) => {
+            let newUsers = [];
+            snapshot.forEach((doc) => {
+                newUsers.push({
+                    id: doc.id,
+                    ...doc.data(),
+                });
+            });
+            newUsers = newUsers.filter((newuser) => newuser?.information.email !== user?.email);
+            setUsers(newUsers);
+        });
+    }, [user?.email]);
 
     return (
         <div className={cx('wrapper')}>
@@ -91,10 +123,61 @@ function Home({ setPage }) {
                     </Swiper>
                 </div>
                 <div className={cx('post-container')}>
-                    {posts && posts.map((post) => <Post key={post.id} post={post} setPage={setPage} />)}
+                    {posts &&
+                        followings &&
+                        posts.map((post) => {
+                            if (followings?.includes(post?.useremail)) {
+                                return <Post key={post?.id} post={post} setPage={setPage} likeds={likeds} />;
+                            }
+                        })}
                 </div>
             </div>
-            <div className={cx('recommend')}></div>
+            <div className={cx('recommend')}>
+                <div className={cx('recommend--header-wrapper')}>
+                    <span className={cx('recommend--header')}>Gợi ý cho bạn</span>
+                    <span
+                        className={cx('recommend--see-all')}
+                        onClick={(e) => {
+                            if (users?.length > 5) {
+                                setSeeAll(!seeAll);
+                            }
+                        }}
+                    >
+                        {seeAll === false ? 'Xem tất cả' : 'Ẩn bớt'}
+                    </span>
+                </div>
+                <div className={cx('recommend--users')}>
+                    {followings &&
+                        users &&
+                        users.map((user, index) => {
+                            if (seeAll === false) {
+                                if (index === 5) {
+                                    return <div key={index} className={cx('hide')}></div>;
+                                }
+                            }
+                            if (!followings.includes(user?.information.email)) {
+                                return (
+                                    <div
+                                        key={user?.id || index}
+                                        className={cx('recommend--user-wrapper')}
+                                        onClick={(e) => {
+                                            nav(`/personalPage/${user?.id}`);
+                                        }}
+                                    >
+                                        <Account
+                                            name={user?.information?.name}
+                                            img={user?.information?.avatar}
+                                            desc="Gợi ý cho bạn"
+                                            follow
+                                            followings={followings}
+                                            email={user?.information?.email}
+                                        />
+                                    </div>
+                                );
+                            }
+                        })}
+                </div>
+            </div>
         </div>
     );
 }

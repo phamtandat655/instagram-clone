@@ -26,14 +26,13 @@ import '../../swiper.scss';
 
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { onSnapshot, doc, collection, orderBy, query, addDoc, serverTimestamp } from 'firebase/firestore';
+import { onSnapshot, doc, collection, orderBy, query, addDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { UserAuth } from '../../Context/AuthContext';
 
 const cx = classNames.bind(styles);
 
-function Post({ post, setPage }) {
-    const [liked, setLiked] = useState(false);
+function Post({ post, setPage, likeds }) {
     const [saved, setSaved] = useState(false);
     const [time, setTime] = useState('');
     const [avatar, setAvatar] = useState('');
@@ -177,24 +176,54 @@ function Post({ post, setPage }) {
         nav(`/personalpage/${post?.useremail}`);
     };
 
+    // neu la 1 hinh van chua doubleclick de like dc
+    const handleDoubleClickLike = (e) => {
+        handleLikePost();
+    };
+
+    const handleClickLike = (e) => {
+        if (likeds.includes(post?.id)) {
+            handleUnLikePost();
+        } else {
+            handleLikePost();
+        }
+    };
+
+    const handleLikePost = async () => {
+        const docRef = doc(db, 'users', `${user?.email}`);
+        await updateDoc(docRef, {
+            likeds: [...likeds, post?.id],
+        });
+    };
+
+    const handleUnLikePost = async () => {
+        const docRef = doc(db, 'users', `${user?.email}`);
+        let newLikeds = likeds.filter((likedIdPost) => likedIdPost !== post?.id);
+        await updateDoc(docRef, {
+            likeds: [...newLikeds],
+        });
+    };
+
     return (
         <div className={cx('wrapper')}>
-            <div className={cx('user')} onClick={handleClickAccount}>
-                <Account
-                    name={post?.username}
-                    img={
-                        avatar ||
-                        'http://phunuvietnam.mediacdn.vn/media/news/33abffcedac43a654ac7f501856bf700/anh-profile-tiet-lo-g-ve-ban-1.jpg'
-                    }
-                    // story
-                />
+            <div className={cx('user')}>
+                <span onClick={handleClickAccount}>
+                    <Account
+                        name={post?.username}
+                        img={
+                            avatar ||
+                            'http://phunuvietnam.mediacdn.vn/media/news/33abffcedac43a654ac7f501856bf700/anh-profile-tiet-lo-g-ve-ban-1.jpg'
+                        }
+                        // story
+                    />
+                </span>
                 <i className={cx('post-option')}>{ThreeDotsIcon}</i>
             </div>
-            <div className={cx('files-slider')} onDoubleClick={(e) => setLiked(true)}>
+            <div className={cx('files-slider')}>
                 {post?.url.length === 1 ? (
                     post?.url[0].type.includes('image') ? (
                         <div>
-                            <img src={post?.url[0].src} alt="post img" />
+                            <img src={post?.url[0].src} alt="post img" onDoubleClick={handleDoubleClickLike} />
                         </div>
                     ) : (
                         <div className={cx('video-container')}>
@@ -233,16 +262,12 @@ function Post({ post, setPage }) {
                         slidesPerView={1}
                         navigation
                         pagination={{ clickable: true }}
+                        onDoubleClick={handleDoubleClickLike}
                     >
                         {post?.url.map((file, index) => {
                             if (file.type.includes('image')) {
                                 return (
-                                    <SwiperSlide
-                                        key={file.src}
-                                        style={{ height: '100%' }}
-                                        className={'item-wrapper'}
-                                        onDoubleClick={(e) => setLiked(true)}
-                                    >
+                                    <SwiperSlide key={file.src} style={{ height: '100%' }} className={'item-wrapper'}>
                                         <img src={file.src} alt="post img" />
                                     </SwiperSlide>
                                 );
@@ -292,8 +317,8 @@ function Post({ post, setPage }) {
             <div className={cx('info')}>
                 <div className={cx('icons-container')}>
                     <div className={cx('icons-left')}>
-                        <div className={cx('icon')} onClick={(e) => setLiked(!liked)}>
-                            {liked === true ? LikedIcon : LikeIcon}
+                        <div className={cx('icon')} onClick={handleClickLike}>
+                            {likeds.includes(post?.id) === true ? LikedIcon : LikeIcon}
                         </div>
                         <div
                             className={cx('icon')}

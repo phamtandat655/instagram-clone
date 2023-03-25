@@ -3,11 +3,12 @@ import styles from './PersonalPage.module.scss';
 
 import { useState, useEffect } from 'react';
 import { UserAuth } from '../../Context/AuthContext';
-import { onSnapshot, doc, query, collection, orderBy } from 'firebase/firestore';
+import { onSnapshot, doc, query, collection, orderBy, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 
 import { ListIcon, PostIcon } from '../../assets/Icons/Icons';
 import { useNavigate, useParams } from 'react-router-dom';
+import Account from '../../components/Account/Account';
 
 const cx = classNames.bind(styles);
 
@@ -16,16 +17,37 @@ function PersonalPage() {
     const [name, setName] = useState();
     const [desc, setDesc] = useState();
     const [posts, setPosts] = useState([]);
-    const { user } = UserAuth();
+    const [followings, setFollowings] = useState([]);
+    const [myFollowings, setMyFollowings] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [hideFollowingsModal, setHideFollowingsModal] = useState(true);
 
+    const { user } = UserAuth();
     const nav = useNavigate();
     const { email } = useParams();
 
     useEffect(() => {
         onSnapshot(doc(db, 'users', `${email}`), (doc) => {
+            // console.log(email);
             setAvatar(doc.data()?.information.avatar);
             setName(doc.data()?.information.name);
             setDesc(doc.data()?.information.desc);
+            setFollowings(doc.data()?.follows);
+        });
+
+        onSnapshot(doc(db, 'users', `${user?.email}`), (doc) => {
+            setMyFollowings(doc.data()?.follows);
+        });
+
+        onSnapshot(collection(db, 'users'), (snapshot) => {
+            let newUsers = [];
+            snapshot.forEach((doc) => {
+                newUsers.push({
+                    id: doc.id,
+                    ...doc.data(),
+                });
+            });
+            setUsers(newUsers);
         });
 
         const q = query(collection(db, 'posts'), orderBy('timestamp', 'desc'));
@@ -42,10 +64,69 @@ function PersonalPage() {
         });
 
         return () => unsubcribe();
-    }, [email]);
+    }, [email, user?.email]);
+
+    const handleFollow = async (e) => {
+        const docRef = doc(db, 'users', `${user?.email}`);
+        await updateDoc(docRef, {
+            follows: [...myFollowings, email],
+        });
+    };
+
+    const handleUnfollow = async (e) => {
+        const docRef = doc(db, 'users', `${user?.email}`);
+        let newFollowings = myFollowings.filter((followingEmail) => followingEmail !== email);
+        await updateDoc(docRef, {
+            follows: [...newFollowings],
+        });
+    };
 
     return (
         <div className={cx('wrapper')}>
+            {hideFollowingsModal === false && (
+                <div
+                    className={cx('followings-modal')}
+                    onClick={(e) => {
+                        setHideFollowingsModal(true);
+                    }}
+                >
+                    <div
+                        className={cx('followings-modal-wrapper')}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                        }}
+                    >
+                        <i
+                            className={cx('followings-modal-close')}
+                            onClick={(e) => {
+                                setHideFollowingsModal(true);
+                            }}
+                        >
+                            X
+                        </i>
+                        <div className={cx('followings-modal-header')}>Người theo dõi</div>
+                        <div className={cx('followings-modal-list')}>
+                            {users &&
+                                users.map((user, index) => {
+                                    if (followings.includes(user?.information.email)) {
+                                        return (
+                                            <div
+                                                key={user?.id || index}
+                                                className={cx('followings-modal-item')}
+                                                onClick={(e) => {
+                                                    setHideFollowingsModal(true);
+                                                    nav(`/personalPage/${user?.id}`);
+                                                }}
+                                            >
+                                                <Account name={user?.information.name} img={user?.information.avatar} />
+                                            </div>
+                                        );
+                                    }
+                                })}
+                        </div>
+                    </div>
+                </div>
+            )}
             <div className={cx('personalPage-top')}>
                 <div className={cx('avatar-container')}>
                     <img alt="avatar" src={avatar} />
@@ -54,19 +135,42 @@ function PersonalPage() {
                 <div className={cx('infomation-container')}>
                     <div className={cx('info-top')}>
                         <p className={cx('info-top--email')}>{email}</p>
-                        {email === user?.email && (
+                        {email === user?.email ? (
                             <div
+                                className={cx('info-top--settings')}
                                 onClick={(e) => {
                                     nav('/account/edit');
                                 }}
                             >
                                 Chỉnh sửa trang cá nhân
                             </div>
+                        ) : (
+                            <div>
+                                {myFollowings && myFollowings.includes(email) ? (
+                                    <p className={cx('info-top--following')} onClick={handleUnfollow}>
+                                        Đang theo dõi
+                                    </p>
+                                ) : (
+                                    <p className={cx('info-top--follow')} onClick={handleFollow}>
+                                        Theo dõi
+                                    </p>
+                                )}
+                            </div>
                         )}
                         {/* <p className={cx('info-top--setting')}>{SettingIcon}</p> */}
                     </div>
                     <div className={cx('info-mid')}>
-                        <span>0 </span>bài viết
+                        <span>
+                            <strong>{posts.length}</strong> bài viết
+                        </span>
+                        <span
+                            className={cx('info-mid-followings')}
+                            onClick={(e) => {
+                                setHideFollowingsModal(false);
+                            }}
+                        >
+                            <strong>{followings ? followings.length : 0}</strong> đang theo dõi
+                        </span>
                     </div>
                     <div className={cx('info-bottom')}>
                         <p className={cx('info-bottom--name')}>{name}</p>
@@ -81,7 +185,7 @@ function PersonalPage() {
                 </p>
                 <div className={cx('post')}>
                     {posts &&
-                        posts.map((post, index) => {
+                        posts.map((post) => {
                             if (post?.url[0].type.includes('image')) {
                                 return (
                                     <div

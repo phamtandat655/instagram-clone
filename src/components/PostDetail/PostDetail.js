@@ -18,7 +18,7 @@ import { useRef, useState, useEffect } from 'react';
 import Comment from '../Comment/Comment';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { onSnapshot, doc, collection, orderBy, query, addDoc, serverTimestamp } from 'firebase/firestore';
+import { onSnapshot, doc, collection, orderBy, query, addDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { UserAuth } from '../../Context/AuthContext';
 
@@ -34,12 +34,12 @@ import '../../swiper.scss';
 const cx = classNames.bind(styles);
 
 function PostDetail({ setPage, page, setIdpost, pathname }) {
-    const [liked, setLiked] = useState(false);
     const [saved, setSaved] = useState(false);
     const [avatar, setAvatar] = useState('');
     const [muted, setMuted] = useState(true);
     const [pause, setPause] = useState(true);
 
+    const [likeds, setLikeds] = useState([]);
     const [username, setUsername] = useState('');
     const [comment, setComment] = useState('');
     const [comments, setComments] = useState([]);
@@ -103,6 +103,7 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
 
         const unsubcribe2 = onSnapshot(doc(db, 'users', `${user?.email}`), (doc) => {
             setUsername(doc.data()?.information.name);
+            setLikeds(doc.data()?.likeds);
         });
 
         return () => {
@@ -169,6 +170,33 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
         }
     };
 
+    const handleClickLike = (e) => {
+        if (likeds.includes(idPost)) {
+            handleUnLikePost();
+        } else {
+            handleLikePost();
+        }
+    };
+
+    const handleLikePost = async () => {
+        const docRef = doc(db, 'users', `${user?.email}`);
+        await updateDoc(docRef, {
+            likeds: [...likeds, idPost],
+        });
+    };
+
+    const handleUnLikePost = async () => {
+        const docRef = doc(db, 'users', `${user?.email}`);
+        let newLikeds = likeds.filter((likedIdPost) => likedIdPost !== idPost);
+        await updateDoc(docRef, {
+            likeds: [...newLikeds],
+        });
+    };
+
+    const handleDoubleClickLike = (e) => {
+        handleLikePost();
+    };
+
     return (
         <div className={cx('wrapper')} onClick={handleClose}>
             <p className={cx('close-icon')} onClick={handleClose}>
@@ -181,12 +209,7 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
                         e.stopPropagation();
                     }}
                 >
-                    <div
-                        className={cx('slider-wrapper')}
-                        onDoubleClick={(e) => {
-                            setLiked(true);
-                        }}
-                    >
+                    <div className={cx('slider-wrapper')} onDoubleClick={handleDoubleClickLike}>
                         {post?.url.length === 1 ? (
                             post?.url[0].type.includes('image') ? (
                                 <div>
@@ -213,7 +236,6 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
                                     <video
                                         ref={videoRef}
                                         width="400"
-                                        // autoPlay
                                         onClick={handleClickVideo}
                                         loop
                                         muted={muted}
@@ -229,6 +251,7 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
                                 slidesPerView={1}
                                 navigation
                                 pagination={{ clickable: true }}
+                                onDoubleClick={handleDoubleClickLike}
                             >
                                 {post?.url.map((file, index) => {
                                     if (file.type.includes('image')) {
@@ -237,7 +260,6 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
                                                 key={file.src}
                                                 style={{ height: '100%' }}
                                                 className={'item-wrapper'}
-                                                onDoubleClick={(e) => setLiked(true)}
                                             >
                                                 <img src={file.src} alt="post img" />
                                             </SwiperSlide>
@@ -298,8 +320,8 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
                         <div className={cx('about-post-wrapper')}>
                             <div className={cx('icons-container')}>
                                 <div className={cx('icons-left')}>
-                                    <div className={cx('icon')} onClick={(e) => setLiked(!liked)}>
-                                        {liked === true ? LikedIcon : LikeIcon}
+                                    <div className={cx('icon')} onClick={handleClickLike}>
+                                        {likeds.includes(idPost) === true ? LikedIcon : LikeIcon}
                                     </div>
                                     <div
                                         className={cx('icon')}
