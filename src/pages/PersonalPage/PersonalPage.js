@@ -1,12 +1,12 @@
 import classNames from 'classnames/bind';
 import styles from './PersonalPage.module.scss';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { UserAuth } from '../../Context/AuthContext';
 import { onSnapshot, doc, query, collection, orderBy, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 
-import { ListIcon, PostIcon } from '../../assets/Icons/Icons';
+import { ListIcon, PostIcon, ThreeDotsIcon } from '../../assets/Icons/Icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import Account from '../../components/Account/Account';
 
@@ -21,14 +21,15 @@ function PersonalPage() {
     const [myFollowings, setMyFollowings] = useState([]);
     const [users, setUsers] = useState([]);
     const [hideFollowingsModal, setHideFollowingsModal] = useState(true);
+    const [indexPostObserved, setIndexPostObserved] = useState(15);
+    const [showSignOut, setShowSignOut] = useState(false);
 
-    const { user } = UserAuth();
+    const { user, logout } = UserAuth();
     const nav = useNavigate();
     const { email } = useParams();
 
     useEffect(() => {
         onSnapshot(doc(db, 'users', `${email}`), (doc) => {
-            // console.log(email);
             setAvatar(doc.data()?.information.avatar);
             setName(doc.data()?.information.name);
             setDesc(doc.data()?.information.desc);
@@ -66,6 +67,22 @@ function PersonalPage() {
         return () => unsubcribe();
     }, [email, user?.email]);
 
+    useEffect(() => {
+        const srollEvent = window.addEventListener('scroll', (e) => {
+            const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight;
+            const clientHeight = document.documentElement.clientHeight;
+
+            const percentage = Math.floor((scrollTop / (scrollHeight - clientHeight)) * 100);
+            if (percentage >= 90) {
+                setIndexPostObserved((prevIndex) => prevIndex + 9);
+            }
+        });
+
+        return () => srollEvent;
+    });
+
+    // con loi~ la : tu cho xem follow bam qua tai khoan ngkhac xong unfollow se bi doi thanh tai khoan cua minh
     const handleFollow = async (e) => {
         const docRef = doc(db, 'users', `${user?.email}`);
         await updateDoc(docRef, {
@@ -79,6 +96,11 @@ function PersonalPage() {
         await updateDoc(docRef, {
             follows: [...newFollowings],
         });
+    };
+
+    const handleSignOut = () => {
+        nav('/');
+        logout();
     };
 
     return (
@@ -118,10 +140,15 @@ function PersonalPage() {
                                                     nav(`/personalPage/${user?.id}`);
                                                 }}
                                             >
-                                                <Account name={user?.information.name} img={user?.information.avatar} />
+                                                <Account
+                                                    name={user?.information.name}
+                                                    img={user?.information.avatar}
+                                                    lengthDesc={40}
+                                                />
                                             </div>
                                         );
                                     }
+                                    return <Fragment key={index}></Fragment>;
                                 })}
                         </div>
                     </div>
@@ -134,7 +161,22 @@ function PersonalPage() {
 
                 <div className={cx('infomation-container')}>
                     <div className={cx('info-top')}>
-                        <p className={cx('info-top--email')}>{email}</p>
+                        <div className={cx('email-wrapper')}>
+                            <p className={cx('info-top--email')}>{email}</p>
+                            <p
+                                className={cx('info-top--icon')}
+                                onClick={(e) => {
+                                    setShowSignOut(!showSignOut);
+                                }}
+                            >
+                                {ThreeDotsIcon}
+                            </p>
+                            {showSignOut === true && (
+                                <div className={cx('info-top--signout')} onClick={handleSignOut}>
+                                    Đăng xuất
+                                </div>
+                            )}
+                        </div>
                         {email === user?.email ? (
                             <div
                                 className={cx('info-top--settings')}
@@ -185,7 +227,10 @@ function PersonalPage() {
                 </p>
                 <div className={cx('post')}>
                     {posts &&
-                        posts.map((post) => {
+                        posts.map((post, index) => {
+                            if (index >= indexPostObserved) {
+                                return <Fragment key={index}></Fragment>;
+                            }
                             if (post?.url[0].type.includes('image')) {
                                 return (
                                     <div

@@ -13,7 +13,7 @@ import Post from '../../components/Post/Post';
 import { UseFireBase } from '../../Context/FireBaseContext';
 import Account from '../../components/Account/Account';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { UserAuth } from '../../Context/AuthContext';
 import { onSnapshot, collection, doc } from 'firebase/firestore';
 import { db } from '../../firebase';
@@ -26,14 +26,13 @@ function Home({ setPage }) {
     const [followings, setFollowings] = useState([]);
     const [users, setUsers] = useState([]);
     const [seeAll, setSeeAll] = useState(false);
-    const [likeds, setLikeds] = useState([]);
+    const [indexPostObserved, setIndexPostObserved] = useState(8);
 
     const { user } = UserAuth();
 
     useEffect(() => {
         onSnapshot(doc(db, 'users', `${user?.email}`), (doc) => {
             setFollowings(doc.data()?.follows);
-            setLikeds(doc.data()?.likeds);
         });
 
         onSnapshot(collection(db, 'users'), (snapshot) => {
@@ -48,6 +47,21 @@ function Home({ setPage }) {
             setUsers(newUsers);
         });
     }, [user?.email]);
+
+    useEffect(() => {
+        const srollEvent = window.addEventListener('scroll', (e) => {
+            const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight;
+            const clientHeight = document.documentElement.clientHeight;
+
+            const percentage = Math.floor((scrollTop / (scrollHeight - clientHeight)) * 100);
+            if (percentage >= 90) {
+                setIndexPostObserved((prevIndex) => prevIndex + 2);
+            }
+        });
+
+        return () => srollEvent;
+    });
 
     return (
         <div className={cx('wrapper')}>
@@ -125,10 +139,14 @@ function Home({ setPage }) {
                 <div className={cx('post-container')}>
                     {posts &&
                         followings &&
-                        posts.map((post) => {
-                            if (followings?.includes(post?.useremail)) {
-                                return <Post key={post?.id} post={post} setPage={setPage} likeds={likeds} />;
+                        posts.map((post, index) => {
+                            if (index > indexPostObserved) {
+                                return <Fragment key={index}></Fragment>;
                             }
+                            if (followings?.includes(post?.useremail) || user.email === post?.useremail) {
+                                return <Post key={post?.id} post={post} setPage={setPage} />;
+                            }
+                            return <Fragment key={index}></Fragment>;
                         })}
                 </div>
             </div>
@@ -171,10 +189,12 @@ function Home({ setPage }) {
                                             follow
                                             followings={followings}
                                             email={user?.information?.email}
+                                            recommend="recommend-home"
                                         />
                                     </div>
                                 );
                             }
+                            return <Fragment key={index}></Fragment>;
                         })}
                 </div>
             </div>

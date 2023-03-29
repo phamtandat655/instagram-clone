@@ -1,7 +1,7 @@
 import classNames from 'classnames/bind';
 import styles from './Explore.module.scss';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { onSnapshot, collection } from 'firebase/firestore';
 import { db } from '../../firebase';
 
@@ -12,6 +12,7 @@ const cx = classNames.bind(styles);
 
 function Explore() {
     const [posts, setPosts] = useState([]);
+    const [indexPostObserved, setIndexPostObserved] = useState(15);
 
     const nav = useNavigate();
     const { email } = useParams();
@@ -31,11 +32,29 @@ function Explore() {
         return () => unsubcribe();
     }, [email]);
 
+    useEffect(() => {
+        const srollEvent = window.addEventListener('scroll', (e) => {
+            const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight;
+            const clientHeight = document.documentElement.clientHeight;
+
+            const percentage = Math.floor((scrollTop / (scrollHeight - clientHeight)) * 100);
+            if (percentage >= 90) {
+                setIndexPostObserved((prevIndex) => prevIndex + 9);
+            }
+        });
+
+        return () => srollEvent;
+    });
+
     return (
         <div className={cx('wrapper')}>
             <div className={cx('post')}>
                 {posts &&
                     posts.map((post, index) => {
+                        if (index >= indexPostObserved) {
+                            return <Fragment key={index}></Fragment>;
+                        }
                         if (post?.url[0].type.includes('image')) {
                             return (
                                 <div

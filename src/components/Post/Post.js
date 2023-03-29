@@ -32,7 +32,7 @@ import { UserAuth } from '../../Context/AuthContext';
 
 const cx = classNames.bind(styles);
 
-function Post({ post, setPage, likeds }) {
+function Post({ post, setPage }) {
     const [saved, setSaved] = useState(false);
     const [time, setTime] = useState('');
     const [avatar, setAvatar] = useState('');
@@ -42,6 +42,7 @@ function Post({ post, setPage, likeds }) {
     const [username, setUsername] = useState('');
     const [comment, setComment] = useState('');
     const [comments, setComments] = useState([]);
+    const [likedsList, setLikedsList] = useState([]);
 
     const videoRef = useRef();
     const { user } = UserAuth();
@@ -98,9 +99,14 @@ function Post({ post, setPage, likeds }) {
             setUsername(doc.data()?.information.name);
         });
 
+        const unsubcribe3 = onSnapshot(doc(db, 'posts', `${post?.id}`), (doc) => {
+            setLikedsList(doc.data()?.likeds);
+        });
+
         return () => {
             unsubcribe();
             unsubcribe2();
+            unsubcribe3();
         };
     }, [user?.email, post?.id]);
 
@@ -176,13 +182,15 @@ function Post({ post, setPage, likeds }) {
         nav(`/personalpage/${post?.useremail}`);
     };
 
-    // neu la 1 hinh van chua doubleclick de like dc
     const handleDoubleClickLike = (e) => {
+        if (likedsList.includes(user?.email)) {
+            return;
+        }
         handleLikePost();
     };
 
     const handleClickLike = (e) => {
-        if (likeds.includes(post?.id)) {
+        if (likedsList.includes(user?.email)) {
             handleUnLikePost();
         } else {
             handleLikePost();
@@ -190,15 +198,15 @@ function Post({ post, setPage, likeds }) {
     };
 
     const handleLikePost = async () => {
-        const docRef = doc(db, 'users', `${user?.email}`);
+        const docRef = doc(db, 'posts', `${post?.id}`);
         await updateDoc(docRef, {
-            likeds: [...likeds, post?.id],
+            likeds: [...likedsList, user?.email],
         });
     };
 
     const handleUnLikePost = async () => {
-        const docRef = doc(db, 'users', `${user?.email}`);
-        let newLikeds = likeds.filter((likedIdPost) => likedIdPost !== post?.id);
+        const docRef = doc(db, 'posts', `${post?.id}`);
+        let newLikeds = likedsList.filter((likedIdPost) => likedIdPost !== user?.email);
         await updateDoc(docRef, {
             likeds: [...newLikeds],
         });
@@ -318,7 +326,7 @@ function Post({ post, setPage, likeds }) {
                 <div className={cx('icons-container')}>
                     <div className={cx('icons-left')}>
                         <div className={cx('icon')} onClick={handleClickLike}>
-                            {likeds.includes(post?.id) === true ? LikedIcon : LikeIcon}
+                            {likedsList && likedsList.includes(user?.email) === true ? LikedIcon : LikeIcon}
                         </div>
                         <div
                             className={cx('icon')}
@@ -339,7 +347,7 @@ function Post({ post, setPage, likeds }) {
                         {saved === true ? SavedIcon : SaveIcon}
                     </div>
                 </div>
-                {/* <div className={cx('number-of-like')}>123.123 lượt thích</div> */}
+                <div className={cx('number-of-like')}>{likedsList ? likedsList.length : 0} lượt thích</div>
                 <div className={cx('caption')}>
                     <p className={cx('caption-user')}>{post?.username}</p>
                     {handleDesc(post?.caption)}

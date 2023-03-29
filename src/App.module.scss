@@ -9,6 +9,7 @@
     display: flex;
     justify-content: center;
 
+    width: 100%;
     min-height: 100vh;
     flex: 1;
     margin-left: 15vw;
@@ -18,6 +19,11 @@
 @media (max-width: 1240px) {
     .page-wrapper {
         margin-left: 70px;
+    }
+}
+@media (max-width: 740px) {
+    .page-wrapper {
+        margin-left: 0px;
     }
 }
 
@@ -32,6 +38,7 @@
     margin-top: 50px;
 }
 .img-slider {
+    // display: block;
     position: relative;
     width: 380px;
     height: 570px;
@@ -135,4 +142,10 @@
 }
 .error {
     color: red;
+}
+
+@media (max-width: 1024px) {
+    .img-slider {
+        display: none;
+    }
 }

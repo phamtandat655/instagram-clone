@@ -39,7 +39,7 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
     const [muted, setMuted] = useState(true);
     const [pause, setPause] = useState(true);
 
-    const [likeds, setLikeds] = useState([]);
+    const [likedsList, setLikedsList] = useState([]);
     const [username, setUsername] = useState('');
     const [comment, setComment] = useState('');
     const [comments, setComments] = useState([]);
@@ -103,12 +103,16 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
 
         const unsubcribe2 = onSnapshot(doc(db, 'users', `${user?.email}`), (doc) => {
             setUsername(doc.data()?.information.name);
-            setLikeds(doc.data()?.likeds);
+        });
+
+        const unsubcribe3 = onSnapshot(doc(db, 'posts', `${idPost}`), (doc) => {
+            setLikedsList(doc.data()?.likeds);
         });
 
         return () => {
             unsubcribe();
             unsubcribe2();
+            unsubcribe3();
         };
     }, [user?.email, idPost]);
 
@@ -170,8 +174,15 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
         }
     };
 
+    const handleDoubleClickLike = (e) => {
+        if (likedsList.includes(user?.email)) {
+            return;
+        }
+        handleLikePost();
+    };
+
     const handleClickLike = (e) => {
-        if (likeds.includes(idPost)) {
+        if (likedsList.includes(user?.email)) {
             handleUnLikePost();
         } else {
             handleLikePost();
@@ -179,22 +190,18 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
     };
 
     const handleLikePost = async () => {
-        const docRef = doc(db, 'users', `${user?.email}`);
+        const docRef = doc(db, 'posts', `${idPost}`);
         await updateDoc(docRef, {
-            likeds: [...likeds, idPost],
+            likeds: [...likedsList, user?.email],
         });
     };
 
     const handleUnLikePost = async () => {
-        const docRef = doc(db, 'users', `${user?.email}`);
-        let newLikeds = likeds.filter((likedIdPost) => likedIdPost !== idPost);
+        const docRef = doc(db, 'posts', `${idPost}`);
+        let newLikeds = likedsList.filter((likedIdPost) => likedIdPost !== user?.email);
         await updateDoc(docRef, {
             likeds: [...newLikeds],
         });
-    };
-
-    const handleDoubleClickLike = (e) => {
-        handleLikePost();
     };
 
     return (
@@ -321,7 +328,7 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
                             <div className={cx('icons-container')}>
                                 <div className={cx('icons-left')}>
                                     <div className={cx('icon')} onClick={handleClickLike}>
-                                        {likeds.includes(idPost) === true ? LikedIcon : LikeIcon}
+                                        {likedsList && likedsList.includes(user?.email) === true ? LikedIcon : LikeIcon}
                                     </div>
                                     <div
                                         className={cx('icon')}
@@ -334,7 +341,7 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
                                     <div className={cx('icon')}>{ShareIcon}</div>
                                 </div>
                                 <div
-                                    className={cx('icon')}
+                                    className={cx('icon', 'save-icon')}
                                     onClick={(e) => {
                                         setSaved(!saved);
                                     }}
@@ -342,6 +349,7 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
                                     {saved === true ? SavedIcon : SaveIcon}
                                 </div>
                             </div>
+                            <div className={cx('number-of-like')}>{likedsList ? likedsList.length : 0} lượt thích</div>
                             <p className={cx('time-post')}>{time}</p>
                         </div>
                         <div className={cx('upload-cmt-wrapper')}>
@@ -353,6 +361,11 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
                                 value={comment}
                                 onChange={(e) => {
                                     setComment(e.target.value);
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.code === 'Enter') {
+                                        handleUploadComment();
+                                    }
                                 }}
                             />
                             <button onClick={handleUploadComment}>Đăng</button>

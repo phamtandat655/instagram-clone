@@ -61,3 +61,28 @@
     color: rgb(0, 149, 246);
     cursor: pointer;
 }
+
+@media (max-width: 1024px) {
+    .recommend-home.wrapper {
+        flex-direction: column;
+        justify-content: center;
+        width: 120px;
+        min-width: 120px;
+        height: 110px;
+        border: 1px solid rgba(114, 132, 159, 0.3);
+        margin-right: 10px;
+        padding: 10px;
+        border-radius: 5px;
+
+        .account {
+            flex-direction: column;
+        }
+        .about {
+            margin-left: 0;
+
+            .name {
+                text-align: center;
+            }
+        }
+    }
+}

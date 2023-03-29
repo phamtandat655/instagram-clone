@@ -97,8 +97,6 @@
 
 // click vao search hoac notify navbar se trong giong nhu ipad
 .openModal.wrapper {
-    // width: 50px;
-    // max-width: 50px;
     padding: 0 20px 0 0;
 
     animation: scrollWidth2 0.1s ease forwards;
@@ -120,6 +118,12 @@
 .openModal .item span {
     display: none;
 }
+.navbar-head {
+    display: none;
+}
+.navbar-bottom {
+    display: none;
+}
 
 @media (max-width: 1240px) {
     .wrapper {
@@ -135,5 +139,84 @@
     }
     .item span {
         display: none;
+    }
+}
+@media (max-width: 740px) {
+    .wrapper {
+        position: fixed;
+        top: calc(100vh - 50px);
+        left: 0;
+        right: 0;
+
+        display: flex;
+        flex-direction: row;
+        min-width: 100vw;
+        min-height: 50px;
+        max-height: 50px;
+        flex-basis: unset;
+
+        padding: 0px;
+        background-color: white;
+        border-top: 1px solid rgba(114, 132, 159, 0.3);
+
+        z-index: 10;
+
+        animation: unset;
+    }
+    .list {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-around;
+    }
+    .seemore-item {
+        display: none;
+        align-items: center;
+        justify-content: space-around;
+    }
+    .navbar-head {
+        display: unset;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        min-height: 60px;
+        width: 100vw;
+        min-width: 100vw;
+
+        z-index: 10;
+
+        background-color: white;
+        border-bottom: 1px solid rgba(114, 132, 159, 0.3);
+    }
+    .logo-letter,
+    .search-item,
+    .notify-item {
+        position: absolute;
+        z-index: 11;
+    }
+    .logo-icon {
+        display: none;
+    }
+    .logo-letter {
+        display: block;
+        bottom: calc(100vh - 50px);
+        left: 20px;
+    }
+    .openModal .logo-letter {
+        display: unset;
+    }
+    .search-item {
+        bottom: calc(100vh - 50px);
+        left: calc(100vw - 125px);
+    }
+    .notify-item {
+        bottom: calc(100vh - 50px);
+        left: calc(100vw - 80px);
+    }
+    .openModal.wrapper {
+        padding: 0;
     }
 }

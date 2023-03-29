@@ -42,3 +42,31 @@
 .recommend--user-wrapper {
     margin-bottom: 15px;
 }
+
+@media (max-width: 1024px) {
+    .wrapper {
+        align-items: center;
+        justify-content: unset;
+        flex-direction: column-reverse;
+    }
+    .recommend {
+        width: 430px;
+        margin-left: 0px;
+        margin-bottom: 15px;
+        margin-top: 35px;
+        border-radius: 10px;
+        padding: 20px;
+        background-color: white;
+
+        .recommend--header-wrapper {
+            width: 430px;
+        }
+
+        .recommend--users {
+            display: flex;
+            align-items: center;
+            overflow-x: scroll;
+            overflow-y: hidden;
+        }
+    }
+}

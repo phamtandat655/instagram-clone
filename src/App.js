@@ -36,7 +36,7 @@ function App() {
     useEffect(() => {
         let path = pathname.slice(1) === '' ? 'home' : pathname.slice(1);
         if (path !== idpost) {
-            if (page === 'search' || page === 'notify') {
+            if (page === 'search' || page === 'notify' || page === 'create') {
                 return;
             } else {
                 setPage(path);
@@ -44,7 +44,8 @@ function App() {
         }
     }, [page, pathname]);
 
-    const handleLogin = async () => {
+    const handleLogin = async (e) => {
+        e.preventDefault();
         setError('');
 
         try {
@@ -56,7 +57,9 @@ function App() {
             setError(error?.message);
         }
     };
-    const handleRegister = async () => {
+    const handleRegister = async (e) => {
+        e.preventDefault();
+
         const regex =
             /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
@@ -132,7 +135,7 @@ function App() {
                     <div className={cx('form')}>
                         <div className={cx('icon')}>{logo}</div>
                         {form === 'login' ? (
-                            <div className={cx('input-wrap')}>
+                            <form className={cx('input-wrap')}>
                                 {error && <p className={cx('error')}>{error}</p>}
                                 <input
                                     value={email}
@@ -150,10 +153,12 @@ function App() {
                                     type="password"
                                     placeholder="Mật khẩu"
                                 />
-                                <button onClick={handleLogin}>Đăng nhập</button>
-                            </div>
+                                <button type="submit" onClick={handleLogin}>
+                                    Đăng nhập
+                                </button>
+                            </form>
                         ) : (
-                            <div className={cx('input-wrap')}>
+                            <form className={cx('input-wrap')}>
                                 <input
                                     value={email}
                                     onInput={(e) => {
@@ -178,8 +183,10 @@ function App() {
                                     type="password"
                                     placeholder="Nhập lại mật khẩu"
                                 />
-                                <button onClick={handleRegister}>Đăng ký</button>
-                            </div>
+                                <button type="submit" onClick={handleRegister}>
+                                    Đăng ký
+                                </button>
+                            </form>
                         )}
                         <p className={cx('or')}>Hoặc</p>
                         <div>

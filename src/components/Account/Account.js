@@ -7,7 +7,7 @@ import { db } from '../../firebase';
 
 const cx = classNames.bind(styles);
 
-function Account({ name, img, desc, lengthDesc, follow, change, story, followings, email }) {
+function Account({ name, img, desc, lengthDesc, follow, change, story, followings, email, recommend }) {
     const { user } = UserAuth();
 
     const [seenStory, setSeenStory] = useState(() => {
@@ -30,7 +30,7 @@ function Account({ name, img, desc, lengthDesc, follow, change, story, following
     };
 
     return (
-        <div className={cx('wrapper')}>
+        <div className={cx('wrapper', { 'recommend-home': recommend })}>
             <div className={cx('account')}>
                 <div className={cx('avatar', { havestr: seenStory })} onClick={(e) => setSeenStory(false)}>
                     <img src={img || ''} alt="avatar" />

@@ -51,8 +51,9 @@
 }
 .followings-modal-item {
     margin: 10px 0;
+    padding: 0 20px;
     display: flex;
-    justify-content: center;
+    justify-content: left;
 }
 .personalPage-top {
     display: flex;
@@ -166,10 +167,10 @@
     width: 100%;
     height: 100%;
 
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    column-gap: 20px;
-    row-gap: 20px;
+    max-width: 935px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
 
     margin-top: 20px;
 }
@@ -198,4 +199,91 @@
     height: 100%;
 
     object-fit: cover;
+}
+.info-top--icon {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    .post {
+        box-sizing: content-box;
+        max-width: 935px;
+        width: calc(100% - 40px);
+        gap: 0px;
+    }
+    .post-wrapper {
+        width: calc(100% / 3);
+        height: 150px;
+    }
+}
+@media (max-width: 740px) {
+    .personalPage-top {
+        display: flex;
+        align-items: center;
+
+        margin-top: 65px;
+        padding: 20px 0;
+        border-bottom: 1px solid rgba(114, 132, 159, 0.3);
+    }
+    .avatar-container {
+        width: 100px;
+        height: 100px;
+
+        margin-left: 10px;
+        margin-right: 20px;
+    }
+    .info-top {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .email-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .info-top--email {
+        margin-right: 10px;
+    }
+    .info-top--icon {
+        display: unset;
+        cursor: pointer;
+    }
+    .info-top--signout {
+        display: unset;
+        position: absolute;
+        top: 28px;
+        right: -35px;
+        padding: 10px;
+        width: max-content;
+        height: fit-content;
+        border-radius: 5px;
+        font-weight: bold;
+
+        color: rgb(248, 128, 128);
+        box-shadow: 0 0 3px rgba(114, 132, 159, 0.3);
+        background-color: white;
+
+        cursor: pointer;
+    }
+    .info-top--signout:hover {
+        color: red;
+    }
+    .info-top--signout::before {
+        content: '';
+        position: absolute;
+        top: -4px;
+        left: 43px;
+        width: 15px;
+        height: 15px;
+
+        border-left: 1px solid rgba(114, 132, 159, 0.3);
+        border-top: 1px solid rgba(114, 132, 159, 0.3);
+        transform: rotate(45deg);
+        background-color: white;
+    }
+    .personalPage-bottom {
+        margin-bottom: 55px;
+    }
 }

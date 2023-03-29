@@ -93,6 +93,7 @@ function CreatePost({ page, setPage, pathname }) {
                         arrUrls.push({ src: downloadURL, type: file.type });
                         if (arrUrls.length === uploadArray.length) {
                             addDoc(collection(db, 'posts'), {
+                                likeds: [],
                                 timestampSecond: Math.floor(Date.now() / 1000),
                                 timestamp: serverTimestamp(),
                                 caption: textValue,
