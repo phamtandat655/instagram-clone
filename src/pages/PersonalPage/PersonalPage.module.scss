@@ -32,7 +32,7 @@
     font-weight: 600;
     font-size: 17px;
     padding: 10px 0;
-    border-bottom: 1px solid rgba(2, 2, 2, 0.2);
+    border-bottom: 1px solid rgb(var(--ig-separator));
 }
 .followings-modal-close {
     position: absolute;
@@ -60,7 +60,7 @@
     align-items: center;
 
     padding: 30px 70px;
-    border-bottom: 1px solid rgba(114, 132, 159, 0.3);
+    border-bottom: 1px solid rgb(var(--ig-separator));
 }
 .avatar-container {
     width: 150px;
@@ -133,6 +133,7 @@
 }
 
 .personalPage-bottom {
+    width: 100%;
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -223,7 +224,7 @@
 
         margin-top: 65px;
         padding: 20px 0;
-        border-bottom: 1px solid rgba(114, 132, 159, 0.3);
+        border-bottom: 1px solid rgb(var(--ig-separator));
     }
     .avatar-container {
         width: 100px;
@@ -278,8 +279,8 @@
         width: 15px;
         height: 15px;
 
-        border-left: 1px solid rgba(114, 132, 159, 0.3);
-        border-top: 1px solid rgba(114, 132, 159, 0.3);
+        border-left: 1px solid rgb(var(--ig-separator));
+        border-top: 1px solid rgb(var(--ig-separator));
         transform: rotate(45deg);
         background-color: white;
     }

@@ -29,7 +29,7 @@
 // }
 .menu-item {
     padding: 5px 20px;
-    border-bottom: 1px solid rgba(114, 132, 159, 0.3);
+    border-bottom: 1px solid rgb(var(--ig-separator));
     font-weight: 400;
 
     &:hover {
@@ -45,7 +45,7 @@
     width: 100%;
 }
 .account-settings {
-    border-top: 4px solid rgba(114, 132, 159, 0.2);
+    border-top: 4px solid rgb(var(--ig-separator));
 }
 .signout {
     border: unset;

@@ -15,6 +15,8 @@ function AccountEdit() {
     const [avatar, setAvatar] = useState('');
     const [name, setName] = useState('');
     const [desc, setDesc] = useState('');
+    const [progress, setProgress] = useState(0);
+    const [hideBar, setHideBar] = useState(true);
     const { user } = UserAuth();
 
     const fileRef = useRef();
@@ -28,6 +30,14 @@ function AccountEdit() {
         });
     }, [user?.email]);
 
+    useEffect(() => {
+        if (progress === 100) {
+            setHideBar(true);
+        } else {
+            setHideBar(false);
+        }
+    }, [progress]);
+
     const handleSubmit = async () => {
         const docRef = doc(db, 'users', `${user.email}`);
         await updateDoc(docRef, {
@@ -38,7 +48,7 @@ function AccountEdit() {
                 avatar,
             },
         });
-        nav(`/personalpage/${user?.email}`);
+        nav(`/personalPage/${user?.email}`);
     };
     const handleImgUpload = () => {
         fileRef.current.click();
@@ -54,7 +64,7 @@ function AccountEdit() {
             'state_changed',
             (snapshot) => {
                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log(progress);
+                setProgress(progress);
                 switch (snapshot.state) {
                     case 'paused':
                         // console.log('Upload is paused');
@@ -86,6 +96,12 @@ function AccountEdit() {
     return (
         <div className={cx('wrapper')}>
             <div className={cx('account-wrapper')}>
+                <span
+                    className={cx('progress', { hide: hideBar })}
+                    style={{
+                        width: `${progress}%`,
+                    }}
+                ></span>
                 <div className={cx('avatar-wrapper')}>
                     <img alt="avatar" src={avatar} />
                 </div>

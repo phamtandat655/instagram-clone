@@ -82,7 +82,7 @@
 
     margin-top: 70px;
     margin-left: 30px;
-    border: 1px solid rgba(114, 132, 159, 0.4);
+    border: 1px solid rgb(var(--ig-separator));
     border-radius: 5px;
     padding: 30px 10px;
 }
@@ -100,7 +100,7 @@
     height: 35px;
 
     padding: 0 10px;
-    border: 1px solid rgba(114, 132, 159, 0.4);
+    border: 1px solid rgb(var(--ig-separator));
     border-radius: 5px;
     outline: none;
     margin-bottom: 10px;
@@ -109,7 +109,7 @@
     width: 270px;
     height: 35px;
 
-    background-color: rgb(0, 149, 246);
+    background-color: rgb(var(--ig-primary-button));
     color: white;
     font-weight: 600;
 
@@ -129,10 +129,10 @@
     text-align: center;
     padding: 20px;
 
-    border: 1px solid rgba(114, 132, 159, 0.4);
+    border: 1px solid rgba(var(--ig-separator));
 }
 .change span {
-    color: rgb(0, 149, 246);
+    color: rgb(var(--ig-primary-button));
     font-weight: 600;
 
     cursor: pointer;

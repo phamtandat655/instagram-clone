@@ -12,7 +12,7 @@
     flex-basis: 15vw;
 
     padding: 0 10px;
-    border-right: 1px solid rgba(114, 132, 159, 0.3);
+    border-right: 1px solid rgb(var(--ig-separator));
     background-color: white;
 
     z-index: 10;
@@ -157,7 +157,7 @@
 
         padding: 0px;
         background-color: white;
-        border-top: 1px solid rgba(114, 132, 159, 0.3);
+        border-top: 1px solid rgb(var(--ig-separator));
 
         z-index: 10;
 
@@ -189,7 +189,7 @@
         z-index: 10;
 
         background-color: white;
-        border-bottom: 1px solid rgba(114, 132, 159, 0.3);
+        border-bottom: 1px solid rgb(var(--ig-separator));
     }
     .logo-letter,
     .search-item,

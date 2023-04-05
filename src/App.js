@@ -42,7 +42,7 @@ function App() {
                 setPage(path);
             }
         }
-    }, [page, pathname]);
+    }, [page, pathname, idpost]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -110,7 +110,7 @@ function App() {
                             <Route path="/explore" element={<Explore />} />
                             <Route path="/videos" element={<Reels />} />
                             <Route path="/inbox" element={<Inbox />} />
-                            <Route path="/personalpage/:email" element={<PersonalPage />} />
+                            <Route path="/personalPage/:email" element={<PersonalPage />} />
                             <Route path="/account/edit" element={<AccountEdit />} />
                             <Route
                                 path="/:idPost"

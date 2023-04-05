@@ -8,7 +8,7 @@
     margin-bottom: 20px;
     padding: 10px;
     padding-bottom: 0;
-    border: 1px solid rgba(114, 132, 159, 0.2);
+    border: 1px solid rgb(var(--ig-separator));
     border-radius: 10px;
 
     background-color: white;
@@ -19,6 +19,9 @@
     justify-content: space-between;
 
     margin-bottom: 15px;
+}
+.post-option {
+    cursor: pointer;
 }
 .files-slider {
     position: relative;
@@ -61,6 +64,8 @@
     margin: 10px 0 0 0;
     font-size: 14px;
     font-weight: 600;
+
+    cursor: pointer;
 }
 
 .caption {
@@ -77,7 +82,7 @@
 
 .see-all-cmt {
     font-size: 14px;
-    color: rgba(114, 132, 159, 0.9);
+    color: rgb(var(--ig-secondary-text));
 }
 .see-all-cmt p {
     margin: 10px 0;
@@ -85,7 +90,7 @@
 
 .time-post {
     font-size: 12px;
-    color: rgba(114, 132, 159, 0.7);
+    color: rgb(var(--ig-secondary-text));
     margin: 10px 0;
 }
 
@@ -99,7 +104,7 @@
     max-width: 450px;
     height: 30px;
     padding: 10px;
-    border: 1px solid rgba(114, 132, 159, 0.2);
+    border: 1px solid rgb(var(--ig-separator));
 
     display: flex;
     align-items: center;
@@ -125,7 +130,7 @@
     color: rgb(125, 190, 233);
 }
 .comment input:not(:placeholder-shown) ~ button {
-    color: rgb(0, 149, 246);
+    color: rgb(var(--ig-primary-button));
 }
 .video-container {
     display: flex;
@@ -153,18 +158,85 @@
     padding: 5px;
     z-index: 5;
 
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.5);
+
     cursor: pointer;
 }
 .pause-icon {
     position: absolute;
-    top: 10px;
-    left: 10px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     z-index: 5;
 
-    padding: 5px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.5);
+
+    padding: 10px;
     cursor: pointer;
 }
 
+// liked
+.likeds-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+
+    background-color: rgba(2, 2, 2, 0.5);
+}
+.likeds-modal-wrapper {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    background-color: white;
+    border-radius: 10px;
+}
+.likeds-modal-header {
+    text-align: center;
+    height: 25px;
+    font-weight: 600;
+    font-size: 17px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgb(var(--ig-separator));
+}
+.likeds-modal-close {
+    position: absolute;
+    top: 7px;
+    right: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    color: black;
+    cursor: pointer;
+    padding: 5px;
+}
+.likeds-modal-list {
+    overflow-y: scroll;
+    width: 100%;
+    height: calc(100% - 45px);
+}
+.likeds-modal-item {
+    width: 340px;
+    margin: 10px 0;
+    padding: 0 20px;
+}
+.likeds-modal-item p {
+    line-height: 40px;
+}
+.personalPage-top {
+    display: flex;
+    align-items: center;
+
+    padding: 30px 70px;
+    border-bottom: 1px solid rgb(var(--ig-separator));
+}
 // @media (max-width: 740px) {
 
 // }

@@ -29,13 +29,6 @@ function PersonalPage() {
     const { email } = useParams();
 
     useEffect(() => {
-        onSnapshot(doc(db, 'users', `${email}`), (doc) => {
-            setAvatar(doc.data()?.information.avatar);
-            setName(doc.data()?.information.name);
-            setDesc(doc.data()?.information.desc);
-            setFollowings(doc.data()?.follows);
-        });
-
         onSnapshot(doc(db, 'users', `${user?.email}`), (doc) => {
             setMyFollowings(doc.data()?.follows);
         });
@@ -43,6 +36,13 @@ function PersonalPage() {
         onSnapshot(collection(db, 'users'), (snapshot) => {
             let newUsers = [];
             snapshot.forEach((doc) => {
+                if (doc.id === email) {
+                    setAvatar(doc.data()?.information.avatar);
+                    setName(doc.data()?.information.name);
+                    setDesc(doc.data()?.information.desc);
+                    setFollowings(doc.data()?.follows);
+                }
+
                 newUsers.push({
                     id: doc.id,
                     ...doc.data(),
@@ -64,25 +64,27 @@ function PersonalPage() {
             setPosts(newPosts);
         });
 
-        return () => unsubcribe();
+        return () => {
+            unsubcribe();
+        };
     }, [email, user?.email]);
 
+    const handleScroll = (e) => {
+        const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight;
+        const clientHeight = document.documentElement.clientHeight;
+
+        const percentage = Math.floor((scrollTop / (scrollHeight - clientHeight)) * 100);
+        if (percentage >= 90) {
+            setIndexPostObserved((prevIndex) => prevIndex + 9);
+        }
+    };
     useEffect(() => {
-        const srollEvent = window.addEventListener('scroll', (e) => {
-            const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
-            const scrollHeight = document.documentElement.scrollHeight;
-            const clientHeight = document.documentElement.clientHeight;
+        window.addEventListener('scroll', handleScroll);
 
-            const percentage = Math.floor((scrollTop / (scrollHeight - clientHeight)) * 100);
-            if (percentage >= 90) {
-                setIndexPostObserved((prevIndex) => prevIndex + 9);
-            }
-        });
-
-        return () => srollEvent;
+        return () => window.removeEventListener('scroll', handleScroll);
     });
 
-    // con loi~ la : tu cho xem follow bam qua tai khoan ngkhac xong unfollow se bi doi thanh tai khoan cua minh
     const handleFollow = async (e) => {
         const docRef = doc(db, 'users', `${user?.email}`);
         await updateDoc(docRef, {

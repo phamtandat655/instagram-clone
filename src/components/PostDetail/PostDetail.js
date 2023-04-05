@@ -14,7 +14,8 @@ import {
     VolumeMutedIcon,
     PlayIcon,
 } from '../../assets/Icons/Icons';
-import { useRef, useState, useEffect } from 'react';
+import PostOption from '../PostOption/PostOption';
+import { useRef, useState, useEffect, Fragment } from 'react';
 import Comment from '../Comment/Comment';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -39,6 +40,9 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
     const [muted, setMuted] = useState(true);
     const [pause, setPause] = useState(true);
 
+    const [myFollowings, setMyFollowings] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [hideLikedsModal, setHideLikedsModal] = useState(true);
     const [likedsList, setLikedsList] = useState([]);
     const [username, setUsername] = useState('');
     const [comment, setComment] = useState('');
@@ -47,6 +51,7 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
     const { idPost } = useParams();
     const [post, setPost] = useState({});
     const [time, setTime] = useState('');
+    const [hidePostOption, setHidePostOption] = useState(true);
 
     useEffect(() => {
         const timestamp = {
@@ -85,6 +90,21 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
     });
 
     useEffect(() => {
+        onSnapshot(collection(db, 'users'), (snapshot) => {
+            let newUsers = [];
+            snapshot.forEach((doc) => {
+                newUsers.push({
+                    id: doc.id,
+                    ...doc.data(),
+                });
+            });
+            setUsers(newUsers);
+        });
+
+        onSnapshot(doc(db, 'users', `${user?.email}`), (doc) => {
+            setMyFollowings(doc.data()?.follows);
+        });
+
         onSnapshot(doc(db, 'posts', `${idPost}`), (doc) => {
             setPost(doc.data());
         });
@@ -158,8 +178,8 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
     }
 
     const handleClickAccount = (e) => {
-        setPage(`personalpage/${post?.useremail}`);
-        nav(`/personalpage/${post?.useremail}`);
+        setPage(`personalPage/${post?.useremail}`);
+        nav(`/personalPage/${post?.useremail}`);
     };
 
     const nav = useNavigate();
@@ -206,6 +226,72 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
 
     return (
         <div className={cx('wrapper')} onClick={handleClose}>
+            {hidePostOption === false && (
+                <PostOption
+                    post={post}
+                    ownPost={post?.useremail === user?.email ? true : false}
+                    setHidePostOption={setHidePostOption}
+                    followings={myFollowings}
+                />
+            )}
+            {hideLikedsModal === false && (
+                <div
+                    className={cx('likeds-modal')}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setHideLikedsModal(true);
+                    }}
+                >
+                    <div
+                        className={cx('likeds-modal-wrapper')}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                        }}
+                    >
+                        <i
+                            className={cx('likeds-modal-close')}
+                            onClick={(e) => {
+                                setHideLikedsModal(true);
+                            }}
+                        >
+                            X
+                        </i>
+                        <div className={cx('likeds-modal-header')}>Lượt thích</div>
+                        <div className={cx('likeds-modal-list')}>
+                            {users &&
+                                users.map((likedUser, index) => {
+                                    if (likedsList.includes(likedUser?.information.email)) {
+                                        return (
+                                            <div
+                                                key={likedUser?.id || index}
+                                                className={cx('likeds-modal-item')}
+                                                onClick={(e) => {
+                                                    setHideLikedsModal(true);
+                                                    nav(`/personalPage/${likedUser?.id}`);
+                                                }}
+                                            >
+                                                <Account
+                                                    name={likedUser?.information.name}
+                                                    img={likedUser?.information.avatar}
+                                                    lengthDesc={40}
+                                                    followings={myFollowings}
+                                                    email={likedUser?.information.email}
+                                                    follow={
+                                                        myFollowings.includes(likedUser?.information.email) ||
+                                                        likedUser?.information.email === user?.email
+                                                            ? false
+                                                            : true
+                                                    }
+                                                />
+                                            </div>
+                                        );
+                                    }
+                                    return <Fragment key={index}></Fragment>;
+                                })}
+                        </div>
+                    </div>
+                </div>
+            )}
             <p className={cx('close-icon')} onClick={handleClose}>
                 X
             </p>
@@ -317,7 +403,15 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
                     <div className={cx('info-wrapper')}>
                         <div className={cx('account-wrapper')} onClick={handleClickAccount}>
                             <Account name={post?.username} img={avatar} />
-                            <i className={cx('post-option')}>{ThreeDotsIcon}</i>
+                            <i
+                                className={cx('post-option')}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setHidePostOption(false);
+                                }}
+                            >
+                                {ThreeDotsIcon}
+                            </i>
                         </div>
                         <div className={cx('cmt-wrapper')}>
                             {comments.map((cmt, index) => (
@@ -349,7 +443,14 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
                                     {saved === true ? SavedIcon : SaveIcon}
                                 </div>
                             </div>
-                            <div className={cx('number-of-like')}>{likedsList ? likedsList.length : 0} lượt thích</div>
+                            <div
+                                className={cx('number-of-like')}
+                                onClick={(e) => {
+                                    setHideLikedsModal(false);
+                                }}
+                            >
+                                {likedsList ? likedsList.length : 0} lượt thích
+                            </div>
                             <p className={cx('time-post')}>{time}</p>
                         </div>
                         <div className={cx('upload-cmt-wrapper')}>
@@ -364,11 +465,14 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
                                 }}
                                 onKeyDown={(e) => {
                                     if (e.code === 'Enter') {
-                                        handleUploadComment();
+                                        if (comment.length === 0) return;
+                                        else handleUploadComment();
                                     }
                                 }}
                             />
-                            <button onClick={handleUploadComment}>Đăng</button>
+                            <button onClick={handleUploadComment} disabled={comment.length === 0}>
+                                Đăng
+                            </button>
                         </div>
                     </div>
                 </div>

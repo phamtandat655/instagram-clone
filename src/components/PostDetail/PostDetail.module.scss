@@ -12,6 +12,9 @@
     background-color: rgba(2, 2, 2, 0.5);
     z-index: 20;
 }
+.post-option {
+    cursor: pointer;
+}
 .close-icon {
     position: absolute;
     top: 10px;
@@ -76,21 +79,30 @@
     padding: 5px;
     z-index: 5;
 
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+
     cursor: pointer;
 }
 .pause-icon {
     position: absolute;
-    top: 10px;
-    left: 10px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     z-index: 5;
 
-    padding: 5px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.5);
+
+    padding: 10px;
     cursor: pointer;
 }
 .number-of-like {
     margin: 10px 0 0 0;
     font-size: 14px;
     font-weight: 600;
+
+    cursor: pointer;
 }
 
 //
@@ -112,7 +124,7 @@
     padding: 10px 20px;
     flex-basis: 40px;
 
-    border-bottom: 1px solid rgba(114, 132, 159, 0.2);
+    border-bottom: 1px solid rgb(var(--ig-separator));
 }
 .cmt-wrapper {
     flex: 1;
@@ -129,8 +141,8 @@
     padding: 10px 20px;
     flex-basis: 60px;
 
-    border-top: 1px solid rgba(114, 132, 159, 0.2);
-    border-bottom: 1px solid rgba(114, 132, 159, 0.2);
+    border-top: 1px solid rgb(var(--ig-separator));
+    border-bottom: 1px solid rgb(var(--ig-separator));
 }
 // start
 .icons-container {
@@ -184,7 +196,68 @@
     color: rgb(125, 190, 233);
 }
 .upload-cmt-wrapper input:not(:placeholder-shown) ~ button {
-    color: rgb(0, 149, 246);
+    color: rgb(var(--ig-primary-button));
+}
+
+// liked
+.likeds-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+
+    background-color: rgba(2, 2, 2, 0.5);
+}
+.likeds-modal-wrapper {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    background-color: white;
+    border-radius: 10px;
+}
+.likeds-modal-header {
+    text-align: center;
+    height: 25px;
+    font-weight: 600;
+    font-size: 17px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgb(var(--ig-separator));
+}
+.likeds-modal-close {
+    position: absolute;
+    top: 7px;
+    right: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    color: black;
+    cursor: pointer;
+    padding: 5px;
+}
+.likeds-modal-list {
+    overflow-y: scroll;
+    width: 100%;
+    height: calc(100% - 45px);
+}
+.likeds-modal-item {
+    width: 340px;
+    margin: 10px 0;
+    padding: 0 20px;
+}
+.likeds-modal-item p {
+    line-height: 40px;
+}
+.personalPage-top {
+    display: flex;
+    align-items: center;
+
+    padding: 30px 70px;
+    border-bottom: 1px solid rgb(var(--ig-separator));
 }
 
 @media (max-width: 1360px) {
@@ -224,7 +297,7 @@
         padding: 10px 20px;
         flex-basis: 40px;
 
-        border-bottom: 1px solid rgba(114, 132, 159, 0.2);
+        border-bottom: 1px solid rgb(var(--ig-separator));
     }
 
     .slider-wrapper {

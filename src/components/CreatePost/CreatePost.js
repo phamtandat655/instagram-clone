@@ -93,6 +93,61 @@ function CreatePost({ page, setPage, pathname }) {
                         arrUrls.push({ src: downloadURL, type: file.type });
                         if (arrUrls.length === uploadArray.length) {
                             addDoc(collection(db, 'posts'), {
+                                reels: false,
+                                likeds: [],
+                                timestampSecond: Math.floor(Date.now() / 1000),
+                                timestamp: serverTimestamp(),
+                                caption: textValue,
+                                url: arrUrls,
+                                username: name,
+                                useremail: user?.email,
+                            });
+                            handleClose();
+                        }
+                    });
+                },
+            );
+        });
+    };
+
+    const handleUploadToReels = async (e) => {
+        setWaitLoad(true);
+        const arrUrls = [];
+
+        if (uploadArray.length > 1 || !uploadArray[0].type.includes('video')) {
+            alert('Reels chỉ đăng được 1 VIDEO');
+            setWaitLoad(false);
+            return;
+        }
+
+        files.map((file) => {
+            const storageRef = ref(storage, `files/${file.name}`);
+            const uploadTask = uploadBytesResumable(storageRef, file);
+
+            uploadTask.on(
+                'state_changed',
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    setProgress(progress);
+
+                    switch (snapshot.state) {
+                        case 'paused':
+                            break;
+                        case 'running':
+                            break;
+                        default:
+                            break;
+                    }
+                },
+                (error) => {
+                    alert(error.message);
+                },
+                async () => {
+                    await getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                        arrUrls.push({ src: downloadURL, type: file.type });
+                        if (arrUrls.length === uploadArray.length) {
+                            addDoc(collection(db, 'posts'), {
+                                reels: true,
                                 likeds: [],
                                 timestampSecond: Math.floor(Date.now() / 1000),
                                 timestamp: serverTimestamp(),
@@ -145,6 +200,10 @@ function CreatePost({ page, setPage, pathname }) {
     function deleteHandler(image) {
         setUploadArray(uploadArray.filter((e) => e.src !== image));
         URL.revokeObjectURL(image);
+
+        if (uploadArray.length <= 1) {
+            setWaitLoad(true);
+        }
     }
 
     const handleClose = () => {
@@ -179,9 +238,18 @@ function CreatePost({ page, setPage, pathname }) {
                 <div className={cx('caption-zone')}>
                     <div className={cx('account-wrap')}>
                         <Account name={name} img={avatar} />
-                        <button onClick={handleUpload} className={cx({ wait: waitLoad })} disabled={waitLoad}>
-                            Chia sẻ
-                        </button>
+                        <div>
+                            <button
+                                onClick={handleUploadToReels}
+                                className={cx('reels-btn', { wait: waitLoad })}
+                                disabled={waitLoad}
+                            >
+                                Upload to Reels
+                            </button>
+                            <button onClick={handleUpload} className={cx({ wait: waitLoad })} disabled={waitLoad}>
+                                Chia sẻ
+                            </button>
+                        </div>
                     </div>
                     <div className={cx('input-wrapper')} onClick={handleTextAraeClick}>
                         <textarea
@@ -190,8 +258,6 @@ function CreatePost({ page, setPage, pathname }) {
                             value={textValue}
                             onChange={(e) => {
                                 setTextValue(e.target.value);
-                                if (e.target.value.length > 0) setWaitLoad(false);
-                                else if (files.length === 0) setWaitLoad(true);
                             }}
                         />
                     </div>

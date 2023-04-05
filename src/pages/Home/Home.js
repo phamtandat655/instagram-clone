@@ -13,7 +13,7 @@ import Post from '../../components/Post/Post';
 import { UseFireBase } from '../../Context/FireBaseContext';
 import Account from '../../components/Account/Account';
 import { useNavigate } from 'react-router-dom';
-import { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { UserAuth } from '../../Context/AuthContext';
 import { onSnapshot, collection, doc } from 'firebase/firestore';
 import { db } from '../../firebase';
@@ -27,7 +27,8 @@ function Home({ setPage }) {
     const [users, setUsers] = useState([]);
     const [seeAll, setSeeAll] = useState(false);
     const [indexPostObserved, setIndexPostObserved] = useState(8);
-
+    const [loading, setLoading] = useState(true);
+    const [allFollowedPost, setAllFollowedPost] = useState([]);
     const { user } = UserAuth();
 
     useEffect(() => {
@@ -43,24 +44,36 @@ function Home({ setPage }) {
                     ...doc.data(),
                 });
             });
-            newUsers = newUsers.filter((newuser) => newuser?.information.email !== user?.email);
+            newUsers = newUsers.filter((newuser) => newuser?.id !== user?.email);
             setUsers(newUsers);
         });
     }, [user?.email]);
 
     useEffect(() => {
-        const srollEvent = window.addEventListener('scroll', (e) => {
-            const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
-            const scrollHeight = document.documentElement.scrollHeight;
-            const clientHeight = document.documentElement.clientHeight;
+        if (followings && posts) {
+            let allNewFollowedPost = posts.filter((post) => {
+                return followings?.includes(post?.useremail) || user?.email === post?.useremail;
+            });
+            setAllFollowedPost(allNewFollowedPost);
+            setLoading(false);
+        }
+    }, [followings, posts, user?.email]);
 
-            const percentage = Math.floor((scrollTop / (scrollHeight - clientHeight)) * 100);
-            if (percentage >= 90) {
-                setIndexPostObserved((prevIndex) => prevIndex + 2);
-            }
-        });
+    const handleScroll = (e) => {
+        const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight;
+        const clientHeight = document.documentElement.clientHeight;
 
-        return () => srollEvent;
+        const percentage = Math.floor((scrollTop / (scrollHeight - clientHeight)) * 100);
+        if (percentage >= 90) {
+            setIndexPostObserved((prevIndex) => prevIndex + 2);
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll);
+
+        return () => window.removeEventListener('scroll', handleScroll);
     });
 
     return (
@@ -136,19 +149,20 @@ function Home({ setPage }) {
                         </SwiperSlide>
                     </Swiper>
                 </div>
-                <div className={cx('post-container')}>
-                    {posts &&
-                        followings &&
-                        posts.map((post, index) => {
-                            if (index > indexPostObserved) {
-                                return <Fragment key={index}></Fragment>;
-                            }
-                            if (followings?.includes(post?.useremail) || user.email === post?.useremail) {
+                {loading === true ? (
+                    <p className={cx('loading')}>Loading...</p>
+                ) : (
+                    <div className={cx('post-container')}>
+                        {allFollowedPost &&
+                            followings &&
+                            allFollowedPost.map((post, index) => {
+                                if (index > indexPostObserved) {
+                                    return <Fragment key={index}></Fragment>;
+                                }
                                 return <Post key={post?.id} post={post} setPage={setPage} />;
-                            }
-                            return <Fragment key={index}></Fragment>;
-                        })}
-                </div>
+                            })}
+                    </div>
+                )}
             </div>
             <div className={cx('recommend')}>
                 <div className={cx('recommend--header-wrapper')}>

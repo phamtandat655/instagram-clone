@@ -24,11 +24,12 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import '../../swiper.scss';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, Fragment } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { onSnapshot, doc, collection, orderBy, query, addDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { UserAuth } from '../../Context/AuthContext';
+import PostOption from '../PostOption/PostOption';
 
 const cx = classNames.bind(styles);
 
@@ -38,6 +39,10 @@ function Post({ post, setPage }) {
     const [avatar, setAvatar] = useState('');
     const [muted, setMuted] = useState(true);
     const [pause, setPause] = useState(true);
+    const [hideLikedsModal, setHideLikedsModal] = useState(true);
+    const [hidePostOption, setHidePostOption] = useState(true);
+    const [users, setUsers] = useState([]);
+    const [myFollowings, setMyFollowings] = useState([]);
 
     const [username, setUsername] = useState('');
     const [comment, setComment] = useState('');
@@ -83,6 +88,21 @@ function Post({ post, setPage }) {
     }, [post?.useremail]);
 
     useEffect(() => {
+        onSnapshot(doc(db, 'users', `${user?.email}`), (doc) => {
+            setMyFollowings(doc.data()?.follows);
+        });
+
+        onSnapshot(collection(db, 'users'), (snapshot) => {
+            let newUsers = [];
+            snapshot.forEach((doc) => {
+                newUsers.push({
+                    id: doc.id,
+                    ...doc.data(),
+                });
+            });
+            setUsers(newUsers);
+        });
+
         const q = query(collection(db, `posts/${post?.id}/comments`), orderBy('timestamp', 'desc'));
         const unsubcribe = onSnapshot(q, (snapshot) => {
             let newComments = [];
@@ -151,35 +171,37 @@ function Post({ post, setPage }) {
             setMuted(true);
         }
     };
+
+    const handleScroll = () => {
+        let isElInViewPort = (el) => {
+            let rect = el.getBoundingClientRect();
+            let viewHeight = window.innerHeight || document.documentElement.clientHeight;
+
+            return (
+                (rect.top <= 200 && rect.bottom >= 200) ||
+                (rect.bottom >= viewHeight - 200 && rect.top <= viewHeight - 200) ||
+                (rect.top >= 200 && rect.bottom <= viewHeight - 200)
+            );
+        };
+        if (isElInViewPort(videoRef.current)) {
+            videoRef.current.play();
+            setPause(false);
+        } else {
+            videoRef.current.pause();
+            setPause(true);
+        }
+    };
     useEffect(() => {
         if (post?.url[0]?.type === 'video' && pause === true) {
-            const srollEvent = window.addEventListener('scroll', () => {
-                let isElInViewPort = (el) => {
-                    let rect = el.getBoundingClientRect();
-                    let viewHeight = window.innerHeight || document.documentElement.clientHeight;
+            window.addEventListener('scroll', handleScroll);
 
-                    return (
-                        (rect.top <= 200 && rect.bottom >= 200) ||
-                        (rect.bottom >= viewHeight - 200 && rect.top <= viewHeight - 200) ||
-                        (rect.top >= 200 && rect.bottom <= viewHeight - 200)
-                    );
-                };
-                if (isElInViewPort(videoRef.current)) {
-                    videoRef.current.play();
-                    setPause(false);
-                } else {
-                    videoRef.current.pause();
-                    setPause(true);
-                }
-            });
-
-            return () => srollEvent;
+            return () => window.removeEventListener('scroll', handleScroll);
         }
     }, [post?.url, pause]);
 
     const handleClickAccount = (e) => {
-        setPage(`personalpage/${post?.useremail}`);
-        nav(`/personalpage/${post?.useremail}`);
+        setPage(`personalPage/${post?.useremail}`);
+        nav(`/personalPage/${post?.useremail}`);
     };
 
     const handleDoubleClickLike = (e) => {
@@ -214,6 +236,71 @@ function Post({ post, setPage }) {
 
     return (
         <div className={cx('wrapper')}>
+            {hideLikedsModal === false && (
+                <div
+                    className={cx('likeds-modal')}
+                    onClick={(e) => {
+                        setHideLikedsModal(true);
+                    }}
+                >
+                    <div
+                        className={cx('likeds-modal-wrapper')}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                        }}
+                    >
+                        <i
+                            className={cx('likeds-modal-close')}
+                            onClick={(e) => {
+                                setHideLikedsModal(true);
+                            }}
+                        >
+                            X
+                        </i>
+                        <div className={cx('likeds-modal-header')}>Lượt thích</div>
+                        <div className={cx('likeds-modal-list')}>
+                            {users &&
+                                users.map((likedUser, index) => {
+                                    if (likedsList.includes(likedUser?.information.email)) {
+                                        return (
+                                            <div
+                                                key={likedUser?.id || index}
+                                                className={cx('likeds-modal-item')}
+                                                onClick={(e) => {
+                                                    setHideLikedsModal(true);
+                                                    nav(`/personalPage/${likedUser?.id}`);
+                                                }}
+                                            >
+                                                <Account
+                                                    name={likedUser?.information.name}
+                                                    img={likedUser?.information.avatar}
+                                                    lengthDesc={40}
+                                                    followings={myFollowings}
+                                                    email={likedUser?.information.email}
+                                                    follow={
+                                                        myFollowings.includes(likedUser?.information.email) ||
+                                                        likedUser?.information.email === user?.email
+                                                            ? false
+                                                            : true
+                                                    }
+                                                />
+                                            </div>
+                                        );
+                                    }
+                                    return <Fragment key={index}></Fragment>;
+                                })}
+                        </div>
+                    </div>
+                </div>
+            )}
+            {hidePostOption === false && (
+                <PostOption
+                    post={post}
+                    ownPost={post?.useremail === user?.email ? true : false}
+                    setHidePostOption={setHidePostOption}
+                    followings={myFollowings}
+                />
+            )}
             <div className={cx('user')}>
                 <span onClick={handleClickAccount}>
                     <Account
@@ -225,7 +312,9 @@ function Post({ post, setPage }) {
                         // story
                     />
                 </span>
-                <i className={cx('post-option')}>{ThreeDotsIcon}</i>
+                <i className={cx('post-option')} onClick={(e) => setHidePostOption(false)}>
+                    {ThreeDotsIcon}
+                </i>
             </div>
             <div className={cx('files-slider')}>
                 {post?.url.length === 1 ? (
@@ -347,7 +436,9 @@ function Post({ post, setPage }) {
                         {saved === true ? SavedIcon : SaveIcon}
                     </div>
                 </div>
-                <div className={cx('number-of-like')}>{likedsList ? likedsList.length : 0} lượt thích</div>
+                <div className={cx('number-of-like')} onClick={(e) => setHideLikedsModal(false)}>
+                    {likedsList ? likedsList.length : 0} lượt thích
+                </div>
                 <div className={cx('caption')}>
                     <p className={cx('caption-user')}>{post?.username}</p>
                     {handleDesc(post?.caption)}
@@ -366,8 +457,16 @@ function Post({ post, setPage }) {
                     onChange={(e) => {
                         setComment(e.target.value);
                     }}
+                    onKeyDown={(e) => {
+                        if (e.code === 'Enter') {
+                            if (comment.length === 0) return;
+                            else handleUploadComment();
+                        }
+                    }}
                 />
-                <button onClick={handleUploadComment}>Đăng</button>
+                <button onClick={handleUploadComment} disabled={comment.length === 0}>
+                    Đăng
+                </button>
             </div>
         </div>
     );

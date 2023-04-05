@@ -147,13 +147,13 @@ function Navbar({ page, setPage, clickSeeMore, setClickSeeMore, pathname }) {
                             </div>
                         </NavLink>
                         <NavLink
-                            to={`/personalpage/${user.email}`}
-                            className={(nav) => cx({ active: nav.isActive && page === `personalpage/${user.email}` })}
+                            to={`/personalPage/${user.email}`}
+                            className={(nav) => cx({ active: nav.isActive && page === `personalPage/${user.email}` })}
                         >
                             <div
                                 className={cx('item', 'personalPage')}
                                 onClick={(e) => {
-                                    setPage(`personalpage/${user.email}`);
+                                    setPage(`personalPage/${user.email}`);
                                 }}
                             >
                                 <img src={avatar} alt="avatar bi loi" />

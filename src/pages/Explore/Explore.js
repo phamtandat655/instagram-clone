@@ -32,19 +32,20 @@ function Explore() {
         return () => unsubcribe();
     }, [email]);
 
+    const handleScroll = (e) => {
+        const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight;
+        const clientHeight = document.documentElement.clientHeight;
+
+        const percentage = Math.floor((scrollTop / (scrollHeight - clientHeight)) * 100);
+        if (percentage >= 90) {
+            setIndexPostObserved((prevIndex) => prevIndex + 9);
+        }
+    };
     useEffect(() => {
-        const srollEvent = window.addEventListener('scroll', (e) => {
-            const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
-            const scrollHeight = document.documentElement.scrollHeight;
-            const clientHeight = document.documentElement.clientHeight;
+        window.addEventListener('scroll', handleScroll);
 
-            const percentage = Math.floor((scrollTop / (scrollHeight - clientHeight)) * 100);
-            if (percentage >= 90) {
-                setIndexPostObserved((prevIndex) => prevIndex + 9);
-            }
-        });
-
-        return () => srollEvent;
+        return () => window.removeEventListener('scroll', handleScroll);
     });
 
     return (
