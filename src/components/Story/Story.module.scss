@@ -3,31 +3,30 @@
     cursor: pointer;
 
     scroll-snap-align: start;
-}
 
-// .wrapper {
-// }
-.avatar {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 60px;
-    height: 60px;
+    .avatar {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 60px;
+        height: 60px;
 
-    border-radius: 50%;
-    border: 2px solid red;
-}
-.avatar img {
-    width: calc(100% - 5px);
-    height: calc(100% - 5px);
+        border-radius: 50%;
+        border: 2px solid red;
 
-    object-fit: cover;
-    border-radius: 50%;
-}
-.seen {
-    border-color: rgba(114, 132, 159, 0.6);
-}
-.user-name {
-    width: 75px;
-    font-size: 12px;
+        img {
+            width: calc(100% - 5px);
+            height: calc(100% - 5px);
+
+            object-fit: cover;
+            border-radius: 50%;
+        }
+    }
+    .seen {
+        border-color: rgba(114, 132, 159, 0.6);
+    }
+    .user-name {
+        width: 75px;
+        font-size: 12px;
+    }
 }

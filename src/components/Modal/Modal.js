@@ -35,6 +35,7 @@ function Modal({ page }) {
             if (user?.name.includes(e.target.value)) {
                 newSearchUsers.push(user);
             }
+            return user;
         });
         setSearchUsers(newSearchUsers);
     };

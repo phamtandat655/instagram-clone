@@ -8,7 +8,7 @@ import { db } from '../../firebase';
 
 import { ListIcon, PostIcon, ThreeDotsIcon } from '../../assets/Icons/Icons';
 import { useNavigate, useParams } from 'react-router-dom';
-import Account from '../../components/Account/Account';
+import FollowsModal from '../../components/FollowsModal/FollowsModal';
 
 const cx = classNames.bind(styles);
 
@@ -19,8 +19,10 @@ function PersonalPage() {
     const [posts, setPosts] = useState([]);
     const [followings, setFollowings] = useState([]);
     const [myFollowings, setMyFollowings] = useState([]);
+    const [followers, setFollowers] = useState([]);
     const [users, setUsers] = useState([]);
-    const [hideFollowingsModal, setHideFollowingsModal] = useState(true);
+    const [hideFollowModal, setHideFollowModal] = useState(true);
+    const [typeOfFollowModal, setTypeOfFollowModal] = useState('');
     const [indexPostObserved, setIndexPostObserved] = useState(15);
     const [showSignOut, setShowSignOut] = useState(false);
 
@@ -35,7 +37,13 @@ function PersonalPage() {
 
         onSnapshot(collection(db, 'users'), (snapshot) => {
             let newUsers = [];
+            let newFollowers = [];
             snapshot.forEach((doc) => {
+                newUsers.push({
+                    id: doc.id,
+                    ...doc.data(),
+                });
+
                 if (doc.id === email) {
                     setAvatar(doc.data()?.information.avatar);
                     setName(doc.data()?.information.name);
@@ -43,12 +51,15 @@ function PersonalPage() {
                     setFollowings(doc.data()?.follows);
                 }
 
-                newUsers.push({
-                    id: doc.id,
-                    ...doc.data(),
-                });
+                if (doc.data()?.follows.includes(email)) {
+                    newFollowers.push({
+                        id: doc.id,
+                        ...doc.data(),
+                    });
+                }
             });
             setUsers(newUsers);
+            setFollowers(newFollowers);
         });
 
         const q = query(collection(db, 'posts'), orderBy('timestamp', 'desc'));
@@ -107,54 +118,14 @@ function PersonalPage() {
 
     return (
         <div className={cx('wrapper')}>
-            {hideFollowingsModal === false && (
-                <div
-                    className={cx('followings-modal')}
-                    onClick={(e) => {
-                        setHideFollowingsModal(true);
-                    }}
-                >
-                    <div
-                        className={cx('followings-modal-wrapper')}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                        }}
-                    >
-                        <i
-                            className={cx('followings-modal-close')}
-                            onClick={(e) => {
-                                setHideFollowingsModal(true);
-                            }}
-                        >
-                            X
-                        </i>
-                        <div className={cx('followings-modal-header')}>Người theo dõi</div>
-                        <div className={cx('followings-modal-list')}>
-                            {users &&
-                                users.map((user, index) => {
-                                    if (followings.includes(user?.information.email)) {
-                                        return (
-                                            <div
-                                                key={user?.id || index}
-                                                className={cx('followings-modal-item')}
-                                                onClick={(e) => {
-                                                    setHideFollowingsModal(true);
-                                                    nav(`/personalPage/${user?.id}`);
-                                                }}
-                                            >
-                                                <Account
-                                                    name={user?.information.name}
-                                                    img={user?.information.avatar}
-                                                    lengthDesc={40}
-                                                />
-                                            </div>
-                                        );
-                                    }
-                                    return <Fragment key={index}></Fragment>;
-                                })}
-                        </div>
-                    </div>
-                </div>
+            {hideFollowModal === false && (
+                <FollowsModal
+                    typeOfFollowModal={typeOfFollowModal}
+                    users={users}
+                    setHideFollowModal={setHideFollowModal}
+                    followings={followings}
+                    followers={followers}
+                />
             )}
             <div className={cx('personalPage-top')}>
                 <div className={cx('avatar-container')}>
@@ -208,9 +179,25 @@ function PersonalPage() {
                             <strong>{posts.length}</strong> bài viết
                         </span>
                         <span
-                            className={cx('info-mid-followings')}
+                            className={cx('info-mid-followings', {
+                                cursorText: followers.length === 0 ? true : false,
+                            })}
                             onClick={(e) => {
-                                setHideFollowingsModal(false);
+                                if (followers.length === 0) return;
+                                setTypeOfFollowModal('followers');
+                                setHideFollowModal(false);
+                            }}
+                        >
+                            <strong>{followers ? followers.length : 0}</strong> người theo dõi
+                        </span>
+                        <span
+                            className={cx('info-mid-followings', {
+                                cursorText: followings.length === 0 ? true : false,
+                            })}
+                            onClick={(e) => {
+                                if (followings.length === 0) return;
+                                setTypeOfFollowModal('followings');
+                                setHideFollowModal(false);
                             }}
                         >
                             <strong>{followings ? followings.length : 0}</strong> đang theo dõi

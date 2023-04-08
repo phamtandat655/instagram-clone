@@ -4,287 +4,254 @@
     align-items: center;
 
     width: 100%;
-}
-.followings-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 100;
-
-    background-color: rgba(2, 2, 2, 0.5);
-}
-.followings-modal-wrapper {
-    position: relative;
-    width: 400px;
-    height: 400px;
-    background-color: white;
-    border-radius: 10px;
-}
-.followings-modal-header {
-    text-align: center;
-    height: 25px;
-    font-weight: 600;
-    font-size: 17px;
-    padding: 10px 0;
-    border-bottom: 1px solid rgb(var(--ig-separator));
-}
-.followings-modal-close {
-    position: absolute;
-    top: 7px;
-    right: 10px;
-    font-size: 15px;
-    font-weight: 600;
-    color: black;
-    cursor: pointer;
-    padding: 5px;
-}
-.followings-modal-list {
-    overflow-y: scroll;
-    width: 100%;
-    height: calc(100% - 45px);
-}
-.followings-modal-item {
-    margin: 10px 0;
-    padding: 0 20px;
-    display: flex;
-    justify-content: left;
-}
-.personalPage-top {
-    display: flex;
-    align-items: center;
-
-    padding: 30px 70px;
-    border-bottom: 1px solid rgb(var(--ig-separator));
-}
-.avatar-container {
-    width: 150px;
-    height: 150px;
-
-    margin-right: 100px;
-}
-.avatar-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-
-    border-radius: 50%;
-}
-// .infomation-container {}
-
-.info-top {
-    display: flex;
-    align-items: center;
-}
-.info-top--email {
-    font-size: 18px;
-}
-.info-top--settings {
-    font-weight: 600;
-
-    margin: 0 15px;
-    padding: 5px;
-    border-radius: 5px;
-    background-color: rgba(114, 132, 159, 0.15);
-    cursor: pointer;
-}
-.info-top--follow {
-    cursor: pointer;
-    padding: 7px 16px;
-    background-color: rgb(0, 149, 246);
-    border-radius: 10px;
-    margin-left: 20px;
-    color: white;
-    font-weight: 600;
-}
-.info-top--follow:hover {
-    background-color: rgb(71, 176, 247);
-}
-.info-top--following {
-    cursor: pointer;
-    padding: 7px 16px;
-    background-color: rgb(239, 239, 239);
-    border-radius: 10px;
-    margin-left: 20px;
-    color: black;
-    font-weight: 600;
-}
-.info-top--following:hover {
-    background-color: rgb(214, 212, 212);
-}
-.info-top--setting {
-    cursor: pointer;
-}
-.info-mid {
-    margin: 15px 0;
-}
-.info-mid-followings {
-    margin-left: 20px;
-    cursor: pointer;
-}
-.info-bottom--name {
-    font-weight: 600;
-    margin-bottom: 5px;
-}
-
-.personalPage-bottom {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-
-    padding-top: 10px;
-}
-.post-container {
-    cursor: pointer;
-}
-.post-container--icon {
-    margin-right: 5px;
-}
-.post-container.active {
-    position: relative;
-
-    font-weight: 600;
-}
-.post-container.active::before {
-    content: '';
-
-    position: absolute;
-    top: -11px;
-    left: -3px;
-    width: calc(100% + 6px);
-    height: 1px;
-
-    background-color: rgba(114, 132, 159, 1);
-}
-
-// post
-.post {
-    width: 100%;
-    height: 100%;
-
-    max-width: 935px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-
-    margin-top: 20px;
-}
-.post-wrapper {
-    position: relative;
-    width: 290px;
-    height: 290px;
-
-    cursor: pointer;
-}
-.post-wrapper img {
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-}
-.listPost-icon {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    padding: 1px;
-    background-color: rgba(114, 132, 159, 0.05);
-}
-.video {
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-}
-.info-top--icon {
-    display: none;
-}
-
-@media (max-width: 1024px) {
-    .post {
-        box-sizing: content-box;
-        max-width: 935px;
-        width: calc(100% - 40px);
-        gap: 0px;
-    }
-    .post-wrapper {
-        width: calc(100% / 3);
-        height: 150px;
-    }
-}
-@media (max-width: 740px) {
     .personalPage-top {
         display: flex;
         align-items: center;
 
-        margin-top: 65px;
-        padding: 20px 0;
+        padding: 30px 70px;
         border-bottom: 1px solid rgb(var(--ig-separator));
     }
     .avatar-container {
-        width: 100px;
-        height: 100px;
+        width: 150px;
+        height: 150px;
 
-        margin-left: 10px;
-        margin-right: 20px;
+        margin-right: 100px;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+
+            border-radius: 50%;
+        }
     }
+
     .info-top {
         display: flex;
-        flex-direction: column;
         align-items: center;
+
+        &--email {
+            font-size: 18px;
+        }
+        &--settings {
+            font-weight: 600;
+
+            margin: 0 15px;
+            padding: 5px;
+            border-radius: 5px;
+            background-color: rgba(114, 132, 159, 0.15);
+            cursor: pointer;
+        }
+        &--follow {
+            cursor: pointer;
+            padding: 7px 16px;
+            background-color: rgb(0, 149, 246);
+            border-radius: 10px;
+            margin-left: 20px;
+            color: white;
+            font-weight: 600;
+        }
+        &--follow:hover {
+            background-color: rgb(71, 176, 247);
+        }
+        &--following {
+            cursor: pointer;
+            padding: 7px 16px;
+            background-color: rgb(239, 239, 239);
+            border-radius: 10px;
+            margin-left: 20px;
+            color: black;
+            font-weight: 600;
+        }
+        &--following:hover {
+            background-color: rgb(214, 212, 212);
+        }
+        &--setting {
+            cursor: pointer;
+        }
+        &--icon {
+            display: none;
+        }
     }
-    .email-wrapper {
-        position: relative;
+
+    .info-mid {
+        margin: 15px 0;
+
+        &-followings {
+            margin-left: 20px;
+            cursor: pointer;
+        }
+    }
+
+    .cursorText {
+        cursor: text;
+    }
+    .info-bottom--name {
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .personalPage-bottom {
+        width: 100%;
         display: flex;
         align-items: center;
-        margin-bottom: 10px;
+        flex-direction: column;
+
+        padding-top: 10px;
     }
-    .info-top--email {
-        margin-right: 10px;
-    }
-    .info-top--icon {
-        display: unset;
+    .post-container {
         cursor: pointer;
+
+        &--icon {
+            margin-right: 5px;
+        }
+        &.active {
+            position: relative;
+
+            font-weight: 600;
+        }
+        &.active::before {
+            content: '';
+
+            position: absolute;
+            top: -11px;
+            left: -3px;
+            width: calc(100% + 6px);
+            height: 1px;
+
+            background-color: rgba(114, 132, 159, 1);
+        }
     }
-    .info-top--signout {
-        display: unset;
+
+    // post
+    .post {
+        width: 100%;
+        height: 100%;
+
+        max-width: 935px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+
+        margin-top: 20px;
+
+        &-wrapper {
+            position: relative;
+            width: 290px;
+            height: 290px;
+
+            cursor: pointer;
+
+            img {
+                width: 100%;
+                height: 100%;
+
+                object-fit: cover;
+            }
+        }
+    }
+    .listPost-icon {
         position: absolute;
-        top: 28px;
-        right: -35px;
-        padding: 10px;
-        width: max-content;
-        height: fit-content;
-        border-radius: 5px;
-        font-weight: bold;
-
-        color: rgb(248, 128, 128);
-        box-shadow: 0 0 3px rgba(114, 132, 159, 0.3);
-        background-color: white;
-
-        cursor: pointer;
+        top: 10px;
+        right: 10px;
+        padding: 1px;
+        background-color: rgba(114, 132, 159, 0.05);
     }
-    .info-top--signout:hover {
-        color: red;
-    }
-    .info-top--signout::before {
-        content: '';
-        position: absolute;
-        top: -4px;
-        left: 43px;
-        width: 15px;
-        height: 15px;
+    .video {
+        width: 100%;
+        height: 100%;
 
-        border-left: 1px solid rgb(var(--ig-separator));
-        border-top: 1px solid rgb(var(--ig-separator));
-        transform: rotate(45deg);
-        background-color: white;
+        object-fit: cover;
     }
-    .personalPage-bottom {
-        margin-bottom: 55px;
+}
+
+@media (max-width: 1024px) {
+    .wrapper {
+        .post {
+            box-sizing: content-box;
+            max-width: 935px;
+            width: calc(100% - 40px);
+            gap: 0px;
+        }
+        .post-wrapper {
+            width: calc(100% / 3);
+            height: 150px;
+        }
+    }
+}
+@media (max-width: 740px) {
+    .wrapper {
+        .personalPage-top {
+            display: flex;
+            align-items: center;
+
+            margin-top: 65px;
+            padding: 20px 0;
+            border-bottom: 1px solid rgb(var(--ig-separator));
+        }
+        .avatar-container {
+            width: 100px;
+            height: 100px;
+
+            margin-left: 10px;
+            margin-right: 20px;
+        }
+        .info-top {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            &--email {
+                margin-right: 10px;
+            }
+            &--icon {
+                display: unset;
+                cursor: pointer;
+            }
+            &--signout {
+                display: unset;
+                position: absolute;
+                top: 28px;
+                right: -35px;
+                padding: 10px;
+                width: max-content;
+                height: fit-content;
+                border-radius: 5px;
+                font-weight: bold;
+
+                color: rgb(248, 128, 128);
+                box-shadow: 0 0 3px rgba(114, 132, 159, 0.3);
+                background-color: white;
+
+                cursor: pointer;
+            }
+            &--signout:hover {
+                color: red;
+            }
+            &--signout::before {
+                content: '';
+                position: absolute;
+                top: -4px;
+                left: 43px;
+                width: 15px;
+                height: 15px;
+
+                border-left: 1px solid rgb(var(--ig-separator));
+                border-top: 1px solid rgb(var(--ig-separator));
+                transform: rotate(45deg);
+                background-color: white;
+            }
+        }
+        .email-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .personalPage-bottom {
+            margin-bottom: 55px;
+        }
     }
 }

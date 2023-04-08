@@ -27,7 +27,13 @@ function PostOption({ post, ownPost, setHidePostOption, followings }) {
     };
 
     return (
-        <div className={cx('wrapper')} onClick={(e) => setHidePostOption(true)}>
+        <div
+            className={cx('wrapper')}
+            onClick={(e) => {
+                setHidePostOption(true);
+                e.stopPropagation();
+            }}
+        >
             <div className={cx('post-option-container')}>
                 {(followings.includes(post?.useremail) || ownPost === true) && (
                     <div

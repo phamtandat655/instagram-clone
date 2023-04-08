@@ -1,29 +1,30 @@
 .App {
     display: flex;
     margin: 0 auto;
-}
 
-.page-wrapper {
-    position: relative;
-
-    display: flex;
-    justify-content: center;
-
-    width: 100%;
-    min-height: 100vh;
-    flex: 1;
-    margin-left: 15vw;
-
-    background-color: rgba(114, 132, 159, 0.05);
-}
-@media (max-width: 1240px) {
     .page-wrapper {
-        margin-left: 70px;
+        position: relative;
+
+        display: flex;
+        justify-content: center;
+
+        width: 100%;
+        min-height: 100vh;
+        flex: 1;
+        margin-left: 15vw;
+
+        background-color: rgba(114, 132, 159, 0.05);
     }
-}
-@media (max-width: 740px) {
-    .page-wrapper {
-        margin-left: 0px;
+
+    @media (max-width: 1240px) {
+        .page-wrapper {
+            margin-left: 70px;
+        }
+    }
+    @media (max-width: 740px) {
+        .page-wrapper {
+            margin-left: 0px;
+        }
     }
 }
 
@@ -36,114 +37,121 @@
     justify-content: center;
 
     margin-top: 50px;
-}
-.img-slider {
-    // display: block;
-    position: relative;
-    width: 380px;
-    height: 570px;
-    background-image: url(./assets/image/login/home-phones-2x.png);
-    background-repeat: no-repeat;
-    background-size: cover;
-}
-.slider {
-    position: absolute;
-    right: 10px;
-    bottom: 52px;
 
-    width: 232px;
-    height: 500px;
+    .img-slider {
+        // display: block;
+        position: relative;
+        width: 380px;
+        height: 570px;
+        background-image: url(./assets/image/login/home-phones-2x.png);
+        background-repeat: no-repeat;
+        background-size: cover;
 
-    background-image: url(./assets/image/login/screenshot1-2x.png);
-    background-repeat: no-repeat;
-    background-size: cover;
+        .slider {
+            position: absolute;
+            right: 10px;
+            bottom: 52px;
 
-    animation: slide 10s ease infinite;
-}
-@keyframes slide {
-    25% {
-        background-image: url(./assets/image/login/screenshot2-2x.png);
+            width: 232px;
+            height: 500px;
+
+            background-image: url(./assets/image/login/screenshot1-2x.png);
+            background-repeat: no-repeat;
+            background-size: cover;
+
+            animation: slide 10s ease infinite;
+        }
+
+        @keyframes slide {
+            25% {
+                background-image: url(./assets/image/login/screenshot2-2x.png);
+            }
+            50% {
+                background-image: url(./assets/image/login/screenshot3-2x.png);
+            }
+            75% {
+                background-image: url(./assets/image/login/screenshot4-2x.png);
+            }
+            100% {
+                background-image: url(./assets/image/login/screenshot1-2x.png);
+            }
+        }
     }
-    50% {
-        background-image: url(./assets/image/login/screenshot3-2x.png);
+
+    .form {
+        width: 350px;
+        height: 300px;
+        max-height: 350px;
+
+        margin-top: 70px;
+        margin-left: 30px;
+        border: 1px solid rgb(var(--ig-separator));
+        border-radius: 5px;
+        padding: 30px 10px;
+
+        .icon {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .input-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            input {
+                width: 250px;
+                height: 35px;
+
+                padding: 0 10px;
+                border: 1px solid rgb(var(--ig-separator));
+                border-radius: 5px;
+                outline: none;
+                margin-bottom: 10px;
+            }
+
+            button {
+                width: 270px;
+                height: 35px;
+
+                background-color: rgb(var(--ig-primary-button));
+                color: white;
+                font-weight: 600;
+
+                border-radius: 5px;
+                border: none;
+                outline: none;
+
+                cursor: pointer;
+            }
+        }
+
+        .or {
+            text-align: center;
+            opacity: 0.7;
+            margin: 20px 0;
+        }
+        .change {
+            text-align: center;
+            padding: 20px;
+
+            border: 1px solid rgba(var(--ig-separator));
+
+            span {
+                color: rgb(var(--ig-primary-button));
+                font-weight: 600;
+
+                cursor: pointer;
+            }
+        }
+        .change-login {
+            border: unset;
+        }
+        .error {
+            color: red;
+        }
     }
-    75% {
-        background-image: url(./assets/image/login/screenshot4-2x.png);
-    }
-    100% {
-        background-image: url(./assets/image/login/screenshot1-2x.png);
-    }
 }
-
-.form {
-    width: 350px;
-    height: 300px;
-    max-height: 350px;
-
-    margin-top: 70px;
-    margin-left: 30px;
-    border: 1px solid rgb(var(--ig-separator));
-    border-radius: 5px;
-    padding: 30px 10px;
-}
-.icon {
-    text-align: center;
-    margin-bottom: 10px;
-}
-.input-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.input-wrap input {
-    width: 250px;
-    height: 35px;
-
-    padding: 0 10px;
-    border: 1px solid rgb(var(--ig-separator));
-    border-radius: 5px;
-    outline: none;
-    margin-bottom: 10px;
-}
-.input-wrap button {
-    width: 270px;
-    height: 35px;
-
-    background-color: rgb(var(--ig-primary-button));
-    color: white;
-    font-weight: 600;
-
-    border-radius: 5px;
-    border: none;
-    outline: none;
-
-    cursor: pointer;
-}
-.or {
-    text-align: center;
-    opacity: 0.7;
-    margin: 20px 0;
-}
-
-.change {
-    text-align: center;
-    padding: 20px;
-
-    border: 1px solid rgba(var(--ig-separator));
-}
-.change span {
-    color: rgb(var(--ig-primary-button));
-    font-weight: 600;
-
-    cursor: pointer;
-}
-.change-login {
-    border: unset;
-}
-.error {
-    color: red;
-}
-
 @media (max-width: 1024px) {
     .img-slider {
         display: none;

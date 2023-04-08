@@ -2,49 +2,51 @@
     display: flex;
     margin-top: 30px;
     justify-content: center;
-}
-.loading {
-    text-align: center;
-    margin-top: 50px;
-}
-.story-wrapper {
-    position: relative;
-}
-.hide {
-    display: none;
-}
-.story-container {
-    width: 430px;
-    height: 80px;
 
-    padding: 20px;
+    .loading {
+        text-align: center;
+        margin-top: 50px;
+    }
+    .story-wrapper {
+        position: relative;
+    }
+    .hide {
+        display: none;
+    }
+    .story-container {
+        width: 430px;
+        height: 80px;
 
-    border: 1px solid rgb(var(--ig-separator));
-    border-radius: 10px;
-    background-color: white;
-}
-.recommend {
-    margin-left: 30px;
-}
-.recommend--header-wrapper {
-    display: flex;
-    justify-content: space-between;
-    width: 315px;
+        padding: 20px;
 
-    margin-bottom: 20px;
-}
-.recommend--header-wrapper span {
-    font-weight: 600;
-    font-size: 14px;
-}
-.recommend--header {
-    color: rgb(142, 142, 142);
-}
-.recommend--see-all {
-    cursor: pointer;
-}
-.recommend--user-wrapper {
-    margin-bottom: 15px;
+        border: 1px solid rgb(var(--ig-separator));
+        border-radius: 10px;
+        background-color: white;
+    }
+    .recommend {
+        margin-left: 30px;
+
+        &--header-wrapper {
+            display: flex;
+            justify-content: space-between;
+            width: 315px;
+
+            margin-bottom: 20px;
+        }
+        &--header-wrapper span {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        &--header {
+            color: rgb(142, 142, 142);
+        }
+        &--see-all {
+            cursor: pointer;
+        }
+        &--user-wrapper {
+            margin-bottom: 15px;
+        }
+    }
 }
 
 @media (max-width: 1024px) {
@@ -52,25 +54,29 @@
         align-items: center;
         justify-content: unset;
         flex-direction: column-reverse;
-    }
-    .recommend {
-        width: 430px;
-        margin-left: 0px;
-        margin-bottom: 15px;
-        margin-top: 35px;
-        border-radius: 10px;
-        padding: 20px;
-        background-color: white;
 
-        .recommend--header-wrapper {
+        .recommend {
             width: 430px;
-        }
+            margin-left: 0px;
+            margin-bottom: 15px;
+            margin-top: 35px;
+            border-radius: 10px;
+            padding: 20px;
+            background-color: white;
 
-        .recommend--users {
-            display: flex;
-            align-items: center;
-            overflow-x: scroll;
-            overflow-y: hidden;
+            .recommend--header-wrapper {
+                width: 430px;
+            }
+
+            .recommend--users {
+                display: flex;
+                align-items: center;
+                overflow-x: scroll;
+                overflow-y: hidden;
+            }
+            .recommend--users::-webkit-scrollbar {
+                display: none;
+            }
         }
     }
 }

@@ -3,12 +3,15 @@ import styles from './Comment.module.scss';
 import { useEffect, useState } from 'react';
 import { onSnapshot, doc } from 'firebase/firestore';
 import { db } from '../../firebase';
+import { useNavigate } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
 function Comment({ cmt }) {
     const [time, setTime] = useState('');
     const [avatar, setAvatar] = useState('');
+
+    const nav = useNavigate();
 
     useEffect(() => {
         const timestamp = {
@@ -46,7 +49,7 @@ function Comment({ cmt }) {
 
     return (
         <div className={cx('wrapper')}>
-            <div className={cx('account')}>
+            <div className={cx('account')} onClick={(e) => nav(`/personalPage/${cmt.useremail}`)}>
                 <div className={cx('avatar')}>
                     <img
                         src={

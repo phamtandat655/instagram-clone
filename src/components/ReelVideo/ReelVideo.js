@@ -115,14 +115,18 @@ function ReelVideo({ reel, user, username, userAvatar }) {
         setInputValue('');
     };
 
+    const handleCloseCmtsModal = (e) => {
+        setInputValue('');
+        setShowCmtsModal(false);
+    };
     return (
         <div className={cx('video-wrapper')}>
             {showCmtsModal === true && (
-                <div className={cx('cmt-modal')} onClick={(e) => setShowCmtsModal(false)}>
+                <div className={cx('cmt-modal')} onClick={handleCloseCmtsModal}>
                     <div className={cx('cmt-container')} onClick={(e) => e.stopPropagation()}>
                         <div className={cx('cmt-header')}>
                             <strong>Bình luận</strong>
-                            <i className={cx('cmt-header--icon')} onClick={(e) => setShowCmtsModal(false)}>
+                            <i className={cx('cmt-header--icon')} onClick={handleCloseCmtsModal}>
                                 X
                             </i>
                         </div>
