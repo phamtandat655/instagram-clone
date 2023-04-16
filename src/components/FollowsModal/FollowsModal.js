@@ -1,12 +1,11 @@
 import styles from './FollowsModal.module.scss';
 import classNames from 'classnames/bind';
 import Account from '../Account/Account';
-import { Fragment } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
-const FollowsModal = ({ users, typeOfFollowModal, setHideFollowModal, followings, followers }) => {
+const FollowsModal = ({ typeOfFollowModal, setHideFollowModal, followings, followers }) => {
     const nav = useNavigate();
 
     if (typeOfFollowModal === 'followers') {
@@ -78,28 +77,23 @@ const FollowsModal = ({ users, typeOfFollowModal, setHideFollowModal, followings
                     </i>
                     <div className={cx('followings-modal-header')}>Đang theo dõi</div>
                     <div className={cx('followings-modal-list')}>
-                        {users &&
-                            users.map((user, index) => {
-                                if (followings.includes(user?.information.email)) {
-                                    return (
-                                        <div
-                                            key={user?.id || index}
-                                            className={cx('followings-modal-item')}
-                                            onClick={(e) => {
-                                                setHideFollowModal(true);
-                                                nav(`/personalPage/${user?.id}`);
-                                            }}
-                                        >
-                                            <Account
-                                                name={user?.information.name}
-                                                img={user?.information.avatar}
-                                                lengthDesc={40}
-                                            />
-                                        </div>
-                                    );
-                                }
-                                return <Fragment key={index}></Fragment>;
-                            })}
+                        {followings &&
+                            followings.map((user, index) => (
+                                <div
+                                    key={user?.User.id || index}
+                                    className={cx('followings-modal-item')}
+                                    onClick={(e) => {
+                                        setHideFollowModal(true);
+                                        nav(`/personalPage/${user?.User.information.email}`);
+                                    }}
+                                >
+                                    <Account
+                                        name={user?.User.information.name}
+                                        img={user?.User.information.avatar}
+                                        lengthDesc={40}
+                                    />
+                                </div>
+                            ))}
                     </div>
                 </div>
             </div>

@@ -6,11 +6,12 @@ import styles from './MiniMenu.module.scss';
 
 const cx = classNames.bind(styles);
 
-function MiniMenu({ clickSeeMore, setClickSeeMore }) {
+function MiniMenu({ setPage, clickSeeMore, setClickSeeMore }) {
     const { logout } = UserAuth();
     const nav = useNavigate();
 
     const handleSignOut = () => {
+        setPage('home');
         nav('/');
         logout();
     };

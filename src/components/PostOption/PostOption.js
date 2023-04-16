@@ -18,10 +18,13 @@ function PostOption({ post, ownPost, setHidePostOption, followings }) {
         } else {
             if (window.confirm('Bạn có muốn hủy theo dõi ?')) {
                 const docRef = doc(db, 'users', `${user?.email}`);
-                let newFollowings = followings.filter((followingEmail) => followingEmail !== post?.useremail);
+                let newFollowings = followings.filter(
+                    (following) => following?.User?.information.email !== post?.useremail,
+                );
                 await updateDoc(docRef, {
                     follows: [...newFollowings],
                 });
+                setHidePostOption(true);
             }
         }
     };
@@ -35,7 +38,8 @@ function PostOption({ post, ownPost, setHidePostOption, followings }) {
             }}
         >
             <div className={cx('post-option-container')}>
-                {(followings.includes(post?.useremail) || ownPost === true) && (
+                {(followings.filter((following) => following?.User?.information.email !== post?.useremail) ||
+                    ownPost === true) && (
                     <div
                         onClick={(e) => {
                             e.stopPropagation();

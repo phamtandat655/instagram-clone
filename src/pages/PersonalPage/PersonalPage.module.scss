@@ -15,6 +15,8 @@
     .avatar-container {
         width: 150px;
         height: 150px;
+        min-width: 150px;
+        min-height: 150px;
 
         margin-right: 100px;
 
@@ -26,7 +28,12 @@
             border-radius: 50%;
         }
     }
-
+    .infomation-container {
+        width: 615px;
+        max-width: 615px;
+        height: auto;
+        max-height: auto;
+    }
     .info-top {
         display: flex;
         align-items: center;
@@ -174,6 +181,12 @@
             width: calc(100% - 40px);
             gap: 0px;
         }
+        .infomation-container {
+            width: 430px;
+            max-width: 430px;
+            height: unset;
+            max-height: unset;
+        }
         .post-wrapper {
             width: calc(100% / 3);
             height: 150px;
@@ -193,9 +206,11 @@
         .avatar-container {
             width: 100px;
             height: 100px;
+            min-width: 100px;
+            min-height: 100px;
 
             margin-left: 10px;
-            margin-right: 20px;
+            margin-right: 40px;
         }
         .info-top {
             display: flex;
@@ -242,6 +257,12 @@
                 transform: rotate(45deg);
                 background-color: white;
             }
+        }
+        .infomation-container {
+            width: 330px;
+            max-width: 330px;
+            height: unset;
+            max-height: unset;
         }
         .email-wrapper {
             position: relative;

@@ -52,7 +52,10 @@ function Home({ setPage }) {
     useEffect(() => {
         if (followings && posts) {
             let allNewFollowedPost = posts.filter((post) => {
-                return followings?.includes(post?.useremail) || user?.email === post?.useremail;
+                return (
+                    followings.find((following) => following?.User?.information.email === post?.useremail) ||
+                    user?.email === post?.useremail
+                );
             });
             setAllFollowedPost(allNewFollowedPost);
             setLoading(false);
@@ -187,7 +190,7 @@ function Home({ setPage }) {
                                     return <div key={index} className={cx('hide')}></div>;
                                 }
                             }
-                            if (!followings.includes(user?.information.email)) {
+                            if (!followings.find((following) => following?.User?.information.email === user?.id)) {
                                 return (
                                     <div
                                         key={user?.id || index}
@@ -202,7 +205,7 @@ function Home({ setPage }) {
                                             desc="Gợi ý cho bạn"
                                             follow
                                             followings={followings}
-                                            email={user?.information?.email}
+                                            flUser={user}
                                             recommend="recommend-home"
                                         />
                                     </div>

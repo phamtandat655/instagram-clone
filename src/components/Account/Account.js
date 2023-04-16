@@ -2,12 +2,12 @@ import classNames from 'classnames/bind';
 import styles from './Account.module.scss';
 import { useState } from 'react';
 import { UserAuth } from '../../Context/AuthContext';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../../firebase';
 
 const cx = classNames.bind(styles);
 
-function Account({ name, img, desc, lengthDesc, follow, change, story, followings, email, recommend }) {
+function Account({ name, img, desc, lengthDesc, follow, change, story, followings, flUser, recommend }) {
     const { user } = UserAuth();
 
     const [seenStory, setSeenStory] = useState(() => {
@@ -25,7 +25,14 @@ function Account({ name, img, desc, lengthDesc, follow, change, story, following
     const handleFollow = async (e) => {
         const docRef = doc(db, 'users', `${user?.email}`);
         await updateDoc(docRef, {
-            follows: [...followings, email],
+            follows: [
+                ...followings,
+                {
+                    User: flUser,
+                    timestampSecond: Math.floor(Date.now() / 1000),
+                    timestamp: Timestamp.now(),
+                },
+            ],
         });
     };
 

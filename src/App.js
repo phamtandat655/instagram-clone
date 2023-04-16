@@ -106,11 +106,11 @@ function App() {
                     />
                     <div className={cx('page-wrapper')}>
                         <Routes>
-                            <Route path="/" element={<Home setPage={setPage} />} />
-                            <Route path="/explore" element={<Explore />} />
+                            <Route path="/*" element={<Home setPage={setPage} />} />
+                            <Route path="/explore/*" element={<Explore />} />
                             <Route path="/videos" element={<Reels />} />
                             <Route path="/inbox" element={<Inbox />} />
-                            <Route path="/personalPage/:email" element={<PersonalPage />} />
+                            <Route path="/personalPage/:email/*" element={<PersonalPage />} />
                             <Route path="/account/edit" element={<AccountEdit />} />
                             <Route
                                 path="/:idPost"

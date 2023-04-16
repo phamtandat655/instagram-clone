@@ -3,7 +3,7 @@ import styles from './PersonalPage.module.scss';
 
 import { useState, useEffect, Fragment } from 'react';
 import { UserAuth } from '../../Context/AuthContext';
-import { onSnapshot, doc, query, collection, orderBy, updateDoc } from 'firebase/firestore';
+import { onSnapshot, doc, query, collection, orderBy, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../../firebase';
 
 import { ListIcon, PostIcon, ThreeDotsIcon } from '../../assets/Icons/Icons';
@@ -20,7 +20,7 @@ function PersonalPage() {
     const [followings, setFollowings] = useState([]);
     const [myFollowings, setMyFollowings] = useState([]);
     const [followers, setFollowers] = useState([]);
-    const [users, setUsers] = useState([]);
+    const [thisUser, setThisUser] = useState({});
     const [hideFollowModal, setHideFollowModal] = useState(true);
     const [typeOfFollowModal, setTypeOfFollowModal] = useState('');
     const [indexPostObserved, setIndexPostObserved] = useState(15);
@@ -36,29 +36,23 @@ function PersonalPage() {
         });
 
         onSnapshot(collection(db, 'users'), (snapshot) => {
-            let newUsers = [];
             let newFollowers = [];
             snapshot.forEach((doc) => {
-                newUsers.push({
-                    id: doc.id,
-                    ...doc.data(),
-                });
-
                 if (doc.id === email) {
                     setAvatar(doc.data()?.information.avatar);
                     setName(doc.data()?.information.name);
                     setDesc(doc.data()?.information.desc);
                     setFollowings(doc.data()?.follows);
+                    setThisUser(doc.data());
                 }
 
-                if (doc.data()?.follows.includes(email)) {
+                if (doc.data()?.follows.find((following) => following.User.information.email === email)) {
                     newFollowers.push({
                         id: doc.id,
                         ...doc.data(),
                     });
                 }
             });
-            setUsers(newUsers);
             setFollowers(newFollowers);
         });
 
@@ -99,13 +93,20 @@ function PersonalPage() {
     const handleFollow = async (e) => {
         const docRef = doc(db, 'users', `${user?.email}`);
         await updateDoc(docRef, {
-            follows: [...myFollowings, email],
+            follows: [
+                ...myFollowings,
+                {
+                    User: thisUser,
+                    timestampSecond: Math.floor(Date.now() / 1000),
+                    timestamp: Timestamp.now(),
+                },
+            ],
         });
     };
 
     const handleUnfollow = async (e) => {
         const docRef = doc(db, 'users', `${user?.email}`);
-        let newFollowings = myFollowings.filter((followingEmail) => followingEmail !== email);
+        let newFollowings = myFollowings.filter((following) => following?.User?.information.email !== email);
         await updateDoc(docRef, {
             follows: [...newFollowings],
         });
@@ -121,7 +122,6 @@ function PersonalPage() {
             {hideFollowModal === false && (
                 <FollowsModal
                     typeOfFollowModal={typeOfFollowModal}
-                    users={users}
                     setHideFollowModal={setHideFollowModal}
                     followings={followings}
                     followers={followers}
@@ -161,7 +161,8 @@ function PersonalPage() {
                             </div>
                         ) : (
                             <div>
-                                {myFollowings && myFollowings.includes(email) ? (
+                                {myFollowings &&
+                                myFollowings.find((following) => following.User.information.email === email) ? (
                                     <p className={cx('info-top--following')} onClick={handleUnfollow}>
                                         Đang theo dõi
                                     </p>
@@ -205,7 +206,7 @@ function PersonalPage() {
                     </div>
                     <div className={cx('info-bottom')}>
                         <p className={cx('info-bottom--name')}>{name}</p>
-                        <p>{desc}</p>
+                        <p className={cx('info-bottom--desc')}>{desc}</p>
                     </div>
                 </div>
             </div>

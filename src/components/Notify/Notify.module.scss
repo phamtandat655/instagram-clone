@@ -1,0 +1,96 @@
+.wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    height: auto;
+    width: auto;
+    max-width: 350px;
+
+    margin-bottom: 10px;
+
+    .account {
+        display: flex;
+        align-items: center;
+
+        cursor: pointer;
+    }
+
+    .avatar {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        min-height: 40px;
+
+        border-radius: 50%;
+        border: 2px solid transparent;
+
+        img {
+            width: calc(100% - 2px);
+            height: calc(100% - 2px);
+            object-fit: cover;
+
+            border-radius: 50%;
+        }
+    }
+
+    .havestr {
+        border-color: red;
+    }
+
+    .about {
+        margin-left: 10px;
+        font-size: 13px;
+        margin-bottom: 4px;
+        padding-right: 5px;
+
+        max-width: 200px;
+
+        .time {
+            color: rgb(var(--ig-secondary-text));
+        }
+    }
+
+    .name {
+        color: black;
+        font-weight: 700;
+    }
+    .desc {
+        color: rgb(var(--ig-secondary-text));
+    }
+    .follow {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        color: white;
+        background-color: rgb(var(--ig-primary-button));
+        border-radius: 5px;
+
+        width: 100px;
+        height: 30px;
+
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+
+        &.following {
+            color: black;
+            background-color: rgb(var(--ig-secondary-button-background));
+        }
+    }
+}
+
+@media (max-width: 1024px) {
+    .wrapper {
+        max-width: 95%;
+
+        .about {
+            max-width: 250px;
+        }
+    }
+}

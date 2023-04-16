@@ -60,26 +60,49 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
         const postDate = new Date(timestamp.seconds * 1000);
         const nowDate = new Date();
 
-        if (
-            nowDate.getFullYear() === postDate.getFullYear() &&
-            nowDate.getMonth() === postDate.getMonth() &&
-            nowDate.getDate() === postDate.getDate()
-        ) {
-            if (nowDate.getHours() === postDate.getHours()) {
-                if (nowDate.getMinutes() === postDate.getMinutes()) {
-                    setTime(`${nowDate.getMinutes() - postDate.getMinutes()} giay truoc`);
-                } else setTime(`${nowDate.getMinutes() - postDate.getMinutes()} phut truoc`);
-            } else setTime(`${nowDate.getHours() - postDate.getHours()} gio truoc`);
-        } else if (
-            nowDate.getFullYear() === postDate.getFullYear() &&
-            nowDate.getMonth() !== postDate.getMonth() &&
-            nowDate.getDate() !== postDate.getDate()
-        ) {
-            setTime(`THANG ${postDate.getMonth()} ${postDate.getDate()}`);
+        const months = getMonthDifference(postDate, nowDate);
+        const years = nowDate.getFullYear() - postDate.getFullYear();
+
+        // get total seconds between the times
+        let delta = Math.abs(nowDate - postDate) / 1000;
+        // calculate (and subtract) whole days
+        let days = Math.floor(delta / 86400);
+        delta -= days * 86400;
+        // calculate (and subtract) whole hours
+        let hours = Math.floor(delta / 3600) % 24;
+        delta -= hours * 3600;
+        // calculate (and subtract) whole minutes
+        let minutes = Math.floor(delta / 60) % 60;
+        delta -= minutes * 60;
+        // what's left is seconds
+        let seconds = Math.round(delta % 60); // in theory the modulus is not required
+
+        if (years < 1) {
+            if (months >= 1) {
+                setTime(`${months} THÁNG TRƯỚC`);
+            } else {
+                if (days < 1) {
+                    if (hours < 1) {
+                        if (minutes < 1) {
+                            setTime(`${seconds} GIÂY TRƯỚC`);
+                        } else {
+                            setTime(`${minutes} PHÚT TRƯỚC`);
+                        }
+                    } else {
+                        setTime(`${hours} GIỜ TRƯỚC`);
+                    }
+                } else {
+                    setTime(`${days} NGÀY TRƯỚC`);
+                }
+            }
         } else {
-            setTime(`NAM ${postDate.getFullYear()} THANG ${postDate.getMonth()} ${postDate.getDate()}`);
+            setTime(`NĂM ${years} THÁNG ${months} NGÀY ${days}`);
         }
     }, [post?.timestampSecond]);
+
+    function getMonthDifference(startDate, endDate) {
+        return endDate.getMonth() - startDate.getMonth() + 12 * (endDate.getFullYear() - startDate.getFullYear());
+    }
 
     useEffect(() => {
         let path = pathname.slice(1) === '' ? 'home' : pathname.slice(1);

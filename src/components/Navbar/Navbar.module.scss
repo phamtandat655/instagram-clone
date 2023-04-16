@@ -15,9 +15,9 @@
     border-right: 1px solid rgb(var(--ig-separator));
     background-color: white;
 
-    z-index: 30;
+    z-index: 40;
 
-    animation: scrollWidth1 0.1s ease forwards;
+    animation: scrollWidth1 0.2s ease forwards;
 }
 
 @keyframes scrollWidth1 {
@@ -37,7 +37,11 @@
     display: flex;
     align-items: center;
     padding: 12px 20px;
+    margin: 4px 0;
     font-size: 16px;
+    //
+    position: relative;
+    z-index: 40;
 
     & .icon {
         font-size: 22px;
@@ -79,13 +83,16 @@
 }
 
 .activeModal {
+    .item {
+        padding: 0 9px;
+    }
+
     div {
-        margin: -10px;
         .icon {
-            padding: 10px;
-            font-size: 10px;
             border: 1px solid rgb(209, 203, 203);
+            padding: 11px;
             border-radius: 50%;
+            font-size: 10px;
         }
     }
 }
@@ -95,9 +102,10 @@
 
 // click vao search hoac notify navbar se trong giong nhu ipad
 .openModal.wrapper {
-    padding: 0 20px 0 0;
+    padding: 0 10px;
+    align-items: center;
 
-    animation: scrollWidth2 0.1s ease forwards;
+    animation: scrollWidth2 0.2s ease forwards;
 }
 @keyframes scrollWidth2 {
     from {
@@ -109,6 +117,7 @@
 }
 .openModal .logo-icon {
     display: block;
+    padding-bottom: 5px;
 }
 .openModal .logo-letter {
     display: none;
@@ -205,14 +214,24 @@
         display: unset;
     }
     .search-item {
-        bottom: calc(100vh - 50px);
-        left: calc(100vw - 125px);
+        bottom: calc(100vh - 47px);
+        left: calc(100vw - 135px);
     }
     .notify-item {
-        bottom: calc(100vh - 50px);
+        bottom: calc(100vh - 47px);
         left: calc(100vw - 80px);
     }
     .openModal.wrapper {
         padding: 0;
+    }
+    .activeModal {
+        div {
+            .icon {
+                border: 1px solid rgb(209, 203, 203);
+                // padding: 3px;
+                border-radius: 50%;
+                font-size: 10px;
+            }
+        }
     }
 }

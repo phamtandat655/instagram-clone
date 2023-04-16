@@ -26,6 +26,7 @@ p {
 }
 :root {
     --ig-primary-button: 0, 149, 246;
+    --ig-secondary-button-background: 239, 239, 239;
     --ig-separator: 219, 219, 219;
     --ig-secondary-text: 115, 115, 115;
     --ig-bg-modal: 2, 2, 2, 0.5;
