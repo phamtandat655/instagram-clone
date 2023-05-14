@@ -17,17 +17,17 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { UserAuth } from '../../Context/AuthContext';
 import { onSnapshot, collection, doc } from 'firebase/firestore';
 import { db } from '../../firebase';
+import confirmIcon from '../../assets/image/illo-confirm-refresh-light.png';
 
 const cx = classNames.bind(styles);
 
-function Home({ setPage }) {
+function Home() {
     const { posts } = UseFireBase();
     const nav = useNavigate();
     const [followings, setFollowings] = useState([]);
     const [users, setUsers] = useState([]);
     const [seeAll, setSeeAll] = useState(false);
     const [indexPostObserved, setIndexPostObserved] = useState(8);
-    const [loading, setLoading] = useState(true);
     const [allFollowedPost, setAllFollowedPost] = useState([]);
     const { user } = UserAuth();
 
@@ -58,7 +58,6 @@ function Home({ setPage }) {
                 );
             });
             setAllFollowedPost(allNewFollowedPost);
-            setLoading(false);
         }
     }, [followings, posts, user?.email]);
 
@@ -152,20 +151,30 @@ function Home({ setPage }) {
                         </SwiperSlide>
                     </Swiper>
                 </div>
-                {loading === true ? (
-                    <p className={cx('loading')}>Loading...</p>
-                ) : (
-                    <div className={cx('post-container')}>
-                        {allFollowedPost &&
-                            followings &&
-                            allFollowedPost.map((post, index) => {
-                                if (index > indexPostObserved) {
-                                    return <Fragment key={index}></Fragment>;
-                                }
-                                return <Post key={post?.id} post={post} setPage={setPage} />;
-                            })}
-                    </div>
-                )}
+                <div className={cx('post-container')}>
+                    {allFollowedPost &&
+                        followings &&
+                        allFollowedPost.map((post, index) => {
+                            if (index > indexPostObserved) {
+                                return <Fragment key={index}></Fragment>;
+                            } else if (index === allFollowedPost.length - 1) {
+                                return (
+                                    <Fragment key={post?.id}>
+                                        <Post post={post} />
+                                        <div className={cx('confirm-icon-wrapper')}>
+                                            <img src={confirmIcon} alt="confirm-icon" />
+                                            <p>Bạn đã xem hết rồi !</p>
+                                            <p className={cx('see-more-post')}>
+                                                Bạn có muốn xem thêm những bài viết thú vị ?{' '}
+                                                <span onClick={(e) => nav('/explore')}>Tại đây</span>
+                                            </p>
+                                        </div>
+                                    </Fragment>
+                                );
+                            }
+                            return <Post key={post?.id} post={post} />;
+                        })}
+                </div>
             </div>
             <div className={cx('recommend')}>
                 <div className={cx('recommend--header-wrapper')}>
@@ -200,12 +209,10 @@ function Home({ setPage }) {
                                         }}
                                     >
                                         <Account
-                                            name={user?.information?.name}
-                                            img={user?.information?.avatar}
-                                            desc="Gợi ý cho bạn"
+                                            userAccount={user}
+                                            note="Gợi ý cho bạn"
                                             follow
                                             followings={followings}
-                                            flUser={user}
                                             recommend="recommend-home"
                                         />
                                     </div>

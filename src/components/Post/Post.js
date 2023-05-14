@@ -33,10 +33,10 @@ import PostOption from '../PostOption/PostOption';
 
 const cx = classNames.bind(styles);
 
-function Post({ post, setPage }) {
+function Post({ post }) {
     const [saved, setSaved] = useState(false);
     const [time, setTime] = useState('');
-    const [avatar, setAvatar] = useState('');
+    const [thisUser, setThisUser] = useState({});
     const [muted, setMuted] = useState(true);
     const [pause, setPause] = useState(true);
     const [hideLikedsModal, setHideLikedsModal] = useState(true);
@@ -106,7 +106,7 @@ function Post({ post, setPage }) {
 
     useEffect(() => {
         onSnapshot(doc(db, 'users', `${post?.useremail}`), (doc) => {
-            setAvatar(doc.data()?.information.avatar);
+            setThisUser(doc.data());
         });
     }, [post?.useremail]);
 
@@ -223,7 +223,6 @@ function Post({ post, setPage }) {
     }, [post?.url, pause]);
 
     const handleClickAccount = (e) => {
-        setPage(`personalPage/${post?.useremail}`);
         nav(`/personalPage/${post?.useremail}`);
     };
 
@@ -295,13 +294,16 @@ function Post({ post, setPage }) {
                                                 }}
                                             >
                                                 <Account
-                                                    name={likedUser?.information.name}
-                                                    img={likedUser?.information.avatar}
+                                                    userAccount={likedUser}
                                                     lengthDesc={40}
                                                     followings={myFollowings}
-                                                    email={likedUser?.information.email}
                                                     follow={
-                                                        myFollowings.includes(likedUser?.information.email) ||
+                                                        (myFollowings &&
+                                                            myFollowings.find(
+                                                                (following) =>
+                                                                    following.User.information.email ===
+                                                                    likedUser?.information.email,
+                                                            )) ||
                                                         likedUser?.information.email === user?.email
                                                             ? false
                                                             : true
@@ -325,16 +327,14 @@ function Post({ post, setPage }) {
                 />
             )}
             <div className={cx('user')}>
-                <span onClick={handleClickAccount}>
-                    <Account
-                        name={post?.username}
-                        img={
-                            avatar ||
-                            'http://phunuvietnam.mediacdn.vn/media/news/33abffcedac43a654ac7f501856bf700/anh-profile-tiet-lo-g-ve-ban-1.jpg'
-                        }
-                        // story
-                    />
-                </span>
+                {thisUser?.information && (
+                    <span onClick={handleClickAccount}>
+                        <Account
+                            userAccount={thisUser}
+                            // story
+                        />
+                    </span>
+                )}
                 <i className={cx('post-option')} onClick={(e) => setHidePostOption(false)}>
                     {ThreeDotsIcon}
                 </i>

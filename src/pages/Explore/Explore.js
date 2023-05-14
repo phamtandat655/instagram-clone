@@ -50,7 +50,7 @@ function Explore() {
 
     return (
         <div className={cx('wrapper')}>
-            <div className={cx('post')}>
+            <div className={cx('post-list')}>
                 {posts &&
                     posts.map((post, index) => {
                         if (index >= indexPostObserved) {

@@ -31,12 +31,21 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import '../../swiper.scss';
+import { UseFireBase } from '../../Context/FireBaseContext';
 
 const cx = classNames.bind(styles);
 
 function PostDetail({ setPage, page, setIdpost, pathname }) {
+    const { idPostList } = UseFireBase();
+    const { idPost } = useParams();
+    const nav = useNavigate();
+
+    if (!idPostList.includes(idPost)) {
+        nav(`/NotFound/${idPost}`);
+    }
+
     const [saved, setSaved] = useState(false);
-    const [avatar, setAvatar] = useState('');
+    const [thisUser, setThisUser] = useState({});
     const [muted, setMuted] = useState(true);
     const [pause, setPause] = useState(true);
 
@@ -48,7 +57,6 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
     const [comment, setComment] = useState('');
     const [comments, setComments] = useState([]);
     const { user } = UserAuth();
-    const { idPost } = useParams();
     const [post, setPost] = useState({});
     const [time, setTime] = useState('');
     const [hidePostOption, setHidePostOption] = useState(true);
@@ -112,6 +120,8 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
         }
     });
 
+    console.log(`2 : ${page}`);
+
     useEffect(() => {
         onSnapshot(collection(db, 'users'), (snapshot) => {
             let newUsers = [];
@@ -129,7 +139,10 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
         });
 
         onSnapshot(doc(db, 'posts', `${idPost}`), (doc) => {
-            setPost(doc.data());
+            setPost({
+                id: doc.id,
+                ...doc.data(),
+            });
         });
 
         const q = query(collection(db, `posts/${idPost}/comments`), orderBy('timestamp', 'desc'));
@@ -161,7 +174,7 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
 
     useEffect(() => {
         onSnapshot(doc(db, 'users', `${post?.useremail}`), (doc) => {
-            setAvatar(doc.data()?.information.avatar);
+            setThisUser(doc.data());
         });
     }, [post?.useremail]);
 
@@ -205,7 +218,6 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
         nav(`/personalPage/${post?.useremail}`);
     };
 
-    const nav = useNavigate();
     const handleClose = () => {
         setComment('');
         if (page === idPost) {
@@ -255,6 +267,8 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
                     ownPost={post?.useremail === user?.email ? true : false}
                     setHidePostOption={setHidePostOption}
                     followings={myFollowings}
+                    page={page}
+                    setPage={setPage}
                 />
             )}
             {hideLikedsModal === false && (
@@ -294,13 +308,16 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
                                                 }}
                                             >
                                                 <Account
-                                                    name={likedUser?.information.name}
-                                                    img={likedUser?.information.avatar}
+                                                    userAccount={likedUser}
                                                     lengthDesc={40}
                                                     followings={myFollowings}
-                                                    email={likedUser?.information.email}
                                                     follow={
-                                                        myFollowings.includes(likedUser?.information.email) ||
+                                                        (myFollowings &&
+                                                            myFollowings.find(
+                                                                (following) =>
+                                                                    following.User.information.email ===
+                                                                    likedUser?.information.email,
+                                                            )) ||
                                                         likedUser?.information.email === user?.email
                                                             ? false
                                                             : true
@@ -424,8 +441,10 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
                         )}
                     </div>
                     <div className={cx('info-wrapper')}>
-                        <div className={cx('account-wrapper')} onClick={handleClickAccount}>
-                            <Account name={post?.username} img={avatar} />
+                        <div className={cx('account-wrapper')}>
+                            <div onClick={handleClickAccount}>
+                                <Account userAccount={thisUser} />
+                            </div>
                             <i
                                 className={cx('post-option')}
                                 onClick={(e) => {

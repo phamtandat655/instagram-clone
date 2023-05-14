@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: 30px;
 
     width: 100%;
 
@@ -175,6 +176,8 @@
 
 @media (max-width: 1024px) {
     .wrapper {
+        margin-bottom: 50px;
+
         .post {
             box-sizing: content-box;
             max-width: 935px;
@@ -196,8 +199,7 @@
 @media (max-width: 740px) {
     .wrapper {
         .personalPage-top {
-            display: flex;
-            align-items: center;
+            align-items: flex-start;
 
             margin-top: 65px;
             padding: 20px 0;
@@ -256,6 +258,26 @@
                 border-top: 1px solid rgb(var(--ig-separator));
                 transform: rotate(45deg);
                 background-color: white;
+            }
+        }
+        .info-mid {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+
+            padding: 10px 0;
+            border-top: 1px solid rgb(var(--ig-separator));
+            border-bottom: 1px solid rgb(var(--ig-separator));
+
+            .info-mid-followings,
+            .info-mid-posts {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+
+                span {
+                    color: rgb(var(--ig-secondary-text));
+                }
             }
         }
         .infomation-container {

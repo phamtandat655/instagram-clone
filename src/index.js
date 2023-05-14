@@ -9,15 +9,15 @@ import { FireBaseContextProvider } from './Context/FireBaseContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <FireBaseContextProvider>
-        <AuthContextProvider>
+    <AuthContextProvider>
+        <FireBaseContextProvider>
             <React.StrictMode>
                 <BrowserRouter>
                     <App />
                 </BrowserRouter>
             </React.StrictMode>
-        </AuthContextProvider>
-    </FireBaseContextProvider>,
+        </FireBaseContextProvider>
+    </AuthContextProvider>,
 );
 
 // If you want to start measuring performance in your app, pass a function

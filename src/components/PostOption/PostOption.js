@@ -4,27 +4,32 @@ import styles from './PostOption.module.scss';
 import { db } from '../../firebase';
 import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { UserAuth } from '../../Context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
-function PostOption({ post, ownPost, setHidePostOption, followings }) {
+function PostOption({ post, ownPost, setHidePostOption, followings, page }) {
     const { user } = UserAuth();
+    const nav = useNavigate();
 
     const handleClick = async (e) => {
         if (ownPost === true) {
             if (window.confirm('Bạn có muốn xóa bài viết ?')) {
+                nav(`/${page === 'home' ? '' : page}`);
                 await deleteDoc(doc(db, 'posts', `${post?.id}`));
             }
         } else {
-            if (window.confirm('Bạn có muốn hủy theo dõi ?')) {
-                const docRef = doc(db, 'users', `${user?.email}`);
-                let newFollowings = followings.filter(
-                    (following) => following?.User?.information.email !== post?.useremail,
-                );
-                await updateDoc(docRef, {
-                    follows: [...newFollowings],
-                });
-                setHidePostOption(true);
+            if (followings.find((following) => following?.User?.information.email === post?.useremail)) {
+                if (window.confirm('Bạn có muốn hủy theo dõi ?')) {
+                    const docRef = doc(db, 'users', `${user?.email}`);
+                    let newFollowings = followings.filter(
+                        (following) => following?.User?.information.email !== post?.useremail,
+                    );
+                    await updateDoc(docRef, {
+                        follows: [...newFollowings],
+                    });
+                    setHidePostOption(true);
+                }
             }
         }
     };
@@ -38,7 +43,7 @@ function PostOption({ post, ownPost, setHidePostOption, followings }) {
             }}
         >
             <div className={cx('post-option-container')}>
-                {(followings.filter((following) => following?.User?.information.email !== post?.useremail) ||
+                {(followings.find((following) => following?.User?.information.email === post?.useremail) ||
                     ownPost === true) && (
                     <div
                         onClick={(e) => {

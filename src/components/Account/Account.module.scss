@@ -1,3 +1,6 @@
+.hide {
+    display: none !important;
+}
 .wrapper {
     display: flex;
     align-items: center;
@@ -8,6 +11,8 @@
     max-width: 315px;
 
     .account {
+        position: relative;
+
         display: flex;
         align-items: center;
 
@@ -50,10 +55,6 @@
         }
     }
 
-    .name {
-        color: black;
-        font-weight: 700;
-    }
     .desc {
         color: rgba(var(--ig-secondary-text));
     }
@@ -64,6 +65,135 @@
         color: rgb(var(--ig-primary-button));
         cursor: pointer;
     }
+
+    .account:hover .modal--hover-account {
+        display: block;
+    }
+
+    .modal--hover-account {
+        display: none;
+
+        position: absolute;
+        top: 60%;
+        left: 35%;
+
+        width: 350px;
+        min-width: 350px;
+        max-width: 350px;
+        height: 290px;
+        min-height: 290px;
+        max-height: 290px;
+
+        background-color: white;
+        border-radius: 10px;
+        border: 1px solid rgb(var(--ig-separator));
+        box-shadow: 0 0 3px rgb(var(--ig-separator));
+        z-index: 1000;
+
+        .modal--hover-account-top {
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+
+            padding: 10px;
+
+            .modal--hover-account-top__avatar {
+                width: 50px;
+                min-width: 50px;
+                height: 50px;
+                min-height: 50px;
+                margin-right: 20px;
+
+                img {
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 50%;
+
+                    object-fit: cover;
+                }
+            }
+            .modal--hover-account-top__instrodution {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+
+                height: 50px;
+
+                .name {
+                    font-size: 12px;
+                }
+                .desc {
+                    font-size: 12px;
+                }
+            }
+        }
+
+        .modal--hover-account-mid {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+
+            font-size: 14px;
+            padding: 5px 0;
+            border-top: 1px solid rgb(var(--ig-separator));
+            border-bottom: 1px solid rgb(var(--ig-separator));
+
+            .modal--hover-account-mid-followings,
+            .modal--hover-account-mid-posts {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+
+                span {
+                    color: rgb(var(--ig-secondary-text));
+                }
+            }
+        }
+        .modal--hover-account-bottom {
+            .post {
+                width: 100%;
+                height: 100%;
+
+                max-width: 935px;
+                display: flex;
+                gap: 1px;
+
+                margin-top: 20px;
+
+                &-wrapper {
+                    position: relative;
+                    width: calc(350px / 3);
+                    height: calc(350px / 3);
+
+                    cursor: pointer;
+
+                    img {
+                        width: 100%;
+                        height: 100%;
+
+                        object-fit: cover;
+                    }
+                }
+            }
+            .listPost-icon {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                padding: 1px;
+                background-color: rgba(114, 132, 159, 0.05);
+            }
+            .video {
+                width: 100%;
+                height: 100%;
+
+                object-fit: cover;
+            }
+        }
+    }
+}
+.name {
+    color: black;
+    font-weight: 700;
 }
 
 @media (max-width: 1024px) {
@@ -88,5 +218,11 @@
                 text-align: center;
             }
         }
+    }
+}
+
+@media (max-width: 740px) {
+    .account:hover .modal--hover-account {
+        display: none !important;
     }
 }

@@ -3,24 +3,22 @@ import styles from './PersonalPage.module.scss';
 
 import { useState, useEffect, Fragment } from 'react';
 import { UserAuth } from '../../Context/AuthContext';
-import { onSnapshot, doc, query, collection, orderBy, updateDoc, Timestamp } from 'firebase/firestore';
+import { onSnapshot, doc, query, collection, orderBy } from 'firebase/firestore';
 import { db } from '../../firebase';
 
 import { ListIcon, PostIcon, ThreeDotsIcon } from '../../assets/Icons/Icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import FollowsModal from '../../components/FollowsModal/FollowsModal';
+import { UseFireBase } from '../../Context/FireBaseContext';
 
 const cx = classNames.bind(styles);
 
 function PersonalPage() {
-    const [avatar, setAvatar] = useState();
-    const [name, setName] = useState();
-    const [desc, setDesc] = useState();
+    const [thisUser, setThisUser] = useState({});
     const [posts, setPosts] = useState([]);
     const [followings, setFollowings] = useState([]);
-    const [myFollowings, setMyFollowings] = useState([]);
     const [followers, setFollowers] = useState([]);
-    const [thisUser, setThisUser] = useState({});
+    const [myFollowings, setMyFollowings] = useState([]);
     const [hideFollowModal, setHideFollowModal] = useState(true);
     const [typeOfFollowModal, setTypeOfFollowModal] = useState('');
     const [indexPostObserved, setIndexPostObserved] = useState(15);
@@ -29,6 +27,7 @@ function PersonalPage() {
     const { user, logout } = UserAuth();
     const nav = useNavigate();
     const { email } = useParams();
+    const { handleFollow, handleUnfollow } = UseFireBase();
 
     useEffect(() => {
         onSnapshot(doc(db, 'users', `${user?.email}`), (doc) => {
@@ -39,9 +38,6 @@ function PersonalPage() {
             let newFollowers = [];
             snapshot.forEach((doc) => {
                 if (doc.id === email) {
-                    setAvatar(doc.data()?.information.avatar);
-                    setName(doc.data()?.information.name);
-                    setDesc(doc.data()?.information.desc);
                     setFollowings(doc.data()?.follows);
                     setThisUser(doc.data());
                 }
@@ -90,171 +86,163 @@ function PersonalPage() {
         return () => window.removeEventListener('scroll', handleScroll);
     });
 
-    const handleFollow = async (e) => {
-        const docRef = doc(db, 'users', `${user?.email}`);
-        await updateDoc(docRef, {
-            follows: [
-                ...myFollowings,
-                {
-                    User: thisUser,
-                    timestampSecond: Math.floor(Date.now() / 1000),
-                    timestamp: Timestamp.now(),
-                },
-            ],
-        });
-    };
-
-    const handleUnfollow = async (e) => {
-        const docRef = doc(db, 'users', `${user?.email}`);
-        let newFollowings = myFollowings.filter((following) => following?.User?.information.email !== email);
-        await updateDoc(docRef, {
-            follows: [...newFollowings],
-        });
-    };
-
     const handleSignOut = () => {
         nav('/');
         logout();
     };
 
-    return (
-        <div className={cx('wrapper')}>
-            {hideFollowModal === false && (
-                <FollowsModal
-                    typeOfFollowModal={typeOfFollowModal}
-                    setHideFollowModal={setHideFollowModal}
-                    followings={followings}
-                    followers={followers}
-                />
-            )}
-            <div className={cx('personalPage-top')}>
-                <div className={cx('avatar-container')}>
-                    <img alt="avatar" src={avatar} />
-                </div>
+    if (thisUser?.information) {
+        return (
+            <div className={cx('wrapper')}>
+                {hideFollowModal === false && (
+                    <FollowsModal
+                        typeOfFollowModal={typeOfFollowModal}
+                        setHideFollowModal={setHideFollowModal}
+                        followings={followings}
+                        followers={followers}
+                    />
+                )}
+                <div className={cx('personalPage-top')}>
+                    <div className={cx('avatar-container')}>
+                        <img alt="avatar" src={thisUser?.information.avatar} />
+                    </div>
 
-                <div className={cx('infomation-container')}>
-                    <div className={cx('info-top')}>
-                        <div className={cx('email-wrapper')}>
-                            <p className={cx('info-top--email')}>{email}</p>
-                            <p
-                                className={cx('info-top--icon')}
-                                onClick={(e) => {
-                                    setShowSignOut(!showSignOut);
-                                }}
-                            >
-                                {ThreeDotsIcon}
-                            </p>
-                            {showSignOut === true && (
-                                <div className={cx('info-top--signout')} onClick={handleSignOut}>
-                                    Đăng xuất
-                                </div>
-                            )}
-                        </div>
-                        {email === user?.email ? (
-                            <div
-                                className={cx('info-top--settings')}
-                                onClick={(e) => {
-                                    nav('/account/edit');
-                                }}
-                            >
-                                Chỉnh sửa trang cá nhân
-                            </div>
-                        ) : (
-                            <div>
-                                {myFollowings &&
-                                myFollowings.find((following) => following.User.information.email === email) ? (
-                                    <p className={cx('info-top--following')} onClick={handleUnfollow}>
-                                        Đang theo dõi
-                                    </p>
-                                ) : (
-                                    <p className={cx('info-top--follow')} onClick={handleFollow}>
-                                        Theo dõi
-                                    </p>
+                    <div className={cx('infomation-container')}>
+                        <div className={cx('info-top')}>
+                            <div className={cx('email-wrapper')}>
+                                <p className={cx('info-top--email')}>{email}</p>
+                                <p
+                                    className={cx('info-top--icon')}
+                                    onClick={(e) => {
+                                        setShowSignOut(!showSignOut);
+                                    }}
+                                >
+                                    {ThreeDotsIcon}
+                                </p>
+                                {showSignOut === true && (
+                                    <div className={cx('info-top--signout')} onClick={handleSignOut}>
+                                        Đăng xuất
+                                    </div>
                                 )}
                             </div>
-                        )}
-                        {/* <p className={cx('info-top--setting')}>{SettingIcon}</p> */}
+                            {email === user?.email ? (
+                                <div
+                                    className={cx('info-top--settings')}
+                                    onClick={(e) => {
+                                        nav('/account/edit');
+                                    }}
+                                >
+                                    Chỉnh sửa trang cá nhân
+                                </div>
+                            ) : (
+                                <div>
+                                    {myFollowings &&
+                                    myFollowings.find((following) => following.User.information.email === email) ? (
+                                        <p
+                                            className={cx('info-top--following')}
+                                            onClick={(e) => {
+                                                handleUnfollow(user, myFollowings, thisUser);
+                                            }}
+                                        >
+                                            Đang theo dõi
+                                        </p>
+                                    ) : (
+                                        <p
+                                            className={cx('info-top--follow')}
+                                            onClick={(e) => {
+                                                handleFollow(user, myFollowings, thisUser);
+                                            }}
+                                        >
+                                            Theo dõi
+                                        </p>
+                                    )}
+                                </div>
+                            )}
+                            {/* <p className={cx('info-top--setting')}>{SettingIcon}</p> */}
+                        </div>
+                        <div className={cx('info-mid')}>
+                            <span className={cx('info-mid-posts')}>
+                                <strong>{posts.length}</strong> <span>bài viết</span>
+                            </span>
+                            <span
+                                className={cx('info-mid-followings', {
+                                    cursorText: followers.length === 0 ? true : false,
+                                })}
+                                onClick={(e) => {
+                                    if (followers.length === 0) return;
+                                    setTypeOfFollowModal('followers');
+                                    setHideFollowModal(false);
+                                }}
+                            >
+                                <strong>{followers ? followers.length : 0}</strong> <span>người theo dõi</span>
+                            </span>
+                            <span
+                                className={cx('info-mid-followings', {
+                                    cursorText: followings.length === 0 ? true : false,
+                                })}
+                                onClick={(e) => {
+                                    if (followings.length === 0) return;
+                                    setTypeOfFollowModal('followings');
+                                    setHideFollowModal(false);
+                                }}
+                            >
+                                <strong>{followings ? followings.length : 0}</strong> <span>đang theo dõi</span>
+                            </span>
+                        </div>
+                        <div className={cx('info-bottom')}>
+                            <p className={cx('info-bottom--name')}>{thisUser?.information.name}</p>
+                            <p className={cx('info-bottom--desc')}>{thisUser?.information.desc}</p>
+                        </div>
                     </div>
-                    <div className={cx('info-mid')}>
-                        <span>
-                            <strong>{posts.length}</strong> bài viết
-                        </span>
-                        <span
-                            className={cx('info-mid-followings', {
-                                cursorText: followers.length === 0 ? true : false,
+                </div>
+                <div className={cx('personalPage-bottom')}>
+                    <p className={cx('post-container', 'active')}>
+                        <span className={cx('post-container--icon')}>{PostIcon}</span>
+                        <span>BÀI VIẾT</span>
+                    </p>
+                    <div className={cx('post')}>
+                        {posts &&
+                            posts.map((post, index) => {
+                                if (index >= indexPostObserved) {
+                                    return <Fragment key={index}></Fragment>;
+                                }
+                                if (post?.url[0].type.includes('image')) {
+                                    return (
+                                        <div
+                                            key={post?.id}
+                                            className={cx('post-wrapper')}
+                                            onClick={(e) => {
+                                                nav(`/${post?.id}`);
+                                            }}
+                                        >
+                                            {post?.url.length > 1 && <i className={cx('listPost-icon')}>{ListIcon}</i>}
+                                            <img alt="post-img" src={post?.url[0].src} />
+                                        </div>
+                                    );
+                                } else {
+                                    return (
+                                        <div
+                                            key={post?.id}
+                                            className={cx('post-wrapper')}
+                                            onClick={(e) => {
+                                                nav(`/${post?.id}`);
+                                            }}
+                                        >
+                                            {post?.url.length > 1 && <i className={cx('listPost-icon')}>{ListIcon}</i>}
+                                            <video width="290" muted className={cx('video')}>
+                                                <source src={post?.url[0].src} type="video/mp4" />
+                                            </video>
+                                        </div>
+                                    );
+                                }
                             })}
-                            onClick={(e) => {
-                                if (followers.length === 0) return;
-                                setTypeOfFollowModal('followers');
-                                setHideFollowModal(false);
-                            }}
-                        >
-                            <strong>{followers ? followers.length : 0}</strong> người theo dõi
-                        </span>
-                        <span
-                            className={cx('info-mid-followings', {
-                                cursorText: followings.length === 0 ? true : false,
-                            })}
-                            onClick={(e) => {
-                                if (followings.length === 0) return;
-                                setTypeOfFollowModal('followings');
-                                setHideFollowModal(false);
-                            }}
-                        >
-                            <strong>{followings ? followings.length : 0}</strong> đang theo dõi
-                        </span>
-                    </div>
-                    <div className={cx('info-bottom')}>
-                        <p className={cx('info-bottom--name')}>{name}</p>
-                        <p className={cx('info-bottom--desc')}>{desc}</p>
                     </div>
                 </div>
             </div>
-            <div className={cx('personalPage-bottom')}>
-                <p className={cx('post-container', 'active')}>
-                    <span className={cx('post-container--icon')}>{PostIcon}</span>
-                    <span>BÀI VIẾT</span>
-                </p>
-                <div className={cx('post')}>
-                    {posts &&
-                        posts.map((post, index) => {
-                            if (index >= indexPostObserved) {
-                                return <Fragment key={index}></Fragment>;
-                            }
-                            if (post?.url[0].type.includes('image')) {
-                                return (
-                                    <div
-                                        key={post?.id}
-                                        className={cx('post-wrapper')}
-                                        onClick={(e) => {
-                                            nav(`/${post?.id}`);
-                                        }}
-                                    >
-                                        {post?.url.length > 1 && <i className={cx('listPost-icon')}>{ListIcon}</i>}
-                                        <img alt="post-img" src={post?.url[0].src} />
-                                    </div>
-                                );
-                            } else {
-                                return (
-                                    <div
-                                        key={post?.id}
-                                        className={cx('post-wrapper')}
-                                        onClick={(e) => {
-                                            nav(`/${post?.id}`);
-                                        }}
-                                    >
-                                        {post?.url.length > 1 && <i className={cx('listPost-icon')}>{ListIcon}</i>}
-                                        <video width="290" muted className={cx('video')}>
-                                            <source src={post?.url[0].src} type="video/mp4" />
-                                        </video>
-                                    </div>
-                                );
-                            }
-                        })}
-                </div>
-            </div>
-        </div>
-    );
+        );
+    } else {
+        return <p></p>;
+    }
 }
 
 export default PersonalPage;

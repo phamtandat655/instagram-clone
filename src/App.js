@@ -3,18 +3,15 @@ import classNames from 'classnames/bind';
 import { Routes, Route, useLocation } from 'react-router-dom';
 
 import Navbar from './components/Navbar/Navbar';
-import Home from './pages/Home/Home';
-import Explore from './pages/Explore/Explore';
-import Inbox from './pages/Inbox/Inbox';
-import Reels from './pages/Reels/Reels';
-import PersonalPage from './pages/PersonalPage/PersonalPage';
 import { logo } from './assets/image/instagram';
 import { UserAuth } from './Context/AuthContext';
+import React, { lazy, useEffect, useState } from 'react';
 
-import { useEffect, useState } from 'react';
-import AccountEdit from './pages/AccountEdit/AccountEdit';
 import CreatePost from './components/CreatePost/CreatePost';
-import PostDetail from './components/PostDetail/PostDetail';
+import Loader from './components/Loader/Loader';
+
+import { publicRoutes } from './routes/routes';
+const PostDetail = lazy(() => import('./components/PostDetail/PostDetail'));
 
 const cx = classNames.bind(styles);
 
@@ -32,7 +29,7 @@ function App() {
     const [page, setPage] = useState(() => {
         return pathname.slice(1) === '' ? 'home' : pathname.slice(1);
     });
-
+    console.log(`1 : ${page}`);
     useEffect(() => {
         let path = pathname.slice(1) === '' ? 'home' : pathname.slice(1);
         if (path !== idpost) {
@@ -106,21 +103,31 @@ function App() {
                     />
                     <div className={cx('page-wrapper')}>
                         <Routes>
-                            <Route path="/*" element={<Home setPage={setPage} />} />
-                            <Route path="/explore/*" element={<Explore />} />
-                            <Route path="/videos" element={<Reels />} />
-                            <Route path="/inbox" element={<Inbox />} />
-                            <Route path="/personalPage/:email/*" element={<PersonalPage />} />
-                            <Route path="/account/edit" element={<AccountEdit />} />
+                            {publicRoutes.map((route, index) => {
+                                const Page = route.component;
+                                return (
+                                    <Route
+                                        key={index}
+                                        path={route.path}
+                                        element={
+                                            <React.Suspense fallback={<Loader />}>
+                                                <Page />
+                                            </React.Suspense>
+                                        }
+                                    />
+                                );
+                            })}
                             <Route
                                 path="/:idPost"
                                 element={
-                                    <PostDetail
-                                        page={page}
-                                        setPage={setPage}
-                                        setIdpost={setIdpost}
-                                        pathname={pathname}
-                                    />
+                                    <React.Suspense fallback={<Loader />}>
+                                        <PostDetail
+                                            page={page}
+                                            setPage={setPage}
+                                            setIdpost={setIdpost}
+                                            pathname={pathname}
+                                        />
+                                    </React.Suspense>
                                 }
                             />
                         </Routes>

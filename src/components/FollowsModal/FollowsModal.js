@@ -43,9 +43,17 @@ const FollowsModal = ({ typeOfFollowModal, setHideFollowModal, followings, follo
                                     }}
                                 >
                                     <Account
-                                        name={user?.information.name}
-                                        img={user?.information.avatar}
+                                        userAccount={user}
                                         lengthDesc={40}
+                                        follow={
+                                            followings.find(
+                                                (followingUser) =>
+                                                    followingUser?.User.information.email === user?.information.email,
+                                            )
+                                                ? false
+                                                : true
+                                        }
+                                        followings={followings}
                                     />
                                 </div>
                             ))}

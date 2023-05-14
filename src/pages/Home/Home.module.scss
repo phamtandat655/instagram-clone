@@ -2,11 +2,8 @@
     display: flex;
     margin-top: 30px;
     justify-content: center;
+    margin-bottom: 30px;
 
-    .loading {
-        text-align: center;
-        margin-top: 50px;
-    }
     .story-wrapper {
         position: relative;
     }
@@ -47,6 +44,33 @@
             margin-bottom: 15px;
         }
     }
+    .confirm-icon-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        border: 1px solid rgb(var(--ig-separator));
+        border-radius: 10px;
+        padding: 20px 10px;
+
+        .see-more-post {
+            font-size: 14px;
+            color: rgb(var(--ig-secondary-text));
+
+            span {
+                color: blue;
+                text-decoration: underline;
+                cursor: pointer;
+            }
+        }
+        img {
+            width: 90px;
+            height: 90px;
+        }
+        p {
+            font-size: 20px;
+        }
+    }
 }
 
 @media (max-width: 1024px) {
@@ -54,6 +78,7 @@
         align-items: center;
         justify-content: unset;
         flex-direction: column-reverse;
+        margin-bottom: 70px;
 
         .recommend {
             width: 430px;

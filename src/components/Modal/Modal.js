@@ -10,10 +10,12 @@ import Account from '../Account/Account';
 import Notify from '../Notify/Notify';
 import { UserAuth } from '../../Context/AuthContext';
 import useDebounce from '../../hooks/useDebounce/useDebounce';
+import { useNavigate } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
 function Modal({ setPage, page, pathname }) {
+    const nav = useNavigate();
     const [input, setInput] = useState('');
     const [users, setUsers] = useState([]);
     const [searchUsers, setSearchUsers] = useState([]);
@@ -72,7 +74,7 @@ function Modal({ setPage, page, pathname }) {
             });
             setSearchUsers(newSearchUsers);
         }
-    }, [debounced]);
+    }, [debounced, users]);
 
     const handleTimeStamp = (timestampSeconds) => {
         const postDate = new Date(timestampSeconds * 1000);
@@ -152,7 +154,14 @@ function Modal({ setPage, page, pathname }) {
                             <div className={cx('account-wrap')}>
                                 {input !== '' &&
                                     searchUsers.map((user) => (
-                                        <div className={cx('account-wrap')} key={user.email}>
+                                        <div
+                                            className={cx('account-wrap')}
+                                            key={user.email}
+                                            onClick={(e) => {
+                                                nav(`/personalPage/${user.email}`);
+                                                setPage(pathname);
+                                            }}
+                                        >
                                             <Account
                                                 name={user.name}
                                                 img={user.avatar}

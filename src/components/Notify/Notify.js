@@ -1,37 +1,13 @@
 import classNames from 'classnames/bind';
 import styles from './Notify.module.scss';
 import { useNavigate } from 'react-router-dom';
-import { db } from '../../firebase';
-import { doc, updateDoc, Timestamp } from 'firebase/firestore';
+import { UseFireBase } from '../../Context/FireBaseContext';
 
 const cx = classNames.bind(styles);
 
 function Notify({ handleClick, flUser, user, notify, time, following, followings }) {
     const nav = useNavigate();
-
-    const handleFollow = async (e) => {
-        const docRef = doc(db, 'users', `${user?.email}`);
-        await updateDoc(docRef, {
-            follows: [
-                ...followings,
-                {
-                    User: flUser,
-                    timestampSecond: Math.floor(Date.now() / 1000),
-                    timestamp: Timestamp.now(),
-                },
-            ],
-        });
-    };
-
-    const handleUnfollow = async (e) => {
-        const docRef = doc(db, 'users', `${user?.email}`);
-        let newFollowings = followings.filter(
-            (following) => following?.User?.information.email !== flUser?.information.email,
-        );
-        await updateDoc(docRef, {
-            follows: [...newFollowings],
-        });
-    };
+    const { handleFollow, handleUnfollow } = UseFireBase();
 
     const handleClickAccount = (e) => {
         nav(`/personalPage/${flUser?.information.email}`);
@@ -53,9 +29,9 @@ function Notify({ handleClick, flUser, user, notify, time, following, followings
                 className={cx('follow', { following: following })}
                 onClick={(e) => {
                     if (following === true) {
-                        handleUnfollow();
+                        handleUnfollow(user, followings, flUser);
                     } else {
-                        handleFollow();
+                        handleFollow(user, followings, flUser);
                     }
                 }}
             >

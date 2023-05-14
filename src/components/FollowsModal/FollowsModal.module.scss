@@ -45,6 +45,7 @@
 .followings-modal-item {
     margin: 10px 0;
     padding: 0 20px;
-    display: flex;
-    justify-content: left;
+}
+.followings-modal-item p {
+    margin-top: -3px;
 }
