@@ -1,0 +1,22 @@
+.wrapper {
+    position: fixed;
+    background-color: rgb(var(--ig-bg-modal));
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .showstory-container {
+        background-color: black;
+
+        width: 400px;
+        max-width: 400px;
+        height: 700px;
+        max-height: 700px;
+
+        .showstory-top {
+            display: flex;
+            align-items: center;
+        }
+    }
+}

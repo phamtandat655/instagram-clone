@@ -10,9 +10,6 @@ import {
     SaveIcon,
     SavedIcon,
     EmotionIcon,
-    VolumeIcon,
-    VolumeMutedIcon,
-    PlayIcon,
 } from '../../assets/Icons/Icons';
 import PostOption from '../PostOption/PostOption';
 import { useRef, useState, useEffect, Fragment } from 'react';
@@ -32,10 +29,11 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import '../../swiper.scss';
 import { UseFireBase } from '../../Context/FireBaseContext';
+import PostVideo from '../PostVideo/PostVideo';
 
 const cx = classNames.bind(styles);
 
-function PostDetail({ setPage, page, setIdpost, pathname }) {
+function PostDetail({ setPage, page }) {
     const { idPostList } = UseFireBase();
     const { idPost } = useParams();
     const nav = useNavigate();
@@ -46,8 +44,6 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
 
     const [saved, setSaved] = useState(false);
     const [thisUser, setThisUser] = useState({});
-    const [muted, setMuted] = useState(true);
-    const [pause, setPause] = useState(true);
 
     const [myFollowings, setMyFollowings] = useState([]);
     const [users, setUsers] = useState([]);
@@ -113,16 +109,6 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
     }
 
     useEffect(() => {
-        let path = pathname.slice(1) === '' ? 'home' : pathname.slice(1);
-        if (path === idPost) {
-            setIdpost(idPost);
-            setPage(page);
-        }
-    });
-
-    console.log(`2 : ${page}`);
-
-    useEffect(() => {
         onSnapshot(collection(db, 'users'), (snapshot) => {
             let newUsers = [];
             snapshot.forEach((doc) => {
@@ -177,24 +163,6 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
             setThisUser(doc.data());
         });
     }, [post?.useremail]);
-
-    const videoRef = useRef();
-    const handleClickVideo = (e) => {
-        if (videoRef.current.paused === false) {
-            videoRef.current.pause();
-            setPause(true);
-        } else {
-            videoRef.current.play();
-            setPause(false);
-        }
-    };
-    const handleVolume = (e) => {
-        if (videoRef.current.muted === true) {
-            setMuted(false);
-        } else {
-            setMuted(true);
-        }
-    };
 
     const inputRef = useRef();
 
@@ -268,7 +236,6 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
                     setHidePostOption={setHidePostOption}
                     followings={myFollowings}
                     page={page}
-                    setPage={setPage}
                 />
             )}
             {hideLikedsModal === false && (
@@ -349,34 +316,7 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
                                     <img src={post?.url[0].src} alt="post img" />
                                 </div>
                             ) : (
-                                <div className={cx('video-container')}>
-                                    {pause === true && (
-                                        <p
-                                            className={cx('pause-icon')}
-                                            onClick={handleClickVideo}
-                                            onDoubleClick={(e) => e.stopPropagation()}
-                                        >
-                                            {PlayIcon}
-                                        </p>
-                                    )}
-                                    <p
-                                        className={cx('volume-icon')}
-                                        onClick={handleVolume}
-                                        onDoubleClick={(e) => e.stopPropagation()}
-                                    >
-                                        {muted ? VolumeMutedIcon : VolumeIcon}
-                                    </p>
-                                    <video
-                                        ref={videoRef}
-                                        width="400"
-                                        onClick={handleClickVideo}
-                                        loop
-                                        muted={muted}
-                                        className={cx('video')}
-                                    >
-                                        <source src={post?.url[0].src} type="video/mp4" />
-                                    </video>
-                                </div>
+                                <PostVideo file={post?.url[0]} postDetail />
                             )
                         ) : (
                             <Swiper
@@ -400,37 +340,7 @@ function PostDetail({ setPage, page, setIdpost, pathname }) {
                                     } else if (file.type.includes('video')) {
                                         return (
                                             <SwiperSlide key={file.src}>
-                                                <div className={cx('video-container')}>
-                                                    <div className={cx('video-wrapper')}>
-                                                        {pause === true && (
-                                                            <p
-                                                                className={cx('pause-icon')}
-                                                                onClick={handleClickVideo}
-                                                                onDoubleClick={(e) => e.stopPropagation()}
-                                                            >
-                                                                {PlayIcon}
-                                                            </p>
-                                                        )}
-                                                        <p
-                                                            className={cx('volume-icon')}
-                                                            onClick={handleVolume}
-                                                            onDoubleClick={(e) => e.stopPropagation()}
-                                                        >
-                                                            {muted ? VolumeMutedIcon : VolumeIcon}
-                                                        </p>
-                                                        <video
-                                                            ref={videoRef}
-                                                            width="400"
-                                                            // autoPlay
-                                                            onClick={handleClickVideo}
-                                                            loop
-                                                            muted={muted}
-                                                            className={cx('video')}
-                                                        >
-                                                            <source src={file.src} type="video/mp4" />
-                                                        </video>
-                                                    </div>
-                                                </div>
+                                                <PostVideo file={file} postDetail />
                                             </SwiperSlide>
                                         );
                                     } else {

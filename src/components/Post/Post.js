@@ -10,9 +10,6 @@ import {
     SaveIcon,
     SavedIcon,
     EmotionIcon,
-    VolumeIcon,
-    VolumeMutedIcon,
-    PlayIcon,
 } from '../../assets/Icons/Icons';
 
 // Import Swiper React components
@@ -24,12 +21,13 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import '../../swiper.scss';
 
-import { useEffect, useRef, useState, Fragment } from 'react';
+import { useEffect, useState, Fragment } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { onSnapshot, doc, collection, orderBy, query, addDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { UserAuth } from '../../Context/AuthContext';
 import PostOption from '../PostOption/PostOption';
+import PostVideo from '../PostVideo/PostVideo';
 
 const cx = classNames.bind(styles);
 
@@ -37,8 +35,6 @@ function Post({ post }) {
     const [saved, setSaved] = useState(false);
     const [time, setTime] = useState('');
     const [thisUser, setThisUser] = useState({});
-    const [muted, setMuted] = useState(true);
-    const [pause, setPause] = useState(true);
     const [hideLikedsModal, setHideLikedsModal] = useState(true);
     const [hidePostOption, setHidePostOption] = useState(true);
     const [users, setUsers] = useState([]);
@@ -49,7 +45,6 @@ function Post({ post }) {
     const [comments, setComments] = useState([]);
     const [likedsList, setLikedsList] = useState([]);
 
-    const videoRef = useRef();
     const { user } = UserAuth();
     const nav = useNavigate();
 
@@ -178,50 +173,6 @@ function Post({ post }) {
         return <p>{desc}</p>;
     };
 
-    const handleClickVideo = (e) => {
-        if (videoRef.current.paused === false) {
-            videoRef.current.pause();
-            setPause(true);
-        } else {
-            videoRef.current.play();
-            setPause(false);
-        }
-    };
-    const handleVolume = (e) => {
-        if (videoRef.current.muted === true) {
-            setMuted(false);
-        } else {
-            setMuted(true);
-        }
-    };
-
-    const handleScroll = () => {
-        let isElInViewPort = (el) => {
-            let rect = el.getBoundingClientRect();
-            let viewHeight = window.innerHeight || document.documentElement.clientHeight;
-
-            return (
-                (rect.top <= 200 && rect.bottom >= 200) ||
-                (rect.bottom >= viewHeight - 200 && rect.top <= viewHeight - 200) ||
-                (rect.top >= 200 && rect.bottom <= viewHeight - 200)
-            );
-        };
-        if (isElInViewPort(videoRef.current)) {
-            videoRef.current.play();
-            setPause(false);
-        } else {
-            videoRef.current.pause();
-            setPause(true);
-        }
-    };
-    useEffect(() => {
-        if (post?.url[0]?.type === 'video' && pause === true) {
-            window.addEventListener('scroll', handleScroll);
-
-            return () => window.removeEventListener('scroll', handleScroll);
-        }
-    }, [post?.url, pause]);
-
     const handleClickAccount = (e) => {
         nav(`/personalPage/${post?.useremail}`);
     };
@@ -324,6 +275,7 @@ function Post({ post }) {
                     ownPost={post?.useremail === user?.email ? true : false}
                     setHidePostOption={setHidePostOption}
                     followings={myFollowings}
+                    page="home"
                 />
             )}
             <div className={cx('user')}>
@@ -346,35 +298,7 @@ function Post({ post }) {
                             <img src={post?.url[0].src} alt="post img" onDoubleClick={handleDoubleClickLike} />
                         </div>
                     ) : (
-                        <div className={cx('video-container')}>
-                            {pause === true && (
-                                <p
-                                    className={cx('pause-icon')}
-                                    onClick={handleClickVideo}
-                                    onDoubleClick={(e) => e.stopPropagation()}
-                                >
-                                    {PlayIcon}
-                                </p>
-                            )}
-                            <p
-                                className={cx('volume-icon')}
-                                onClick={handleVolume}
-                                onDoubleClick={(e) => e.stopPropagation()}
-                            >
-                                {muted ? VolumeMutedIcon : VolumeIcon}
-                            </p>
-                            <video
-                                ref={videoRef}
-                                width="400"
-                                // autoPlay
-                                onClick={handleClickVideo}
-                                loop
-                                muted={muted}
-                                className={cx('video')}
-                            >
-                                <source src={post?.url[0].src} type="video/mp4" />
-                            </video>
-                        </div>
+                        <PostVideo post={post} file={post?.url[0]} />
                     )
                 ) : (
                     <Swiper
@@ -394,37 +318,7 @@ function Post({ post }) {
                             } else if (file.type.includes('video')) {
                                 return (
                                     <SwiperSlide key={file.src}>
-                                        <div className={cx('video-container')}>
-                                            <div className={cx('video-wrapper')}>
-                                                {pause === true && (
-                                                    <p
-                                                        className={cx('pause-icon')}
-                                                        onClick={handleClickVideo}
-                                                        onDoubleClick={(e) => e.stopPropagation()}
-                                                    >
-                                                        {PlayIcon}
-                                                    </p>
-                                                )}
-                                                <p
-                                                    className={cx('volume-icon')}
-                                                    onClick={handleVolume}
-                                                    onDoubleClick={(e) => e.stopPropagation()}
-                                                >
-                                                    {muted ? VolumeMutedIcon : VolumeIcon}
-                                                </p>
-                                                <video
-                                                    ref={videoRef}
-                                                    width="400"
-                                                    // autoPlay
-                                                    onClick={handleClickVideo}
-                                                    loop
-                                                    muted={muted}
-                                                    className={cx('video')}
-                                                >
-                                                    <source src={file.src} type="video/mp4" />
-                                                </video>
-                                            </div>
-                                        </div>
+                                        <PostVideo post={post} file={file} />
                                     </SwiperSlide>
                                 );
                             } else {

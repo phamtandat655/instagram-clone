@@ -51,6 +51,7 @@ function CreatePost({ page, setPage, pathname }) {
             const upload = {
                 type: file.type,
                 src: URL.createObjectURL(file),
+                name: file.name,
             };
             return upload;
         });
@@ -107,6 +108,7 @@ function CreatePost({ page, setPage, pathname }) {
                     });
                 },
             );
+            return file;
         });
     };
 
@@ -161,13 +163,21 @@ function CreatePost({ page, setPage, pathname }) {
                     });
                 },
             );
+            return file;
         });
     };
 
     const handleDropImg = (e) => {
         e.preventDefault();
-        const file = e.dataTransfer.files[0];
-        showFile(file);
+
+        const files = e.dataTransfer.files;
+        if (files) {
+            setWaitLoad(false);
+        }
+        setFiles((prev) => prev.concat(Array.from(files)));
+        for (let file of files) {
+            showFile(file);
+        }
     };
 
     const showFile = (file) => {
@@ -180,6 +190,7 @@ function CreatePost({ page, setPage, pathname }) {
                 const fileUrl = {
                     src: fileReader.result,
                     type: fileType,
+                    name: file.name,
                 };
                 const fileUrlArr = [fileUrl];
                 setUploadArray((previousImages) => previousImages.concat(fileUrlArr));
@@ -190,16 +201,16 @@ function CreatePost({ page, setPage, pathname }) {
             const fileUrl = {
                 src: video,
                 type: fileType,
+                name: file.name,
             };
             setUploadArray((previous) => previous.concat(fileUrl));
-        } else {
-            alert('Day khong phai anh , video !');
         }
     };
 
-    function deleteHandler(image) {
-        setUploadArray(uploadArray.filter((e) => e.src !== image));
-        URL.revokeObjectURL(image);
+    function deleteHandler(file, src) {
+        setUploadArray(uploadArray.filter((e) => e.src !== src));
+        setFiles(files.filter((f) => f.name !== file.name));
+        URL.revokeObjectURL(src);
 
         if (uploadArray.length <= 1) {
             setWaitLoad(true);
@@ -240,11 +251,18 @@ function CreatePost({ page, setPage, pathname }) {
                         <Account name={name} img={avatar} />
                         <div>
                             <button
+                                // onClick={handleUploadToReels}
+                                className={cx('reels-btn', { wait: waitLoad })}
+                                // disabled={waitLoad}
+                            >
+                                Story
+                            </button>
+                            <button
                                 onClick={handleUploadToReels}
                                 className={cx('reels-btn', { wait: waitLoad })}
                                 disabled={waitLoad}
                             >
-                                Upload to Reels
+                                Reels
                             </button>
                             <button onClick={handleUpload} className={cx({ wait: waitLoad })} disabled={waitLoad}>
                                 Chia sẻ
@@ -283,7 +301,7 @@ function CreatePost({ page, setPage, pathname }) {
                                                 </video>
                                                 <button
                                                     className={cx('btn-delete')}
-                                                    onClick={() => deleteHandler(file.src)}
+                                                    onClick={() => deleteHandler(file, file.src)}
                                                 >
                                                     delete
                                                 </button>
@@ -295,7 +313,7 @@ function CreatePost({ page, setPage, pathname }) {
                                                 <img alt="upload" src={file.src} />
                                                 <button
                                                     className={cx('btn-delete')}
-                                                    onClick={() => deleteHandler(file.src)}
+                                                    onClick={() => deleteHandler(file, file.src)}
                                                 >
                                                     delete
                                                 </button>

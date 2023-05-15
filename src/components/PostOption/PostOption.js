@@ -6,17 +6,34 @@ import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { UserAuth } from '../../Context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
+import { getStorage, ref, deleteObject } from 'firebase/storage';
+
 const cx = classNames.bind(styles);
 
 function PostOption({ post, ownPost, setHidePostOption, followings, page }) {
     const { user } = UserAuth();
     const nav = useNavigate();
+    const storage = getStorage();
 
     const handleClick = async (e) => {
         if (ownPost === true) {
             if (window.confirm('Bạn có muốn xóa bài viết ?')) {
                 nav(`/${page === 'home' ? '' : page}`);
                 await deleteDoc(doc(db, 'posts', `${post?.id}`));
+                post?.url.forEach((url) => {
+                    // Create a reference to the file to delete
+                    const desertRef = ref(storage, `files/${url.src.split('files%2F')[1].split('?alt')[0]}`);
+                    // Delete the file
+                    deleteObject(desertRef)
+                        .then(() => {
+                            // File deleted successfully
+                            // console.log('xoa files thanh cong !');
+                        })
+                        .catch((error) => {
+                            // Uh-oh, an error occurred!
+                            console.log(error);
+                        });
+                });
             }
         } else {
             if (followings.find((following) => following?.User?.information.email === post?.useremail)) {

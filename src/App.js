@@ -11,13 +11,14 @@ import CreatePost from './components/CreatePost/CreatePost';
 import Loader from './components/Loader/Loader';
 
 import { publicRoutes } from './routes/routes';
+import { UseFireBase } from './Context/FireBaseContext';
 const PostDetail = lazy(() => import('./components/PostDetail/PostDetail'));
 
 const cx = classNames.bind(styles);
 
 function App() {
+    const { idPostList } = UseFireBase();
     let { pathname } = useLocation();
-    const [idpost, setIdpost] = useState('');
     const [clickSeeMore, setClickSeeMore] = useState(false);
     const [form, setForm] = useState('login');
     const [error, setError] = useState('');
@@ -29,17 +30,17 @@ function App() {
     const [page, setPage] = useState(() => {
         return pathname.slice(1) === '' ? 'home' : pathname.slice(1);
     });
-    console.log(`1 : ${page}`);
+
     useEffect(() => {
         let path = pathname.slice(1) === '' ? 'home' : pathname.slice(1);
-        if (path !== idpost) {
+        if (!idPostList.includes(path)) {
             if (page === 'search' || page === 'notify' || page === 'create') {
                 return;
             } else {
                 setPage(path);
             }
         }
-    }, [page, pathname, idpost]);
+    }, [page, pathname, idPostList]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -121,12 +122,7 @@ function App() {
                                 path="/:idPost"
                                 element={
                                     <React.Suspense fallback={<Loader />}>
-                                        <PostDetail
-                                            page={page}
-                                            setPage={setPage}
-                                            setIdpost={setIdpost}
-                                            pathname={pathname}
-                                        />
+                                        <PostDetail page={page} setPage={setPage} />
                                     </React.Suspense>
                                 }
                             />
