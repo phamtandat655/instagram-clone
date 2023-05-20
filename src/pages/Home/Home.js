@@ -15,37 +15,28 @@ import Account from '../../components/Account/Account';
 import { useNavigate } from 'react-router-dom';
 import React, { Fragment, useEffect, useState } from 'react';
 import { UserAuth } from '../../Context/AuthContext';
-import { onSnapshot, collection, doc } from 'firebase/firestore';
+import { onSnapshot, doc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import confirmIcon from '../../assets/image/illo-confirm-refresh-light.png';
+import ShowStory from '../../components/ShowStory/ShowStory';
 
 const cx = classNames.bind(styles);
 
 function Home() {
-    const { posts } = UseFireBase();
+    const { posts, stories } = UseFireBase();
     const nav = useNavigate();
     const [followings, setFollowings] = useState([]);
-    const [users, setUsers] = useState([]);
     const [seeAll, setSeeAll] = useState(false);
     const [indexPostObserved, setIndexPostObserved] = useState(8);
     const [allFollowedPost, setAllFollowedPost] = useState([]);
     const { user } = UserAuth();
+    const { users } = UseFireBase();
+    const [userEmailStory, setUserEmailStory] = useState('');
+    const [showStory, setShowStory] = useState(false);
 
     useEffect(() => {
         onSnapshot(doc(db, 'users', `${user?.email}`), (doc) => {
             setFollowings(doc.data()?.follows);
-        });
-
-        onSnapshot(collection(db, 'users'), (snapshot) => {
-            let newUsers = [];
-            snapshot.forEach((doc) => {
-                newUsers.push({
-                    id: doc.id,
-                    ...doc.data(),
-                });
-            });
-            newUsers = newUsers.filter((newuser) => newuser?.id !== user?.email);
-            setUsers(newUsers);
         });
     }, [user?.email]);
 
@@ -78,10 +69,49 @@ function Home() {
         return () => window.removeEventListener('scroll', handleScroll);
     });
 
+    // tìm list user đăng story (và user không bị trùng lặp)
+    let uniqueUser = [
+        ...new Set(
+            stories.map((story) => {
+                return story.useremail;
+            }),
+        ),
+    ];
+
+    // tìm những cái story chứa thông tin của từng người ở trên (và thông tin của từng user không bị trùng lặp)
+    let userUploadStory = [];
+    for (let i of stories) {
+        // nếu thông tin user chưa có trong mảng thì thêm còn có rồi thì ko thêm lại
+        if (!userUploadStory.find((story) => uniqueUser.includes(story.useremail) && story.useremail === i.useremail)) {
+            userUploadStory = userUploadStory.concat(i);
+        }
+        if (userUploadStory.length > 0) {
+            // lấy ra những story của những người đang theo dõi mình hoặc của chính mình
+            userUploadStory = [
+                ...userUploadStory.filter((userUpload) => {
+                    return followings.find(
+                        (fl) =>
+                            fl?.User.information.email === userUpload?.useremail ||
+                            user?.email === userUpload?.useremail,
+                    );
+                }),
+            ];
+        }
+    }
+
     return (
         <div className={cx('wrapper')}>
+            {userEmailStory && (
+                <ShowStory
+                    showStory={showStory}
+                    setShowStory={setShowStory}
+                    usersStory={stories.filter((story) => {
+                        return story.useremail === userEmailStory;
+                    })}
+                />
+            )}
             <div className={cx('newsfeed')}>
-                <div className={cx('story-wrapper')}>
+                <div className={cx('story-wrapper', { hide: userUploadStory <= 0 })}>
                     <Swiper
                         spaceBetween={30}
                         modules={[Navigation]}
@@ -89,66 +119,19 @@ function Home() {
                         navigation
                         className={cx('story-container')}
                     >
-                        <SwiperSlide>
-                            <Story
-                                name="User Name123456789"
-                                img="http://phunuvietnam.mediacdn.vn/media/news/33abffcedac43a654ac7f501856bf700/anh-profile-tiet-lo-g-ve-ban-1.jpg"
-                            />
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <Story
-                                name="User Name123456789"
-                                img="http://phunuvietnam.mediacdn.vn/media/news/33abffcedac43a654ac7f501856bf700/anh-profile-tiet-lo-g-ve-ban-1.jpg"
-                            />
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <Story
-                                name="User Name123456789"
-                                img="http://phunuvietnam.mediacdn.vn/media/news/33abffcedac43a654ac7f501856bf700/anh-profile-tiet-lo-g-ve-ban-1.jpg"
-                            />
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <Story
-                                name="User Name123456789"
-                                img="http://phunuvietnam.mediacdn.vn/media/news/33abffcedac43a654ac7f501856bf700/anh-profile-tiet-lo-g-ve-ban-1.jpg"
-                            />
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <Story
-                                name="User Name123456789"
-                                img="http://phunuvietnam.mediacdn.vn/media/news/33abffcedac43a654ac7f501856bf700/anh-profile-tiet-lo-g-ve-ban-1.jpg"
-                            />
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <Story
-                                name="User Name123456789"
-                                img="http://phunuvietnam.mediacdn.vn/media/news/33abffcedac43a654ac7f501856bf700/anh-profile-tiet-lo-g-ve-ban-1.jpg"
-                            />
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <Story
-                                name="User Name123456789"
-                                img="http://phunuvietnam.mediacdn.vn/media/news/33abffcedac43a654ac7f501856bf700/anh-profile-tiet-lo-g-ve-ban-1.jpg"
-                            />
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <Story
-                                name="User Name123456789"
-                                img="http://phunuvietnam.mediacdn.vn/media/news/33abffcedac43a654ac7f501856bf700/anh-profile-tiet-lo-g-ve-ban-1.jpg"
-                            />
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <Story
-                                name="User Name123456789"
-                                img="http://phunuvietnam.mediacdn.vn/media/news/33abffcedac43a654ac7f501856bf700/anh-profile-tiet-lo-g-ve-ban-1.jpg"
-                            />
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <Story
-                                name="User Name123456789"
-                                img="http://phunuvietnam.mediacdn.vn/media/news/33abffcedac43a654ac7f501856bf700/anh-profile-tiet-lo-g-ve-ban-1.jpg"
-                            />
-                        </SwiperSlide>
+                        {userUploadStory.map((userUpload, index) => {
+                            return (
+                                <SwiperSlide key={index}>
+                                    <Story
+                                        name={userUpload?.username}
+                                        email={userUpload?.useremail}
+                                        img={userUpload?.useravatar}
+                                        setShowStory={setShowStory}
+                                        setUserEmailStory={setUserEmailStory}
+                                    />
+                                </SwiperSlide>
+                            );
+                        })}
                     </Swiper>
                 </div>
                 <div className={cx('post-container')}>

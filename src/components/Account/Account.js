@@ -10,7 +10,7 @@ import { ListIcon } from '../../assets/Icons/Icons';
 
 const cx = classNames.bind(styles);
 
-function Account({ userAccount, name, img, note, lengthDesc, follow, story, followings, recommend }) {
+function Account({ userAccount, name, img, time = '', note, lengthDesc, follow, story, followings, recommend }) {
     const { user } = UserAuth();
     const { handleFollow } = UseFireBase();
 
@@ -68,7 +68,7 @@ function Account({ userAccount, name, img, note, lengthDesc, follow, story, foll
 
     const handleLengthOfWords = (words, length = 22) => {
         if (words.length >= length) {
-            return words.slice(0, length) + '...';
+            return words.slice(0, length) + '...' + time;
         }
         return words;
     };

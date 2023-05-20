@@ -1,51 +1,75 @@
 import classNames from 'classnames/bind';
 import styles from './ShowStory.module.scss';
 import Account from '../Account/Account';
-import { HeartIcon, PlayIcon, ThreeDotsIcon, VolumeIcon } from '../../assets/Icons/Icons';
-import { PostIcon } from '../../assets/Icons/Icons';
+import { PlayStoryIcon, PauseStoryIcon, ThreeDotsStoryIcon } from '../../assets/Icons/Icons';
+import { useState } from 'react';
+import SwipperStory from '../SwipperStory/SwipperStory';
 
 const cx = classNames.bind(styles);
 
-function ShowStory() {
+function ShowStory({ showStory, setShowStory, usersStory }) {
+    const [inputValue, setInputValue] = useState('');
+    const [pause, setPause] = useState(false);
+
     return (
-        <div className={cx('wrapper')}>
-            <div className={cx('showstory-container')}>
+        <div className={cx('wrapper', { hide: !showStory })} onClick={(e) => setShowStory(false)}>
+            <i
+                className={cx('icon-close')}
+                onClick={(e) => {
+                    setShowStory(false);
+                }}
+            >
+                X
+            </i>
+            <div
+                className={cx('showstory-container', { blur: inputValue.length > 0 })}
+                onClick={(e) => e.stopPropagation()}
+            >
                 <div className={cx('showstory-top')}>
-                    <div className={cx('showstory-top--info')}>
+                    <div className={cx('showstory-top-info')}>
                         <Account
                             name="Pham Tan Dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F12523558_530604130450323_583093592_n.jpg?alt=media&token=3879d764-d222-479c-8f75-9adf7d503a9e"
+                            img="https://media-cdn-v2.laodong.vn/Storage/NewsPortal/2022/1/18/996173/Style_61E4d4fee07cd.jpg"
                         />
-                        <p className={cx('showstory-top--info__time')}>18 gio truoc</p>
                     </div>
-                    <div className={cx('showstory-top--option')}>
-                        <p>
-                            <PlayIcon />
+                    <div className={cx('showstory-top-option')}>
+                        <p
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setPause(!pause);
+                            }}
+                        >
+                            {pause === false ? PauseStoryIcon : PlayStoryIcon}
                         </p>
-                        <p>
-                            <VolumeIcon />
-                        </p>
-                        <p>
-                            <ThreeDotsIcon />
-                        </p>
+                        <p>{ThreeDotsStoryIcon}</p>
                     </div>
                 </div>
                 <div className={cx('showstory-mid')}>
-                    <img
-                        alt="story"
-                        src="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F12523558_530604130450323_583093592_n.jpg?alt=media&token=3879d764-d222-479c-8f75-9adf7d503a9e"
-                    />
+                    {usersStory && (
+                        <SwipperStory
+                            usersStory={usersStory}
+                            showStory={showStory}
+                            pause={pause}
+                            setShowStory={setShowStory}
+                        />
+                    )}
                 </div>
                 <div className={cx('showstory-bottom')}>
                     <div>
-                        <input type="text" placeholder={`Trả lời...`} />
+                        <input
+                            className={cx('reply')}
+                            type="text"
+                            placeholder={`Trả lời ${123}...`}
+                            onChange={(e) => setInputValue(e.target.value)}
+                            value={inputValue}
+                        />
                     </div>
-                    <p>
-                        <HeartIcon />
-                    </p>
-                    <p>
-                        <PostIcon />
-                    </p>
+                    <button
+                        disabled={inputValue.length > 0 ? true : false}
+                        className={cx({ 'color-white': inputValue.length > 0 })}
+                    >
+                        Gửi
+                    </button>
                 </div>
             </div>
         </div>

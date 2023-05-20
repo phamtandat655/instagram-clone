@@ -28,6 +28,7 @@ import { db } from '../../firebase';
 import { UserAuth } from '../../Context/AuthContext';
 import PostOption from '../PostOption/PostOption';
 import PostVideo from '../PostVideo/PostVideo';
+import { UseFireBase } from '../../Context/FireBaseContext';
 
 const cx = classNames.bind(styles);
 
@@ -37,7 +38,7 @@ function Post({ post }) {
     const [thisUser, setThisUser] = useState({});
     const [hideLikedsModal, setHideLikedsModal] = useState(true);
     const [hidePostOption, setHidePostOption] = useState(true);
-    const [users, setUsers] = useState([]);
+    // const [users, setUsers] = useState([]);
     const [myFollowings, setMyFollowings] = useState([]);
 
     const [username, setUsername] = useState('');
@@ -46,6 +47,7 @@ function Post({ post }) {
     const [likedsList, setLikedsList] = useState([]);
 
     const { user } = UserAuth();
+    const { getUserByEmail, users } = UseFireBase();
     const nav = useNavigate();
 
     useEffect(() => {
@@ -100,25 +102,16 @@ function Post({ post }) {
     }
 
     useEffect(() => {
-        onSnapshot(doc(db, 'users', `${post?.useremail}`), (doc) => {
-            setThisUser(doc.data());
-        });
-    }, [post?.useremail]);
+        setThisUser(getUserByEmail(`${post?.useremail}`));
+    }, [post?.useremail, getUserByEmail]);
 
     useEffect(() => {
         onSnapshot(doc(db, 'users', `${user?.email}`), (doc) => {
             setMyFollowings(doc.data()?.follows);
         });
 
-        onSnapshot(collection(db, 'users'), (snapshot) => {
-            let newUsers = [];
-            snapshot.forEach((doc) => {
-                newUsers.push({
-                    id: doc.id,
-                    ...doc.data(),
-                });
-            });
-            setUsers(newUsers);
+        const unsubcribe2 = onSnapshot(doc(db, 'users', `${user?.email}`), (doc) => {
+            setUsername(doc.data()?.information.name);
         });
 
         const q = query(collection(db, `posts/${post?.id}/comments`), orderBy('timestamp', 'desc'));
@@ -131,10 +124,6 @@ function Post({ post }) {
                 });
             });
             setComments(newComments);
-        });
-
-        const unsubcribe2 = onSnapshot(doc(db, 'users', `${user?.email}`), (doc) => {
-            setUsername(doc.data()?.information.name);
         });
 
         const unsubcribe3 = onSnapshot(doc(db, 'posts', `${post?.id}`), (doc) => {

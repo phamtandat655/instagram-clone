@@ -46,13 +46,13 @@ function PostDetail({ setPage, page }) {
     const [thisUser, setThisUser] = useState({});
 
     const [myFollowings, setMyFollowings] = useState([]);
-    const [users, setUsers] = useState([]);
     const [hideLikedsModal, setHideLikedsModal] = useState(true);
     const [likedsList, setLikedsList] = useState([]);
     const [username, setUsername] = useState('');
     const [comment, setComment] = useState('');
     const [comments, setComments] = useState([]);
     const { user } = UserAuth();
+    const { users } = UseFireBase();
     const [post, setPost] = useState({});
     const [time, setTime] = useState('');
     const [hidePostOption, setHidePostOption] = useState(true);
@@ -109,17 +109,6 @@ function PostDetail({ setPage, page }) {
     }
 
     useEffect(() => {
-        onSnapshot(collection(db, 'users'), (snapshot) => {
-            let newUsers = [];
-            snapshot.forEach((doc) => {
-                newUsers.push({
-                    id: doc.id,
-                    ...doc.data(),
-                });
-            });
-            setUsers(newUsers);
-        });
-
         onSnapshot(doc(db, 'users', `${user?.email}`), (doc) => {
             setMyFollowings(doc.data()?.follows);
         });

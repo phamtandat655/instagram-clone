@@ -167,6 +167,59 @@ function CreatePost({ page, setPage, pathname }) {
         });
     };
 
+    const handleUploadToStory = async (e) => {
+        setWaitLoad(true);
+        const arrUrls = [];
+
+        if (textValue.length > 0) {
+            alert('Story không có caption !');
+            setWaitLoad(false);
+            return;
+        }
+
+        files.map((file) => {
+            const storageRef = ref(storage, `files/${file.name}`);
+            const uploadTask = uploadBytesResumable(storageRef, file);
+
+            uploadTask.on(
+                'state_changed',
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    setProgress(progress);
+
+                    switch (snapshot.state) {
+                        case 'paused':
+                            break;
+                        case 'running':
+                            break;
+                        default:
+                            break;
+                    }
+                },
+                (error) => {
+                    alert(error.message);
+                },
+                async () => {
+                    await getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                        arrUrls.push({ src: downloadURL, type: file.type });
+                        if (arrUrls.length === uploadArray.length) {
+                            addDoc(collection(db, 'stories'), {
+                                timestampSecond: Math.floor(Date.now() / 1000),
+                                timestamp: serverTimestamp(),
+                                url: arrUrls,
+                                username: name,
+                                useremail: user?.email,
+                                useravatar: avatar,
+                            });
+                            handleClose();
+                        }
+                    });
+                },
+            );
+            return file;
+        });
+    };
+
     const handleDropImg = (e) => {
         e.preventDefault();
 
@@ -251,9 +304,9 @@ function CreatePost({ page, setPage, pathname }) {
                         <Account name={name} img={avatar} />
                         <div>
                             <button
-                                // onClick={handleUploadToReels}
+                                onClick={handleUploadToStory}
                                 className={cx('reels-btn', { wait: waitLoad })}
-                                // disabled={waitLoad}
+                                disabled={waitLoad}
                             >
                                 Story
                             </button>

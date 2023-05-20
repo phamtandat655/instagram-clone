@@ -177,7 +177,7 @@ function Modal({ setPage, page, pathname }) {
                     <div className={cx('notify-modal')}>
                         <h3 className={cx('notify__header')}>Thông báo</h3>
                         <div className={cx('notify-container')}>
-                            {followers &&
+                            {followers && followers.length > 0 ? (
                                 followers.map((flUser, index) => {
                                     let timestampSecond = flUser.follows.find(
                                         (flUser) => flUser?.User.information.email === user?.email,
@@ -205,7 +205,10 @@ function Modal({ setPage, page, pathname }) {
                                             followings={followings}
                                         />
                                     );
-                                })}
+                                })
+                            ) : (
+                                <p>Hiện không có thông báo nào !</p>
+                            )}
                         </div>
                     </div>
                 )}

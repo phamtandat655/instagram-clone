@@ -4,7 +4,7 @@ import styles from './Story.module.scss';
 
 const cx = classNames.bind(styles);
 
-function Story({ name, img }) {
+function Story({ name, img, email, setShowStory, setUserEmailStory }) {
     const [seen, setSeen] = useState(false);
 
     const handleFixLengthOfName = (name) => {
@@ -19,6 +19,8 @@ function Story({ name, img }) {
             className={cx('wrapper')}
             onClick={() => {
                 setSeen(true);
+                setShowStory(true);
+                setUserEmailStory(email);
             }}
         >
             {/* neu da seen thi them class 'seen' vao */}

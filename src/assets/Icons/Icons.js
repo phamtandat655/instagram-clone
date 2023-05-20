@@ -717,3 +717,116 @@ export const ListIcon = (
         <path d="M34.8 29.7V11c0-2.9-2.3-5.2-5.2-5.2H11c-2.9 0-5.2 2.3-5.2 5.2v18.7c0 2.9 2.3 5.2 5.2 5.2h18.7c2.8-.1 5.1-2.4 5.1-5.2zM39.2 15v16.1c0 4.5-3.7 8.2-8.2 8.2H14.9c-.6 0-.9.7-.5 1.1 1 1.1 2.4 1.8 4.1 1.8h13.4c5.7 0 10.3-4.6 10.3-10.3V18.5c0-1.6-.7-3.1-1.8-4.1-.5-.4-1.2 0-1.2.6z"></path>
     </svg>
 );
+
+export const PlayStoryIcon = (
+    <svg
+        aria-label="Phát"
+        className="x1lliihq x1n2onr6"
+        color="rgb(255, 255, 255)"
+        fill="rgb(255, 255, 255)"
+        height="16"
+        role="img"
+        viewBox="0 0 24 24"
+        width="16"
+    >
+        <title>Phát</title>
+        <path d="M5.888 22.5a3.46 3.46 0 0 1-1.721-.46l-.003-.002a3.451 3.451 0 0 1-1.72-2.982V4.943a3.445 3.445 0 0 1 5.163-2.987l12.226 7.059a3.444 3.444 0 0 1-.001 5.967l-12.22 7.056a3.462 3.462 0 0 1-1.724.462Z"></path>
+    </svg>
+);
+
+export const PauseStoryIcon = (
+    <svg
+        aria-label="Tạm dừng"
+        className="x1lliihq x1n2onr6"
+        color="rgb(255, 255, 255)"
+        fill="rgb(255, 255, 255)"
+        height="16"
+        role="img"
+        viewBox="0 0 48 48"
+        width="16"
+    >
+        <title>Tạm dừng</title>
+        <path d="M15 1c-3.3 0-6 1.3-6 3v40c0 1.7 2.7 3 6 3s6-1.3 6-3V4c0-1.7-2.7-3-6-3zm18 0c-3.3 0-6 1.3-6 3v40c0 1.7 2.7 3 6 3s6-1.3 6-3V4c0-1.7-2.7-3-6-3z"></path>
+    </svg>
+);
+
+export const VolumeStoryIcon = (
+    <svg
+        aria-label="Đang phát âm thanh"
+        className="x1lliihq x1n2onr6"
+        color="rgb(255, 255, 255)"
+        fill="rgb(255, 255, 255)"
+        height="16"
+        role="img"
+        viewBox="0 0 24 24"
+        width="16"
+    >
+        <title>Đang phát âm thanh</title>
+        <path d="M16.636 7.028a1.5 1.5 0 1 0-2.395 1.807 5.365 5.365 0 0 1 1.103 3.17 5.378 5.378 0 0 1-1.105 3.176 1.5 1.5 0 1 0 2.395 1.806 8.396 8.396 0 0 0 1.71-4.981 8.39 8.39 0 0 0-1.708-4.978Zm3.73-2.332A1.5 1.5 0 1 0 18.04 6.59 8.823 8.823 0 0 1 20 12.007a8.798 8.798 0 0 1-1.96 5.415 1.5 1.5 0 0 0 2.326 1.894 11.672 11.672 0 0 0 2.635-7.31 11.682 11.682 0 0 0-2.635-7.31Zm-8.963-3.613a1.001 1.001 0 0 0-1.082.187L5.265 6H2a1 1 0 0 0-1 1v10.003a1 1 0 0 0 1 1h3.265l5.01 4.682.02.021a1 1 0 0 0 1.704-.814L12.005 2a1 1 0 0 0-.602-.917Z"></path>
+    </svg>
+);
+
+export const VolumeMutedStoryIcon = (
+    <svg
+        aria-label="Video không có âm thanh."
+        className="x1lliihq x1n2onr6"
+        color="rgb(255, 255, 255)"
+        fill="rgb(255, 255, 255)"
+        height="16"
+        role="img"
+        viewBox="0 0 24 24"
+        width="16"
+    >
+        <title>Video không có âm thanh.</title>
+        <path d="M11.403 1.083a1.001 1.001 0 0 0-1.082.187L5.265 6H2a1 1 0 0 0-1 1v10.003a1 1 0 0 0 1 1h3.265l5.01 4.682.02.021a1 1 0 0 0 1.704-.814L12.005 2a1 1 0 0 0-.602-.917ZM20.704 12l1.94-1.94a1.5 1.5 0 0 0-2.122-2.12l-1.939 1.939-1.94-1.94a1.5 1.5 0 1 0-2.12 2.122L16.461 12l-1.94 1.94a1.5 1.5 0 1 0 2.122 2.12l1.939-1.939 1.94 1.94a1.5 1.5 0 0 0 2.12-2.122Z"></path>
+    </svg>
+);
+
+export const ThreeDotsStoryIcon = (
+    <svg
+        aria-label="Menu"
+        className="x1lliihq x1n2onr6"
+        color="rgb(255, 255, 255)"
+        fill="rgb(255, 255, 255)"
+        height="24"
+        role="img"
+        viewBox="0 0 24 24"
+        width="24"
+    >
+        <title>Menu</title>
+        <circle cx="12" cy="12" r="2.75"></circle>
+        <circle cx="19.5" cy="12" r="2.75"></circle>
+        <circle cx="4.5" cy="12" r="2.75"></circle>
+    </svg>
+);
+
+export const ImageIcon = (
+    <svg
+        aria-label="Thêm ảnh hoặc video"
+        className="x1lliihq x1n2onr6"
+        color="rgb(0, 0, 0)"
+        fill="rgb(0, 0, 0)"
+        height="24"
+        role="img"
+        viewBox="0 0 24 24"
+        width="24"
+    >
+        <title>Thêm ảnh hoặc video</title>
+        <path d="M6.549 5.013A1.557 1.557 0 1 0 8.106 6.57a1.557 1.557 0 0 0-1.557-1.557Z" fillRule="evenodd"></path>
+        <path
+            d="m2 18.605 3.901-3.9a.908.908 0 0 1 1.284 0l2.807 2.806a.908.908 0 0 0 1.283 0l5.534-5.534a.908.908 0 0 1 1.283 0l3.905 3.905"
+            fill="none"
+            stroke="currentColor"
+            strokeLinejoin="round"
+            strokeWidth="2"
+        ></path>
+        <path
+            d="M18.44 2.004A3.56 3.56 0 0 1 22 5.564h0v12.873a3.56 3.56 0 0 1-3.56 3.56H5.568a3.56 3.56 0 0 1-3.56-3.56V5.563a3.56 3.56 0 0 1 3.56-3.56Z"
+            fill="none"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+        ></path>
+    </svg>
+);

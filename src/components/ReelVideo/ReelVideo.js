@@ -7,6 +7,7 @@ import Comment from '../Comment/Comment';
 import { db } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
+import { UseFireBase } from '../../Context/FireBaseContext';
 
 const cx = classNames.bind(styles);
 
@@ -22,11 +23,10 @@ function ReelVideo({ reel, user, username, userAvatar }) {
 
     const videoRef = useRef();
     const nav = useNavigate();
+    const { getUserByEmail } = UseFireBase();
 
     useEffect(() => {
-        onSnapshot(doc(db, 'users', `${reel?.useremail}`), (doc) => {
-            setAvatar(doc.data()?.information.avatar);
-        });
+        setAvatar(getUserByEmail(`${reel?.useremail}`)?.information.avatar);
 
         const unsubcribe3 = onSnapshot(doc(db, 'posts', `${reel?.id}`), (doc) => {
             setLikedsList(doc.data()?.likeds);
@@ -48,7 +48,7 @@ function ReelVideo({ reel, user, username, userAvatar }) {
             unsubcribe2();
             unsubcribe3();
         };
-    }, [reel]);
+    }, [reel, getUserByEmail]);
 
     const handleClickVideo = (e) => {
         if (videoRef.current.paused === false) {

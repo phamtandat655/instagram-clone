@@ -1,15 +1,15 @@
 import classNames from 'classnames/bind';
 import styles from './Comment.module.scss';
 import { useEffect, useState } from 'react';
-import { onSnapshot, doc } from 'firebase/firestore';
-import { db } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
+import { UseFireBase } from '../../Context/FireBaseContext';
 
 const cx = classNames.bind(styles);
 
 function Comment({ cmt }) {
     const [time, setTime] = useState('');
     const [avatar, setAvatar] = useState('');
+    const { getUserByEmail } = UseFireBase();
 
     const nav = useNavigate();
 
@@ -65,10 +65,8 @@ function Comment({ cmt }) {
     }, [cmt?.timestampSecond]);
 
     useEffect(() => {
-        onSnapshot(doc(db, 'users', `${cmt?.useremail}`), (doc) => {
-            setAvatar(doc.data()?.information.avatar);
-        });
-    }, [cmt?.useremail]);
+        setAvatar(getUserByEmail(`${cmt?.useremail}`)?.information.avatar);
+    }, [cmt?.useremail, getUserByEmail]);
 
     return (
         <div className={cx('wrapper')}>

@@ -30,4 +30,5 @@ p {
     --ig-separator: 219, 219, 219;
     --ig-secondary-text: 115, 115, 115;
     --ig-bg-modal: 2, 2, 2, 0.5;
+    --swiper-theme-color: white !important;
 }
