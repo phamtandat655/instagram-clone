@@ -9,7 +9,7 @@
     .container {
         display: flex;
         align-items: center;
-        width: 70vw;
+        width: 80vw;
         height: 80vh;
 
         background-color: white;
@@ -27,12 +27,35 @@
             overflow-y: scroll;
             scroll-behavior: smooth;
 
-            &__account {
-                padding: 10px 10px 10px 30px;
+            &__account-wrapper {
+                .inboxList__title {
+                    font-size: 16px;
+                    font-weight: 700;
+                    padding: 10px 0 0 10px;
+                }
+                .inboxList__title-wrong {
+                    display: flex;
+                    justify-content: center;
+
+                    padding-top: 50px;
+                }
+                .inboxList__account {
+                    padding: 10px 0px 10px 30px;
+                    margin: 5px 0;
+
+                    &.activeAccount {
+                        background-color: rgb(var(--ig-separator));
+                    }
+                }
+
+                img {
+                    min-width: 30px;
+                    min-height: 30px;
+                }
             }
         }
         .inboxChats {
-            flex: 3;
+            flex: 2;
             width: 100%;
             height: 100%;
             display: flex;
@@ -43,8 +66,24 @@
             border-bottom-right-radius: 5px;
 
             .inboxChats-top {
+                display: flex;
+                align-items: center;
+
                 padding: 10px;
                 border-bottom: 1px solid rgb(var(--ig-separator));
+
+                .icon-back {
+                    height: 100%;
+
+                    font-size: 25px;
+                    font-weight: 600;
+                    margin-right: 10px;
+                    padding-right: 5px;
+                    border-right: 1px solid rgb(var(--ig-separator));
+
+                    cursor: pointer;
+                    display: none;
+                }
             }
             .inboxChats-mid {
                 display: flex;
@@ -76,7 +115,7 @@
 
                         font-size: 17px;
 
-                        padding: 0 10px 0 20px;
+                        padding: 0 15% 0 20px;
                         border-radius: 50px;
                         border: 1px solid rgb(var(--ig-separator));
                         outline: none;
@@ -106,6 +145,38 @@
                     }
                 }
             }
+        }
+    }
+}
+
+@media (max-width: 1024px) {
+    .wrapper {
+        .container {
+            .inboxList {
+                &.responsiveInboxList {
+                    display: none;
+                }
+            }
+            .inboxChats {
+                display: none;
+
+                &.responsiveInboxChats {
+                    display: flex;
+
+                    .inboxChats-top {
+                        .icon-back {
+                            display: block !important;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 740px) {
+    .wrapper {
+        .container {
         }
     }
 }

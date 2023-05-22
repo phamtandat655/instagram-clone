@@ -295,18 +295,22 @@ function Post({ post }) {
                         slidesPerView={1}
                         navigation
                         pagination={{ clickable: true }}
-                        onDoubleClick={handleDoubleClickLike}
                     >
                         {post?.url.map((file, index) => {
                             if (file.type.includes('image')) {
                                 return (
-                                    <SwiperSlide key={file.src} style={{ height: '100%' }} className={'item-wrapper'}>
+                                    <SwiperSlide
+                                        onDoubleClick={handleDoubleClickLike}
+                                        key={file.src}
+                                        style={{ height: '100%' }}
+                                        className={'item-wrapper'}
+                                    >
                                         <img src={file.src} alt="post img" />
                                     </SwiperSlide>
                                 );
                             } else if (file.type.includes('video')) {
                                 return (
-                                    <SwiperSlide key={file.src}>
+                                    <SwiperSlide onDoubleClick={handleDoubleClickLike} key={file.src}>
                                         <PostVideo post={post} file={file} />
                                     </SwiperSlide>
                                 );

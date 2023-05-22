@@ -1,289 +1,226 @@
 import classNames from 'classnames/bind';
 import styles from './Inbox.module.scss';
 import Account from '../../components/Account/Account';
-import { ImageIcon } from '../../assets/Icons/Icons';
 import Message from '../../components/Message/Message';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { UseFireBase } from '../../Context/FireBaseContext';
+import { UserAuth } from '../../Context/AuthContext';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { updateDoc, doc, Timestamp, setDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
 
 const cx = classNames.bind(styles);
 
 function Inbox() {
-    const { inboxes } = UseFireBase();
+    const { inboxes, getUserByEmail, userEmailList } = UseFireBase();
+    const { user } = UserAuth();
+    const { pathname } = useLocation();
     const scroll = useRef(null);
+    const [userInboxes, setUserInboxes] = useState([]);
+    const [chatings, setChatings] = useState([]);
+    const [inputValue, setInputValue] = useState('');
+    const [idInboxList, setIdInboxList] = useState([]);
+    const nav = useNavigate();
+    // de responsive
+    const [isHoverUserInUserInboxes, setIsHoverUserInUserInboxes] = useState(false);
 
-    console.log(inboxes);
+    let emailInPathName = pathname.slice(7);
 
-    const handleSubmitMessage = (e) => {
+    useEffect(() => {
+        setIsHoverUserInUserInboxes(emailInPathName ? true : false);
+
+        if (emailInPathName && userEmailList && !userEmailList.includes(emailInPathName)) {
+            nav(`/NotFound/inbox/${emailInPathName}`);
+        }
+
+        let newUserInboxes = [];
+        let newIdInboxList = [];
+
+        inboxes.forEach((inbox) => {
+            newIdInboxList.push(inbox?.id);
+
+            const idArr = [...inbox?.id.split('??')];
+            if (idArr.includes(user?.email)) {
+                newUserInboxes.push(inbox);
+
+                if (emailInPathName && idArr.includes(emailInPathName)) {
+                    setChatings(
+                        inbox?.inboxesList
+                            .sort(function (x, y) {
+                                return x.timestampSecond - y.timestampSecond;
+                            })
+                            .reverse(),
+                    );
+                }
+            }
+        });
+        setUserInboxes(newUserInboxes);
+        setIdInboxList(newIdInboxList);
+    }, [inboxes, user, emailInPathName, nav, userEmailList]);
+
+    const handleSubmitMessage = async (e) => {
+        if (inputValue.trim().length <= 0) {
+            return;
+        }
+
+        scroll.current.scrollIntoView({ behavior: 'smooth' });
+
+        let id = emailInPathName + '??' + user?.email;
+        let idReverse = user?.email + '??' + emailInPathName;
+        const sender = getUserByEmail(user?.email);
+
+        // nếu chưa có cuộc trò chuyện thì tạo
+        if (!idInboxList.includes(id) && !idInboxList.includes(idReverse)) {
+            await setDoc(doc(db, 'inboxes', `${id}`), {
+                inboxesList: [
+                    {
+                        timestampSecond: Math.floor(Date.now() / 1000),
+                        timestamp: Timestamp.now(),
+                        username: sender?.information?.name,
+                        useremail: sender?.information?.email,
+                        useravatar: sender?.information?.avatar,
+                        chat: inputValue,
+                    },
+                ],
+            });
+            setInputValue('');
+        }
+
+        // nếu có rồi thì thêm vô
+        inboxes.forEach(async (inbox) => {
+            if (inbox?.id.includes(user?.email) && inbox?.id.includes(emailInPathName)) {
+                // lay thong tin nguoi gui
+                const docRef = doc(db, 'inboxes', `${inbox?.id}`);
+                await updateDoc(docRef, {
+                    inboxesList: [
+                        ...chatings,
+                        {
+                            timestampSecond: Math.floor(Date.now() / 1000),
+                            timestamp: Timestamp.now(),
+                            username: sender?.information?.name,
+                            useremail: sender?.information?.email,
+                            useravatar: sender?.information?.avatar,
+                            chat: inputValue,
+                        },
+                    ],
+                });
+                setInputValue('');
+            }
+        });
+    };
+
+    const getUserByIdInbox = (idInbox) => {
+        return idInbox.split('??').find((useremail) => useremail !== user?.email);
+    };
+
+    const handleClickUserInUserList = (useremail) => {
+        setInputValue('');
+        nav(`/inbox/${useremail}`);
         scroll.current.scrollIntoView({ behavior: 'smooth' });
     };
 
     return (
         <div className={cx('wrapper')}>
             <div className={cx('container')}>
-                <div className={cx('inboxList')}>
-                    <div className={cx('inboxList__account')}>
-                        <Account
-                            note="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            time=" - 3h"
-                            lengthDesc={30}
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                    </div>
-                    <div className={cx('inboxList__account')}>
-                        <Account
-                            note="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            time=" - 3h"
-                            lengthDesc={30}
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                    </div>
-                    <div className={cx('inboxList__account')}>
-                        <Account
-                            note="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            time=" - 3h"
-                            lengthDesc={30}
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                    </div>
-                    <div className={cx('inboxList__account')}>
-                        <Account
-                            note="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            time=" - 3h"
-                            lengthDesc={30}
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                    </div>
-                    <div className={cx('inboxList__account')}>
-                        <Account
-                            note="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            time=" - 3h"
-                            lengthDesc={30}
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                    </div>
-                    <div className={cx('inboxList__account')}>
-                        <Account
-                            note="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            time=" - 3h"
-                            lengthDesc={30}
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                    </div>
-                    <div className={cx('inboxList__account')}>
-                        <Account
-                            note="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            time=" - 3h"
-                            lengthDesc={30}
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                    </div>
-                    <div className={cx('inboxList__account')}>
-                        <Account
-                            note="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            time=" - 3h"
-                            lengthDesc={30}
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                    </div>
-                    <div className={cx('inboxList__account')}>
-                        <Account
-                            note="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            time=" - 3h"
-                            lengthDesc={30}
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                    </div>
-                    <div className={cx('inboxList__account')}>
-                        <Account
-                            note="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            time=" - 3h"
-                            lengthDesc={30}
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                    </div>
-                    <div className={cx('inboxList__account')}>
-                        <Account
-                            note="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            time=" - 3h"
-                            lengthDesc={30}
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                    </div>
-                    <div className={cx('inboxList__account')}>
-                        <Account
-                            note="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            time=" - 3h"
-                            lengthDesc={30}
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                    </div>
-                    <div className={cx('inboxList__account')}>
-                        <Account
-                            note="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            time=" - 3h"
-                            lengthDesc={30}
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                    </div>
-                    <div className={cx('inboxList__account')}>
-                        <Account
-                            note="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            time=" - 3h"
-                            lengthDesc={30}
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                    </div>
-                    <div className={cx('inboxList__account')}>
-                        <Account
-                            note="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            time=" - 3h"
-                            lengthDesc={30}
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                    </div>
-                    <div className={cx('inboxList__account')}>
-                        <Account
-                            note="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            time=" - 3h"
-                            lengthDesc={30}
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
+                <div className={cx('inboxList', { responsiveInboxList: isHoverUserInUserInboxes })}>
+                    <div className={cx('inboxList__account-wrapper')}>
+                        <p className={cx('inboxList__title')}>Tin nhắn</p>
+                        {userInboxes.length <= 0 && (
+                            <div className={cx('inboxList__title-wrong')}>Hiện không có tin nhắn nào !</div>
+                        )}
+                        {userInboxes &&
+                            userInboxes.map((userInbox, index) => {
+                                const userEmail = getUserByIdInbox(userInbox?.id);
+                                const user = getUserByEmail(userEmail);
+                                const lastestMessage = userInbox?.inboxesList
+                                    .sort(function (x, y) {
+                                        return x.timestampSecond - y.timestampSecond;
+                                    })
+                                    .reverse();
+
+                                return (
+                                    <div
+                                        className={cx('inboxList__account', {
+                                            activeAccount: pathname && emailInPathName === userEmail,
+                                        })}
+                                        onClick={(e) => handleClickUserInUserList(userEmail)}
+                                        key={index}
+                                    >
+                                        <Account
+                                            note={lastestMessage[0]?.chat}
+                                            // time=" - 3h"
+                                            lengthDesc={30}
+                                            name={user?.information?.name}
+                                            img={user?.information?.avatar}
+                                        />
+                                    </div>
+                                );
+                            })}
                     </div>
                 </div>
-                <div className={cx('inboxChats')}>
+                <div className={cx('inboxChats', { responsiveInboxChats: isHoverUserInUserInboxes })}>
                     <div className={cx('inboxChats-top')}>
-                        <Account
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
+                        <div
+                            className={cx('icon-back')}
+                            onClick={(e) => {
+                                setIsHoverUserInUserInboxes(false);
+                                nav('/inbox');
+                            }}
+                        >
+                            {'<'}
+                        </div>
+                        {emailInPathName && (
+                            <div
+                                onClick={(e) =>
+                                    nav(`/personalPage/${getUserByEmail(emailInPathName)?.information?.email}`)
+                                }
+                            >
+                                <Account
+                                    name={getUserByEmail(emailInPathName)?.information?.name || ''}
+                                    img={getUserByEmail(emailInPathName)?.information?.avatar || ''}
+                                />
+                            </div>
+                        )}
                     </div>
                     <div className={cx('inboxChats-mid')}>
                         <div ref={scroll}></div>
 
-                        <Message
-                            message="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            isMyMessage
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                        <Message
-                            message="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            isMyMessage
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                        <Message
-                            message="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                        <Message
-                            message="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            isMyMessage
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                        <Message
-                            message="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                        <Message
-                            message="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                        <Message
-                            message="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            isMyMessage
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                        <Message
-                            message="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            isMyMessage
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                        <Message
-                            message="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                        <Message
-                            message="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            isMyMessage
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                        <Message
-                            message="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                        <Message
-                            message="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                        <Message
-                            message="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            isMyMessage
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                        <Message
-                            message="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            isMyMessage
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                        <Message
-                            message="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                        <Message
-                            message="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            isMyMessage
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                        <Message
-                            message="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
-                        <Message
-                            message="Hello ! Day la tin nhan dau tien ! Day la tin nhan dau tien !"
-                            name="Pham tan dat"
-                            img="https://firebasestorage.googleapis.com/v0/b/instagram-clone-c4282.appspot.com/o/files%2F345249558_1160442644734602_9026704827842054617_n.jpg?alt=media&token=d2550f94-d683-4c47-8199-f79a72e6504d"
-                        />
+                        {emailInPathName &&
+                            chatings.map((chat, index) => {
+                                const time = new Date(chat?.timestampSecond * 1000);
+
+                                return (
+                                    <Message
+                                        key={index}
+                                        message={chat?.chat}
+                                        isMyMessage={chat?.useremail === user?.email}
+                                        name={chat?.username}
+                                        img={chat?.useravatar}
+                                        time={time.toLocaleString()}
+                                    />
+                                );
+                            })}
                     </div>
                     <div className={cx('inboxChats-bottom')}>
-                        <div className={cx('chatInput-wrapper')}>
-                            <input type="text" placeholder="Nhập tin nhắn..." />
-                            <label htmlFor="inboxChats-fileImg">{ImageIcon}</label>
-                            <input type="file" id="inboxChats-fileImg" hidden />
-                            <button onClick={handleSubmitMessage}>Gửi</button>
-                        </div>
+                        {emailInPathName && (
+                            <form
+                                className={cx('chatInput-wrapper')}
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    handleSubmitMessage();
+                                }}
+                            >
+                                <input
+                                    value={inputValue}
+                                    onChange={(e) => {
+                                        setInputValue(e.target.value);
+                                    }}
+                                    type="text"
+                                    placeholder="Nhập tin nhắn..."
+                                />
+                                <button>Gửi</button>
+                            </form>
+                        )}
                     </div>
                 </div>
             </div>

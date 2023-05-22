@@ -38,10 +38,6 @@ function PostDetail({ setPage, page }) {
     const { idPost } = useParams();
     const nav = useNavigate();
 
-    if (!idPostList.includes(idPost)) {
-        nav(`/NotFound/${idPost}`);
-    }
-
     const [saved, setSaved] = useState(false);
     const [thisUser, setThisUser] = useState({});
 
@@ -56,6 +52,12 @@ function PostDetail({ setPage, page }) {
     const [post, setPost] = useState({});
     const [time, setTime] = useState('');
     const [hidePostOption, setHidePostOption] = useState(true);
+
+    useEffect(() => {
+        if (!idPostList.includes(idPost)) {
+            nav(`/NotFound/${idPost}`);
+        }
+    }, [idPostList, nav, idPost]);
 
     useEffect(() => {
         const timestamp = {
@@ -298,11 +300,11 @@ function PostDetail({ setPage, page }) {
                         e.stopPropagation();
                     }}
                 >
-                    <div className={cx('slider-wrapper')} onDoubleClick={handleDoubleClickLike}>
+                    <div className={cx('slider-wrapper')}>
                         {post?.url.length === 1 ? (
                             post?.url[0].type.includes('image') ? (
                                 <div>
-                                    <img src={post?.url[0].src} alt="post img" />
+                                    <img src={post?.url[0].src} alt="post img" onDoubleClick={handleDoubleClickLike} />
                                 </div>
                             ) : (
                                 <PostVideo file={post?.url[0]} postDetail />
@@ -313,22 +315,22 @@ function PostDetail({ setPage, page }) {
                                 slidesPerView={1}
                                 navigation
                                 pagination={{ clickable: true }}
-                                onDoubleClick={handleDoubleClickLike}
                             >
-                                {post?.url.map((file, index) => {
+                                {post?.url.map((file) => {
                                     if (file.type.includes('image')) {
                                         return (
                                             <SwiperSlide
                                                 key={file.src}
                                                 style={{ height: '100%' }}
                                                 className={'item-wrapper'}
+                                                onDoubleClick={handleDoubleClickLike}
                                             >
                                                 <img src={file.src} alt="post img" />
                                             </SwiperSlide>
                                         );
                                     } else if (file.type.includes('video')) {
                                         return (
-                                            <SwiperSlide key={file.src}>
+                                            <SwiperSlide key={file.src} onDoubleClick={handleDoubleClickLike}>
                                                 <PostVideo file={file} postDetail />
                                             </SwiperSlide>
                                         );

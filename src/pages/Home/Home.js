@@ -26,7 +26,6 @@ function Home() {
     const { posts, stories } = UseFireBase();
     const nav = useNavigate();
     const [followings, setFollowings] = useState([]);
-    const [seeAll, setSeeAll] = useState(false);
     const [indexPostObserved, setIndexPostObserved] = useState(8);
     const [allFollowedPost, setAllFollowedPost] = useState([]);
     const { user } = UserAuth();
@@ -89,10 +88,9 @@ function Home() {
             // lấy ra những story của những người đang theo dõi mình hoặc của chính mình
             userUploadStory = [
                 ...userUploadStory.filter((userUpload) => {
-                    return followings.find(
-                        (fl) =>
-                            fl?.User.information.email === userUpload?.useremail ||
-                            user?.email === userUpload?.useremail,
+                    return (
+                        followings.find((fl) => fl?.User.information.email === userUpload?.useremail) ||
+                        user?.email === userUpload?.useremail
                     );
                 }),
             ];
@@ -157,6 +155,16 @@ function Home() {
                             }
                             return <Post key={post?.id} post={post} />;
                         })}
+                    {allFollowedPost.length <= 0 && (
+                        <div className={cx('confirm-icon-wrapper', 'dontHaveAnyPost')}>
+                            {/* <img src={confirmIcon} alt="confirm-icon" /> */}
+                            <p>Hiện tại không có bài viết nào !</p>
+                            <p className={cx('see-more-post')}>
+                                Bạn có muốn khám phá những bài viết thú vị ?{' '}
+                                <span onClick={(e) => nav('/explore')}>Tại đây</span>
+                            </p>
+                        </div>
+                    )}
                 </div>
             </div>
             <div className={cx('recommend')}>
@@ -165,41 +173,43 @@ function Home() {
                     <span
                         className={cx('recommend--see-all')}
                         onClick={(e) => {
-                            if (users?.length > 5) {
-                                setSeeAll(!seeAll);
-                            }
+                            nav('/recommendUsers');
                         }}
                     >
-                        {seeAll === false ? 'Xem tất cả' : 'Ẩn bớt'}
+                        Xem tất cả
                     </span>
                 </div>
                 <div className={cx('recommend--users')}>
                     {followings &&
                         users &&
-                        users.map((user, index) => {
-                            if (seeAll === false) {
-                                if (index === 5) {
-                                    return <div key={index} className={cx('hide')}></div>;
-                                }
+                        users.map((u, index) => {
+                            if (index >= 5) {
+                                return <div key={index} className={cx('hide')}></div>;
                             }
-                            if (!followings.find((following) => following?.User?.information.email === user?.id)) {
-                                return (
-                                    <div
-                                        key={user?.id || index}
-                                        className={cx('recommend--user-wrapper')}
-                                        onClick={(e) => {
-                                            nav(`/personalPage/${user?.id}`);
-                                        }}
-                                    >
-                                        <Account
-                                            userAccount={user}
-                                            note="Gợi ý cho bạn"
-                                            follow
-                                            followings={followings}
-                                            recommend="recommend-home"
-                                        />
-                                    </div>
-                                );
+                            if (
+                                !followings.find(
+                                    (following) => following?.User?.information?.email === u?.information?.email,
+                                )
+                            ) {
+                                if (u?.information?.email !== user?.email) {
+                                    return (
+                                        <div
+                                            key={index}
+                                            className={cx('recommend--user-wrapper')}
+                                            onClick={(e) => {
+                                                nav(`/personalPage/${u?.information?.email}`);
+                                            }}
+                                        >
+                                            <Account
+                                                userAccount={u}
+                                                note="Gợi ý cho bạn"
+                                                follow
+                                                followings={followings}
+                                                recommend="recommend-home"
+                                            />
+                                        </div>
+                                    );
+                                }
                             }
                             return <Fragment key={index}></Fragment>;
                         })}

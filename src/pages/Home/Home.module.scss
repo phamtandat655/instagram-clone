@@ -53,6 +53,11 @@
         border-radius: 10px;
         padding: 20px 10px;
 
+        &.dontHaveAnyPost {
+            width: 450px;
+            margin-top: 10px;
+        }
+
         .see-more-post {
             font-size: 14px;
             color: rgb(var(--ig-secondary-text));
@@ -76,8 +81,9 @@
 @media (max-width: 1024px) {
     .wrapper {
         align-items: center;
-        justify-content: unset;
         flex-direction: column-reverse;
+        justify-content: flex-end;
+
         margin-bottom: 70px;
 
         .recommend {

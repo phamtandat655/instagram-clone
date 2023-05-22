@@ -39,14 +39,17 @@
         display: flex;
         align-items: center;
 
+        &--following-wrapper {
+            display: flex;
+        }
         &--email {
             font-size: 18px;
         }
         &--settings {
             font-weight: 600;
 
-            margin: 0 15px;
-            padding: 5px;
+            margin: 0 10px;
+            // padding: 7px 16px;
             border-radius: 5px;
             background-color: rgba(114, 132, 159, 0.15);
             cursor: pointer;
@@ -107,6 +110,18 @@
         flex-direction: column;
 
         padding-top: 10px;
+
+        .dontHavePost {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            margin-top: 20px;
+
+            p {
+                margin-bottom: 10px;
+            }
+        }
     }
     .post-container {
         cursor: pointer;
@@ -219,6 +234,9 @@
             flex-direction: column;
             align-items: center;
 
+            &--settings {
+                margin-top: 10px;
+            }
             &--email {
                 margin-right: 10px;
             }

@@ -2,8 +2,10 @@
     display: flex;
     align-items: flex-start;
     justify-content: center;
+    width: 100%;
 
     padding-top: 20px;
+    padding-left: 10px;
 
     .post-list {
         width: 100%;
@@ -52,11 +54,11 @@
             box-sizing: content-box;
             max-width: 935px;
             width: calc(100% - 40px);
-            gap: 0px;
+            gap: 1px;
             margin-bottom: 55px;
         }
         .post-wrapper {
-            width: calc(100% / 3);
+            width: calc((100% / 3) - 4px);
             height: 150px;
         }
     }

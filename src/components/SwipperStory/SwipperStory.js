@@ -11,20 +11,15 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import '../../swiper.scss';
 import { useEffect, useRef } from 'react';
-import { db } from '../../firebase';
-import { doc, deleteDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 // import { getStorage } from 'firebase/storage';
 // , ref, deleteObject
-
-import { useNavigate } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
 function SwipperStory({ usersStory, pause, setShowStory, showStory }) {
     const swiperRef = useRef(null);
-
     const nav = useNavigate();
-    // const storage = getStorage();
 
     useEffect(() => {
         if (!showStory) {
@@ -46,58 +41,6 @@ function SwipperStory({ usersStory, pause, setShowStory, showStory }) {
     } else {
         post = usersStory[0];
     }
-
-    useEffect(() => {
-        if (usersStory.length > 0) {
-            usersStory.forEach((post) => {
-                const postDate = new Date(post.timestampSecond * 1000);
-                const nowDate = new Date();
-
-                // get total seconds between the times
-                let delta = Math.abs(nowDate - postDate) / 1000;
-                // calculate (and subtract) whole days
-                let days = Math.floor(delta / 86400);
-
-                if (days >= 1) {
-                    handleDeleteStory(post);
-                }
-            });
-        } else {
-            usersStory[0].forEach((post) => {
-                const postDate = new Date(post.timestampSecond * 1000);
-                const nowDate = new Date();
-
-                // get total seconds between the times
-                let delta = Math.abs(nowDate - postDate) / 1000;
-                // calculate (and subtract) whole days
-                let days = Math.floor(delta / 86400);
-
-                if (days >= 1) {
-                    handleDeleteStory(post);
-                }
-            });
-        }
-    }, [usersStory]);
-
-    const handleDeleteStory = async (post) => {
-        nav(`/`);
-        await deleteDoc(doc(db, 'stories', `${post?.id}`));
-        // để xóa hình ảnh trong story nhưng nếu nhiều người đăng ảnh giống nhau sẽ bị xóa mất luôn ảnh của những ng đăng sau
-        // post?.url.forEach((url) => {
-        //     // Create a reference to the file to delete
-        //     const desertRef = ref(storage, `files/${url.src.split('files%2F')[1].split('?alt')[0]}`);
-        //     // Delete the file
-        //     deleteObject(desertRef)
-        //         .then(() => {
-        //             // File deleted successfully
-        //             console.log('xoa files thanh cong !');
-        //         })
-        //         .catch((error) => {
-        //             // Uh-oh, an error occurred!
-        //             console.log(error);
-        //         });
-        // });
-    };
 
     const handleTimeStory = (timestampSecond) => {
         const timestamp = {
@@ -204,6 +147,7 @@ function SwipperStory({ usersStory, pause, setShowStory, showStory }) {
             </div>
         );
     } else {
+        nav('/');
         return <p className={cx('invalidStory')}>Story không còn tồn tại !</p>;
     }
 }

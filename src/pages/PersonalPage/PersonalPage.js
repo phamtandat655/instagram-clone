@@ -135,7 +135,15 @@ function PersonalPage() {
                                     Chỉnh sửa trang cá nhân
                                 </div>
                             ) : (
-                                <div>
+                                <div className={cx('info-top--following-wrapper')}>
+                                    <div
+                                        className={cx('info-top--following')}
+                                        onClick={(e) => {
+                                            nav(`/inbox/${email}`);
+                                        }}
+                                    >
+                                        Nhắn tin
+                                    </div>
                                     {myFollowings &&
                                     myFollowings.find((following) => following.User.information.email === email) ? (
                                         <p
@@ -158,7 +166,6 @@ function PersonalPage() {
                                     )}
                                 </div>
                             )}
-                            {/* <p className={cx('info-top--setting')}>{SettingIcon}</p> */}
                         </div>
                         <div className={cx('info-mid')}>
                             <span className={cx('info-mid-posts')}>
@@ -237,6 +244,13 @@ function PersonalPage() {
                                 }
                             })}
                     </div>
+                    {posts.length <= 0 && (
+                        <div className={cx('dontHavePost')}>
+                            <h3>Hiện tại chưa có bài viết nào !</h3>
+                            <p>Hãy chia sẻ những bức ảnh đầu tiên của bạn !</p>
+                            <p>Khi bạn chia sẻ ảnh, ảnh sẽ xuất hiện trên trang cá nhân của bạn.</p>
+                        </div>
+                    )}
                 </div>
             </div>
         );

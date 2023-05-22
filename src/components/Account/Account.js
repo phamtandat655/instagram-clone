@@ -149,6 +149,9 @@ function Account({ userAccount, name, img, time = '', note, lengthDesc, follow, 
                                     }
                                 })}
                         </div>
+                        {posts?.length <= 0 && (
+                            <h4 className={cx('userDontHavePost')}>Hiện tại chưa có bài đăng nào !</h4>
+                        )}
                     </div>
                 </div>
 

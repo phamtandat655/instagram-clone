@@ -8,7 +8,7 @@ import SwipperStory from '../SwipperStory/SwipperStory';
 const cx = classNames.bind(styles);
 
 function ShowStory({ showStory, setShowStory, usersStory }) {
-    const [inputValue, setInputValue] = useState('');
+    // const [inputValue, setInputValue] = useState('');
     const [pause, setPause] = useState(false);
 
     return (
@@ -22,7 +22,8 @@ function ShowStory({ showStory, setShowStory, usersStory }) {
                 X
             </i>
             <div
-                className={cx('showstory-container', { blur: inputValue.length > 0 })}
+                className={cx('showstory-container')}
+                // , { blur: inputValue.length > 0 }
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className={cx('showstory-top')}>
@@ -54,7 +55,7 @@ function ShowStory({ showStory, setShowStory, usersStory }) {
                         />
                     )}
                 </div>
-                <div className={cx('showstory-bottom')}>
+                {/* <div className={cx('showstory-bottom')}>
                     <div>
                         <input
                             className={cx('reply')}
@@ -70,7 +71,7 @@ function ShowStory({ showStory, setShowStory, usersStory }) {
                     >
                         Gửi
                     </button>
-                </div>
+                </div> */}
             </div>
         </div>
     );

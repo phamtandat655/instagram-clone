@@ -10,6 +10,7 @@ const Reels = lazy(() => import('../pages/Reels/Reels'));
 const PersonalPage = lazy(() => import('../pages/PersonalPage/PersonalPage'));
 const AccountEdit = lazy(() => import('../pages/AccountEdit/AccountEdit'));
 const NotFound = lazy(() => import('../pages/NotFound/NotFound'));
+const RecommendUsers = lazy(() => import('../pages/RecommendUsers/RecommendUsers'));
 
 const publicRoutes = [
     { path: config.routes.home, component: Home },
@@ -19,6 +20,7 @@ const publicRoutes = [
     { path: config.routes.personalPage, component: PersonalPage },
     { path: config.routes.accountEdit, component: AccountEdit },
     { path: config.routes.notFound, component: NotFound },
+    { path: config.routes.recommendUsers, component: RecommendUsers },
 ];
 
 const privateRoutes = [];
