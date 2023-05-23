@@ -177,6 +177,18 @@
 @media screen and (max-width: 740px) {
     .wrapper {
         .container {
+            .inboxChats {
+                .inboxChats-mid {
+                    max-width: calc(100vw - 100px);
+                }
+                .inboxChats-bottom {
+                    .chatInput-wrapper {
+                        input {
+                            padding: 0 25% 0 20px;
+                        }
+                    }
+                }
+            }
         }
     }
 }

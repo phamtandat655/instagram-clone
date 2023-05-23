@@ -197,6 +197,9 @@
     .wrapper {
         margin-top: 70px;
     }
+    .video-wrapper {
+        width: calc(100vw - 20px);
+    }
     .video-container {
         width: 350px;
         height: 600px;

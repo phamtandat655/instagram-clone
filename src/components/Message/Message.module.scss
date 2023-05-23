@@ -48,6 +48,11 @@
             padding: 10px;
             border: 1px solid rgb(var(--ig-separator));
             border-radius: 20px;
+            p {
+                max-width: 350px;
+
+                word-wrap: break-word;
+            }
         }
 
         .message-time {
@@ -55,6 +60,24 @@
             font-size: 14px;
             color: rgb(var(--ig-secondary-text));
             text-align: left;
+        }
+    }
+}
+
+@media screen and (max-width: 740px) {
+    .wrapper {
+        .container {
+            .message-wrapper {
+                max-width: 50vw;
+
+                P {
+                    max-width: 180px;
+                }
+            }
+            .message-time {
+                width: 100%;
+                font-size: 11px;
+            }
         }
     }
 }

@@ -164,3 +164,21 @@
 .hide {
     display: none;
 }
+
+@media screen and (max-width: 740px) {
+    .wrapper {
+        .showstory-container {
+            width: calc(100vw - 20px);
+            max-width: calc(100vw - 20px);
+            padding: 0;
+            overflow: hidden;
+
+            .showstory-top {
+                width: calc(100vw - 40px);
+            }
+            .showstory-bottom {
+                width: calc(100vw - 40px);
+            }
+        }
+    }
+}

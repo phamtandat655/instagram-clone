@@ -86,3 +86,19 @@
         }
     }
 }
+
+@media screen and (max-width: 740px) {
+    .wrapper {
+        max-width: 100vw;
+
+        .input-wrapper {
+            grid-template-columns: 60px 245px;
+            gap: 10px;
+
+            input {
+                grid-column: 2;
+                width: 220px;
+            }
+        }
+    }
+}

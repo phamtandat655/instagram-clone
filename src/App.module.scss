@@ -93,6 +93,10 @@
         border-radius: 5px;
         padding: 30px 10px;
 
+        @media screen and (max-width: 740px) {
+            margin-left: 0;
+        }
+
         .icon {
             text-align: center;
             margin-bottom: 10px;

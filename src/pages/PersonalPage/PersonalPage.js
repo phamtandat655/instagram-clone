@@ -111,14 +111,16 @@ function PersonalPage() {
                         <div className={cx('info-top')}>
                             <div className={cx('email-wrapper')}>
                                 <p className={cx('info-top--email')}>{email}</p>
-                                <p
-                                    className={cx('info-top--icon')}
-                                    onClick={(e) => {
-                                        setShowSignOut(!showSignOut);
-                                    }}
-                                >
-                                    {ThreeDotsIcon}
-                                </p>
+                                {email === user?.email && (
+                                    <p
+                                        className={cx('info-top--icon')}
+                                        onClick={(e) => {
+                                            setShowSignOut(!showSignOut);
+                                        }}
+                                    >
+                                        {ThreeDotsIcon}
+                                    </p>
+                                )}
                                 {showSignOut === true && (
                                     <div className={cx('info-top--signout')} onClick={handleSignOut}>
                                         Đăng xuất

@@ -9,6 +9,10 @@
 }
 @media screen and (max-width: 740px) {
     .wrapper {
+        max-width: 100vw;
+        padding: 0 10px;
+        overflow: hidden;
         margin-top: 70px;
+        margin-bottom: 40px;
     }
 }

@@ -198,3 +198,23 @@
         border-bottom: 1px solid rgb(var(--ig-separator));
     }
 }
+
+@media screen and (max-width: 740px) {
+    .wrapper {
+        max-width: calc(100vw - 30px);
+
+        .files-slider {
+            width: calc(100vw - 10px);
+            min-width: calc(100vw - 10px);
+            max-width: calc(100vw - 10px);
+        }
+        .likeds-modal-wrapper {
+            width: calc(100vw - 20px);
+        }
+        .comment {
+            width: calc(100vw - 30px);
+            min-width: calc(100vw - 30px);
+            max-width: calc(100vw - 30px);
+        }
+    }
+}

@@ -116,6 +116,8 @@
             flex-direction: column;
             align-items: center;
 
+            text-align: center;
+
             margin-top: 20px;
 
             p {
@@ -213,6 +215,9 @@
 }
 @media screen and (max-width: 740px) {
     .wrapper {
+        width: 100vw;
+        max-width: 100vw;
+
         .personalPage-top {
             align-items: flex-start;
 
@@ -248,7 +253,7 @@
                 display: unset;
                 position: absolute;
                 top: 28px;
-                right: -35px;
+                right: 0px;
                 padding: 10px;
                 width: max-content;
                 height: fit-content;
@@ -267,8 +272,9 @@
             &--signout::before {
                 content: '';
                 position: absolute;
-                top: -4px;
-                left: 43px;
+                top: -8px;
+                // left: 43px;
+                right: 5px;
                 width: 15px;
                 height: 15px;
 
@@ -295,12 +301,16 @@
 
                 span {
                     color: rgb(var(--ig-secondary-text));
+                    font-size: 12px;
                 }
             }
         }
+        .info-bottom--desc {
+            font-size: 13px;
+        }
         .infomation-container {
-            width: 330px;
-            max-width: 330px;
+            width: calc(100vw - 150px);
+            max-width: calc(100vw - 150px);
             height: unset;
             max-height: unset;
         }
@@ -313,6 +323,16 @@
 
         .personalPage-bottom {
             margin-bottom: 55px;
+
+            .post {
+                width: calc(100vw - 20px);
+                padding-left: 20px;
+
+                &-wrapper {
+                    width: calc(100% / 3 - 8px);
+                    margin: 1px;
+                }
+            }
         }
     }
 }
