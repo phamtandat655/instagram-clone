@@ -5,7 +5,7 @@
     top: 50px;
     z-index: 50;
 }
-@media (max-width: 1024px) {
+@media screen and (max-width: 1024px) {
     .loader-wrapper {
         top: 100px;
     }

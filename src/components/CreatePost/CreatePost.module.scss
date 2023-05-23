@@ -223,7 +223,7 @@
     }
 }
 
-@media (max-width: 740px) {
+@media screen and (max-width: 740px) {
     .wrapper {
         .upload-container {
             width: 370px;

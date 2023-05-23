@@ -132,7 +132,7 @@
     display: none;
 }
 
-@media (max-width: 1240px) {
+@media screen and (max-width: 1240px) {
     .wrapper {
         width: 50px;
         max-width: 50px;
@@ -148,7 +148,7 @@
         display: none;
     }
 }
-@media (max-width: 740px) {
+@media screen and (max-width: 740px) {
     .wrapper {
         position: fixed;
         top: calc(100vh - 50px);

@@ -149,7 +149,7 @@
     }
 }
 
-@media (max-width: 1024px) {
+@media screen and (max-width: 1024px) {
     .wrapper {
         .container {
             .inboxList {
@@ -174,7 +174,7 @@
     }
 }
 
-@media (max-width: 740px) {
+@media screen and (max-width: 740px) {
     .wrapper {
         .container {
         }

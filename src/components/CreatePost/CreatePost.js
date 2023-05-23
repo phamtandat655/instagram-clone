@@ -384,7 +384,7 @@ function CreatePost({ page, setPage, pathname }) {
                             <div>
                                 <div className={cx('text-center')}>{ImageUploadIcon}</div>
                                 <header>Kéo ảnh vào đây</header>
-                                <button onClick={handleOpenUploadImg}>Chọn từ máy tính</button>
+                                <button onClick={handleOpenUploadImg}>Chọn từ máy</button>
                             </div>
                         )}
                         <input

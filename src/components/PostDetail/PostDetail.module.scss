@@ -217,12 +217,12 @@
     border-bottom: 1px solid rgb(var(--ig-separator));
 }
 
-@media (max-width: 1360px) {
+@media screen and (max-width: 1360px) {
     .container {
         width: calc(100% - 120px);
     }
 }
-@media (max-width: 740px) {
+@media screen and (max-width: 740px) {
     .container {
         position: relative;
 

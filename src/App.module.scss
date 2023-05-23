@@ -20,12 +20,12 @@
         background-color: rgba(114, 132, 159, 0.05);
     }
 
-    @media (max-width: 1240px) {
+    @media screen and (max-width: 1240px) {
         .page-wrapper {
             padding-left: 70px;
         }
     }
-    @media (max-width: 740px) {
+    @media screen and (max-width: 740px) {
         .page-wrapper {
             padding-left: 0px;
         }
@@ -156,7 +156,7 @@
         }
     }
 }
-@media (max-width: 1024px) {
+@media screen and (max-width: 1024px) {
     .img-slider {
         display: none;
     }

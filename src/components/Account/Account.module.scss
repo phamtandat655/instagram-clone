@@ -202,7 +202,7 @@
     font-weight: 700;
 }
 
-@media (max-width: 1024px) {
+@media screen and (max-width: 1024px) {
     .recommend-home.wrapper {
         flex-direction: column;
         justify-content: center;
@@ -227,7 +227,7 @@
     }
 }
 
-@media (max-width: 740px) {
+@media screen and (max-width: 740px) {
     .account:hover .modal--hover-account {
         display: none !important;
     }
