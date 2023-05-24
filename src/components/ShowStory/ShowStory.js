@@ -29,8 +29,12 @@ function ShowStory({ showStory, setShowStory, usersStory }) {
                 <div className={cx('showstory-top')}>
                     <div className={cx('showstory-top-info')}>
                         <Account
-                            name="Pham Tan Dat"
-                            img="https://media-cdn-v2.laodong.vn/Storage/NewsPortal/2022/1/18/996173/Style_61E4d4fee07cd.jpg"
+                            name={usersStory[0].username || ''}
+                            img={
+                                usersStory[0].useravatar ||
+                                'http://phunuvietnam.mediacdn.vn/media/news/33abffcedac43a654ac7f501856bf700/anh-profile-tiet-lo-g-ve-ban-1.jpg'
+                            }
+                            // img="https://media-cdn-v2.laodong.vn/Storage/NewsPortal/2022/1/18/996173/Style_61E4d4fee07cd.jpg"
                         />
                     </div>
                     <div className={cx('showstory-top-option')}>

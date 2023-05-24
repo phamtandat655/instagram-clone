@@ -139,7 +139,7 @@ function Home() {
                                     <Story
                                         name={userUpload?.username}
                                         email={userUpload?.useremail}
-                                        img={userUpload?.useravatar}
+                                        img={userUpload.useravatar}
                                         setShowStory={setShowStory}
                                         setUserEmailStory={setUserEmailStory}
                                     />
@@ -171,7 +171,7 @@ function Home() {
                             }
                             return <Post key={post?.id} post={post} />;
                         })}
-                    {allFollowedPost.length <= 0 && (
+                    {allFollowedPost && followings && allFollowedPost.length === 0 && (
                         <div className={cx('confirm-icon-wrapper', 'dontHaveAnyPost')}>
                             {/* <img src={confirmIcon} alt="confirm-icon" /> */}
                             <p>Hiện tại không có bài viết nào !</p>

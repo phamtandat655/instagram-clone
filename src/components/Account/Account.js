@@ -77,7 +77,14 @@ function Account({ userAccount, name, img, time = '', note, lengthDesc, follow, 
         <div className={cx('wrapper', { 'recommend-home': recommend })}>
             <div className={cx('account')}>
                 <div className={cx('avatar', { havestr: seenStory })} onClick={(e) => setSeenStory(false)}>
-                    <img src={userAccount?.information.avatar || img || ''} alt="avatar" />
+                    <img
+                        src={
+                            userAccount?.information.avatar ||
+                            img ||
+                            'http://phunuvietnam.mediacdn.vn/media/news/33abffcedac43a654ac7f501856bf700/anh-profile-tiet-lo-g-ve-ban-1.jpg'
+                        }
+                        alt="avatar"
+                    />
                 </div>
                 <div className={cx('about')}>
                     <p className={cx('name')}>{handleLengthOfWords(userAccount?.information.name || name || '', 18)}</p>

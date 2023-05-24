@@ -33,7 +33,7 @@ function Modal({ setPage, page, pathname }) {
                     newFollowers.push(doc.data());
                 }
 
-                if (doc.data().information.email.includes(user?.email)) {
+                if (doc.data()?.information?.email?.includes(user?.email)) {
                     setFollowings(doc.data().follows);
                 }
 
@@ -60,7 +60,7 @@ function Modal({ setPage, page, pathname }) {
         return () => unsubcribe();
     }, [user?.email]);
 
-    const debounced = useDebounce(input, 500);
+    const debounced = useDebounce(input, 200);
     useEffect(() => {
         if (!debounced.trim()) {
             setSearchUsers([]);
@@ -153,10 +153,10 @@ function Modal({ setPage, page, pathname }) {
                         <div className={cx('search-content')}>
                             <div className={cx('account-wrap')}>
                                 {input !== '' &&
-                                    searchUsers.map((user) => (
+                                    searchUsers.map((user, index) => (
                                         <div
                                             className={cx('account-wrap')}
-                                            key={user.email}
+                                            key={index}
                                             onClick={(e) => {
                                                 nav(`/personalPage/${user.email}`);
                                                 setPage(pathname);
@@ -170,6 +170,9 @@ function Modal({ setPage, page, pathname }) {
                                             />
                                         </div>
                                     ))}
+                                {input !== '' && debounced && searchUsers.length === 0 && (
+                                    <div className={cx('nothing')}>Không tìm thấy gì !</div>
+                                )}
                             </div>
                         </div>
                     </div>

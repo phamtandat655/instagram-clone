@@ -54,8 +54,10 @@ function PostDetail({ setPage, page }) {
     const [time, setTime] = useState('');
     const [hidePostOption, setHidePostOption] = useState(true);
 
+    console.log();
+
     useEffect(() => {
-        if (idPostList && idPostList.length !== 0 && !idPostList.includes(idPost)) {
+        if (idPostList && !isEmpty(idPostList) && !idPostList.includes(idPost)) {
             nav(`/NotFound/${idPost}`);
         }
     }, [idPostList, nav, idPost]);
@@ -294,7 +296,7 @@ function PostDetail({ setPage, page }) {
             <p className={cx('close-icon')} onClick={handleClose}>
                 X
             </p>
-            {isEmpty(post) === false && (
+            {!isEmpty(post) && post.url && !isEmpty(post.url) && (
                 <div
                     className={cx('container')}
                     onClick={(e) => {
@@ -302,7 +304,7 @@ function PostDetail({ setPage, page }) {
                     }}
                 >
                     <div className={cx('slider-wrapper')}>
-                        {post?.url.length === 1 ? (
+                        {post?.url?.length === 1 ? (
                             post?.url[0].type.includes('image') ? (
                                 <div>
                                     <img src={post?.url[0].src} alt="post img" onDoubleClick={handleDoubleClickLike} />

@@ -25,7 +25,13 @@ function Story({ name, img, email, setShowStory, setUserEmailStory }) {
         >
             {/* neu da seen thi them class 'seen' vao */}
             <div className={cx('avatar', { seen: seen === true })}>
-                <img alt="avatar" src={img} />
+                <img
+                    alt="avatar"
+                    src={
+                        img ||
+                        'http://phunuvietnam.mediacdn.vn/media/news/33abffcedac43a654ac7f501856bf700/anh-profile-tiet-lo-g-ve-ban-1.jpg'
+                    }
+                />
             </div>
             <p className={cx('user-name')}>{handleFixLengthOfName(name)}</p>
         </div>

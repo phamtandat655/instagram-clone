@@ -1,6 +1,6 @@
 import styles from './App.module.scss';
 import classNames from 'classnames/bind';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 
 import Navbar from './components/Navbar/Navbar';
 import { logo } from './assets/image/instagram';
@@ -31,6 +31,8 @@ function App() {
         return pathname.slice(1) === '' ? 'home' : pathname.slice(1);
     });
 
+    const nav = useNavigate();
+
     useEffect(() => {
         let path = pathname.slice(1) === '' ? 'home' : pathname.slice(1);
         if (!idPostList.includes(path)) {
@@ -54,6 +56,7 @@ function App() {
             console.log(error);
             setError(error?.message);
         }
+        nav('/');
     };
     const handleRegister = async (e) => {
         e.preventDefault();
@@ -84,6 +87,7 @@ function App() {
         } catch (error) {
             console.log(error);
         }
+        nav('/');
     };
 
     return (

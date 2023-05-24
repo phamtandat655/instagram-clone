@@ -32,7 +32,7 @@ function Inbox() {
         if (
             emailInPathName &&
             userEmailList &&
-            userEmailList.length !== 0 &&
+            userEmailList?.length !== 0 &&
             !userEmailList.includes(emailInPathName)
         ) {
             nav(`/NotFound/inbox/${emailInPathName}`);
