@@ -6,7 +6,7 @@ import { onSnapshot, collection } from 'firebase/firestore';
 import { db } from '../../firebase';
 
 import { ListIcon } from '../../assets/Icons/Icons';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
@@ -15,7 +15,6 @@ function Explore() {
     const [indexPostObserved, setIndexPostObserved] = useState(15);
 
     const nav = useNavigate();
-    const { email } = useParams();
 
     useEffect(() => {
         const unsubcribe = onSnapshot(collection(db, 'posts'), (snapshot) => {
@@ -30,7 +29,7 @@ function Explore() {
         });
 
         return () => unsubcribe();
-    }, [email]);
+    }, []);
 
     const handleScroll = (e) => {
         const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
@@ -42,6 +41,7 @@ function Explore() {
             setIndexPostObserved((prevIndex) => prevIndex + 9);
         }
     };
+
     useEffect(() => {
         window.addEventListener('scroll', handleScroll);
 

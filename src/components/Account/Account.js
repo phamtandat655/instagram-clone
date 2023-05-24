@@ -1,6 +1,6 @@
 import classNames from 'classnames/bind';
 import styles from './Account.module.scss';
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect, Fragment, memo } from 'react';
 import { UserAuth } from '../../Context/AuthContext';
 import { UseFireBase } from '../../Context/FireBaseContext';
 
@@ -170,4 +170,4 @@ function Account({ userAccount, name, img, time = '', note, lengthDesc, follow, 
     );
 }
 
-export default Account;
+export default memo(Account);

@@ -21,7 +21,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import '../../swiper.scss';
 
-import { useEffect, useState, Fragment } from 'react';
+import { useEffect, useState, Fragment, memo, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { onSnapshot, doc, collection, orderBy, query, addDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
@@ -137,16 +137,19 @@ function Post({ post }) {
         };
     }, [user?.email, post?.id]);
 
-    const handleUploadComment = (e) => {
-        addDoc(collection(db, `posts/${post?.id}/comments`), {
-            timestampSecond: Math.floor(Date.now() / 1000),
-            timestamp: serverTimestamp(),
-            comment: comment,
-            username: username,
-            useremail: user?.email,
-        });
-        setComment('');
-    };
+    const handleUploadComment = useCallback(
+        (e) => {
+            addDoc(collection(db, `posts/${post?.id}/comments`), {
+                timestampSecond: Math.floor(Date.now() / 1000),
+                timestamp: serverTimestamp(),
+                comment: comment,
+                username: username,
+                useremail: user?.email,
+            });
+            setComment('');
+        },
+        [post?.id, comment, username, user?.email],
+    );
 
     const handleDesc = (desc) => {
         if (desc.length > 50) {
@@ -181,20 +184,20 @@ function Post({ post }) {
         }
     };
 
-    const handleLikePost = async () => {
+    const handleLikePost = useCallback(async () => {
         const docRef = doc(db, 'posts', `${post?.id}`);
         await updateDoc(docRef, {
             likeds: [...likedsList, user?.email],
         });
-    };
+    }, [post?.id, user?.email, likedsList]);
 
-    const handleUnLikePost = async () => {
+    const handleUnLikePost = useCallback(async () => {
         const docRef = doc(db, 'posts', `${post?.id}`);
         let newLikeds = likedsList.filter((likedIdPost) => likedIdPost !== user?.email);
         await updateDoc(docRef, {
             likeds: [...newLikeds],
         });
-    };
+    }, [post?.id, user?.email, likedsList]);
 
     return (
         <div className={cx('wrapper')}>
@@ -382,4 +385,4 @@ function Post({ post }) {
     );
 }
 
-export default Post;
+export default memo(Post);

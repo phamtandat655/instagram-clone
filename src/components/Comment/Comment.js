@@ -1,6 +1,6 @@
 import classNames from 'classnames/bind';
 import styles from './Comment.module.scss';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UseFireBase } from '../../Context/FireBaseContext';
 
@@ -92,4 +92,4 @@ function Comment({ cmt }) {
     );
 }
 
-export default Comment;
+export default memo(Comment);

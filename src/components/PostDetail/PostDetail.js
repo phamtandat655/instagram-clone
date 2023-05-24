@@ -11,9 +11,7 @@ import {
     SavedIcon,
     EmotionIcon,
 } from '../../assets/Icons/Icons';
-import PostOption from '../PostOption/PostOption';
 import { useRef, useState, useEffect, Fragment } from 'react';
-import Comment from '../Comment/Comment';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { onSnapshot, doc, collection, orderBy, query, addDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
@@ -29,11 +27,15 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import '../../swiper.scss';
 import { UseFireBase } from '../../Context/FireBaseContext';
+
+import PostOption from '../PostOption/PostOption';
+import Comment from '../Comment/Comment';
 import PostVideo from '../PostVideo/PostVideo';
 
 const cx = classNames.bind(styles);
 
 function PostDetail({ setPage, page }) {
+    console.log('postdetail');
     const { idPostList } = UseFireBase();
     const { idPost } = useParams();
     const nav = useNavigate();
@@ -54,7 +56,7 @@ function PostDetail({ setPage, page }) {
     const [hidePostOption, setHidePostOption] = useState(true);
 
     useEffect(() => {
-        if (!idPostList.includes(idPost)) {
+        if (idPostList.length !== 0 && !idPostList.includes(idPost)) {
             nav(`/NotFound/${idPost}`);
         }
     }, [idPostList, nav, idPost]);

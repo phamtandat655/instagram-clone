@@ -29,7 +29,7 @@ function Inbox() {
     useEffect(() => {
         setIsHoverUserInUserInboxes(emailInPathName ? true : false);
 
-        if (emailInPathName && userEmailList && !userEmailList.includes(emailInPathName)) {
+        if (emailInPathName && userEmailList.length !== 0 && !userEmailList.includes(emailInPathName)) {
             nav(`/NotFound/inbox/${emailInPathName}`);
         }
 
@@ -89,6 +89,8 @@ function Inbox() {
         // nếu có rồi thì thêm vô
         inboxes.forEach(async (inbox) => {
             if (inbox?.id.includes(user?.email) && inbox?.id.includes(emailInPathName)) {
+                setInputValue('');
+
                 // lay thong tin nguoi gui
                 const docRef = doc(db, 'inboxes', `${inbox?.id}`);
                 await updateDoc(docRef, {
@@ -104,7 +106,6 @@ function Inbox() {
                         },
                     ],
                 });
-                setInputValue('');
             }
         });
     };

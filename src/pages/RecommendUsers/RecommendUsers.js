@@ -2,7 +2,7 @@ import classNames from 'classnames/bind';
 import styles from './RecommendUsers.module.scss';
 import { UseFireBase } from '../../Context/FireBaseContext';
 import { UserAuth } from '../../Context/AuthContext';
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Account from '../../components/Account/Account';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase';
@@ -40,43 +40,46 @@ function RecommendUsers() {
         return () => window.removeEventListener('scroll', handleScroll);
     });
 
+    let recommendUsers = useMemo(() => {
+        if (followings && users) {
+            return users.filter((u, index) => {
+                return (
+                    !followings.find((following) => following?.User?.information?.email === u?.information?.email) &&
+                    u?.information?.email !== user?.email
+                );
+            });
+        }
+        return null;
+    }, [users, followings, user?.email]);
+
     return (
         <div className={cx('wrapper')}>
             <div className={cx('recommend')}>
                 <p className={cx('recommend__title')}>Gợi ý</p>
                 <div className={cx('recommend--users')}>
-                    {followings &&
-                        users &&
-                        users.map((u, index) => {
+                    {recommendUsers &&
+                        recommendUsers.map((u, index) => {
                             if (index >= IndexObserved) {
                                 return <div key={index} className={cx('hide')}></div>;
+                            } else {
+                                return (
+                                    <div
+                                        key={index}
+                                        className={cx('recommend--user-wrapper')}
+                                        onClick={(e) => {
+                                            nav(`/personalPage/${u?.information?.email}`);
+                                        }}
+                                    >
+                                        <Account
+                                            userAccount={u}
+                                            note="Gợi ý cho bạn"
+                                            follow
+                                            followings={followings}
+                                            recommend="recommend-home"
+                                        />
+                                    </div>
+                                );
                             }
-                            if (
-                                !followings.find(
-                                    (following) => following?.User?.information?.email === u?.information?.email,
-                                )
-                            ) {
-                                if (u?.information?.email !== user?.email) {
-                                    return (
-                                        <div
-                                            key={index}
-                                            className={cx('recommend--user-wrapper')}
-                                            onClick={(e) => {
-                                                nav(`/personalPage/${u?.information?.email}`);
-                                            }}
-                                        >
-                                            <Account
-                                                userAccount={u}
-                                                note="Gợi ý cho bạn"
-                                                follow
-                                                followings={followings}
-                                                recommend="recommend-home"
-                                            />
-                                        </div>
-                                    );
-                                }
-                            }
-                            return <Fragment key={index}></Fragment>;
                         })}
                 </div>
             </div>

@@ -1,45 +1,15 @@
 import classNames from 'classnames/bind';
 import styles from './PostVideo.module.scss';
-import { useRef, useState } from 'react';
+import { memo, useRef, useState } from 'react';
 // , useEffect
 import { VolumeIcon, VolumeMutedIcon, PlayIcon } from '../../assets/Icons/Icons';
 
 const cx = classNames.bind(styles);
 
-function PostVideo({ post, file, postDetail }) {
+function PostVideo({ file, postDetail }) {
     const [muted, setMuted] = useState(true);
     const [pause, setPause] = useState(true);
     const videoRef = useRef();
-
-    // useEffect(() => {
-    //     if (post) {
-    //         if (post?.url[0]?.type === 'video' && pause === true) {
-    //             window.addEventListener('scroll', handleScroll);
-
-    //             return () => window.removeEventListener('scroll', handleScroll);
-    //         }
-    //     }
-    // }, [post, pause]);
-
-    // const handleScroll = () => {
-    //     let isElInViewPort = (el) => {
-    //         let rect = el.getBoundingClientRect();
-    //         let viewHeight = window.innerHeight || document.documentElement.clientHeight;
-
-    //         return (
-    //             (rect.top <= 200 && rect.bottom >= 200) ||
-    //             (rect.bottom >= viewHeight - 200 && rect.top <= viewHeight - 200) ||
-    //             (rect.top >= 200 && rect.bottom <= viewHeight - 200)
-    //         );
-    //     };
-    //     if (isElInViewPort(videoRef.current)) {
-    //         videoRef.current.play();
-    //         setPause(false);
-    //     } else {
-    //         videoRef.current.pause();
-    //         setPause(true);
-    //     }
-    // };
 
     const handleClickVideo = (e) => {
         if (videoRef.current.paused === false) {
@@ -89,4 +59,4 @@ function PostVideo({ post, file, postDetail }) {
     );
 }
 
-export default PostVideo;
+export default memo(PostVideo);

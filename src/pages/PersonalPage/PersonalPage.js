@@ -8,8 +8,8 @@ import { db } from '../../firebase';
 
 import { ListIcon, PostIcon, ThreeDotsIcon } from '../../assets/Icons/Icons';
 import { useNavigate, useParams } from 'react-router-dom';
-import FollowsModal from '../../components/FollowsModal/FollowsModal';
 import { UseFireBase } from '../../Context/FireBaseContext';
+import FollowsModal from '../../components/FollowsModal/FollowsModal';
 
 const cx = classNames.bind(styles);
 

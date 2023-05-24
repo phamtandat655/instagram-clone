@@ -8,16 +8,17 @@ import '../../swiper.scss';
 
 import styles from './Home.module.scss';
 import classNames from 'classnames/bind';
-import Story from '../../components/Story/Story';
-import Post from '../../components/Post/Post';
 import { UseFireBase } from '../../Context/FireBaseContext';
-import Account from '../../components/Account/Account';
 import { useNavigate } from 'react-router-dom';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { UserAuth } from '../../Context/AuthContext';
 import { onSnapshot, doc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import confirmIcon from '../../assets/image/illo-confirm-refresh-light.png';
+
+import Account from '../../components/Account/Account';
+import Post from '../../components/Post/Post';
+import Story from '../../components/Story/Story';
 import ShowStory from '../../components/ShowStory/ShowStory';
 
 const cx = classNames.bind(styles);
@@ -27,7 +28,6 @@ function Home() {
     const nav = useNavigate();
     const [followings, setFollowings] = useState([]);
     const [indexPostObserved, setIndexPostObserved] = useState(8);
-    const [allFollowedPost, setAllFollowedPost] = useState([]);
     const { user } = UserAuth();
     const { users } = UseFireBase();
     const [userEmailStory, setUserEmailStory] = useState('');
@@ -38,18 +38,6 @@ function Home() {
             setFollowings(doc.data()?.follows);
         });
     }, [user?.email]);
-
-    useEffect(() => {
-        if (followings && posts) {
-            let allNewFollowedPost = posts.filter((post) => {
-                return (
-                    followings.find((following) => following?.User?.information.email === post?.useremail) ||
-                    user?.email === post?.useremail
-                );
-            });
-            setAllFollowedPost(allNewFollowedPost);
-        }
-    }, [followings, posts, user?.email]);
 
     const handleScroll = (e) => {
         const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
@@ -96,6 +84,34 @@ function Home() {
             ];
         }
     }
+
+    // loc ra nhung bai post cua nhung nguoi dang follow
+    let allFollowedPost = useMemo(() => {
+        if (followings && posts) {
+            return posts.filter((post) => {
+                return (
+                    followings.find((following) => following?.User?.information.email === post?.useremail) ||
+                    user?.email === post?.useremail
+                );
+            });
+        }
+        return null;
+    }, [followings, posts, user?.email]);
+
+    // loc recomendUsers
+    let recommendUsers = useMemo(() => {
+        if (followings && users) {
+            return users.filter((u) => {
+                return (
+                    !followings.find((following) => following?.User?.information?.email === u?.information?.email) &&
+                    u?.information?.email !== user?.email
+                );
+            });
+        }
+        return null;
+    }, [users, followings, user?.email]);
+
+    let count = 1;
 
     return (
         <div className={cx('wrapper')}>
@@ -180,38 +196,30 @@ function Home() {
                     </span>
                 </div>
                 <div className={cx('recommend--users')}>
-                    {followings &&
-                        users &&
-                        users.map((u, index) => {
-                            if (index >= 5) {
+                    {recommendUsers &&
+                        recommendUsers.map((u, index) => {
+                            if (count > 5) {
                                 return <div key={index} className={cx('hide')}></div>;
+                            } else {
+                                count++;
+                                return (
+                                    <div
+                                        key={index}
+                                        className={cx('recommend--user-wrapper')}
+                                        onClick={(e) => {
+                                            nav(`/personalPage/${u?.information?.email}`);
+                                        }}
+                                    >
+                                        <Account
+                                            userAccount={u}
+                                            note="Gợi ý cho bạn"
+                                            follow
+                                            followings={followings}
+                                            recommend="recommend-home"
+                                        />
+                                    </div>
+                                );
                             }
-                            if (
-                                !followings.find(
-                                    (following) => following?.User?.information?.email === u?.information?.email,
-                                )
-                            ) {
-                                if (u?.information?.email !== user?.email) {
-                                    return (
-                                        <div
-                                            key={index}
-                                            className={cx('recommend--user-wrapper')}
-                                            onClick={(e) => {
-                                                nav(`/personalPage/${u?.information?.email}`);
-                                            }}
-                                        >
-                                            <Account
-                                                userAccount={u}
-                                                note="Gợi ý cho bạn"
-                                                follow
-                                                followings={followings}
-                                                recommend="recommend-home"
-                                            />
-                                        </div>
-                                    );
-                                }
-                            }
-                            return <Fragment key={index}></Fragment>;
                         })}
                 </div>
             </div>

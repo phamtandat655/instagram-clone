@@ -1,5 +1,5 @@
 import classNames from 'classnames/bind';
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import styles from './Story.module.scss';
 
 const cx = classNames.bind(styles);
@@ -32,4 +32,4 @@ function Story({ name, img, email, setShowStory, setUserEmailStory }) {
     );
 }
 
-export default Story;
+export default memo(Story);
