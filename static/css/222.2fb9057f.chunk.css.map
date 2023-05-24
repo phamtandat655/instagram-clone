@@ -1,0 +1,1 @@
+{"version":3,"file":"static/css/222.2fb9057f.chunk.css","mappings":"AAAA,yBACI,gBACA,eAKA,uDACI","sources":["pages/NotFound/NotFound.module.scss"],"sourcesContent":[".wrapper {\r\n    margin-top: 50px;\r\n    padding: 0 10px;\r\n\r\n    h2 {\r\n        text-align: center;\r\n    }\r\n    p {\r\n        text-align: center;\r\n    }\r\n}\r\n"],"names":[],"sourceRoot":""}
