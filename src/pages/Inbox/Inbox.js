@@ -29,7 +29,12 @@ function Inbox() {
     useEffect(() => {
         setIsHoverUserInUserInboxes(emailInPathName ? true : false);
 
-        if (emailInPathName && userEmailList.length !== 0 && !userEmailList.includes(emailInPathName)) {
+        if (
+            emailInPathName &&
+            userEmailList &&
+            userEmailList.length !== 0 &&
+            !userEmailList.includes(emailInPathName)
+        ) {
             nav(`/NotFound/inbox/${emailInPathName}`);
         }
 

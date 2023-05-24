@@ -35,7 +35,6 @@ import PostVideo from '../PostVideo/PostVideo';
 const cx = classNames.bind(styles);
 
 function PostDetail({ setPage, page }) {
-    console.log('postdetail');
     const { idPostList } = UseFireBase();
     const { idPost } = useParams();
     const nav = useNavigate();
@@ -56,7 +55,7 @@ function PostDetail({ setPage, page }) {
     const [hidePostOption, setHidePostOption] = useState(true);
 
     useEffect(() => {
-        if (idPostList.length !== 0 && !idPostList.includes(idPost)) {
+        if (idPostList && idPostList.length !== 0 && !idPostList.includes(idPost)) {
             nav(`/NotFound/${idPost}`);
         }
     }, [idPostList, nav, idPost]);
