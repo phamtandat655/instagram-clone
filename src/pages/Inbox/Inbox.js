@@ -81,9 +81,7 @@ function Inbox() {
                     {
                         timestampSecond: Math.floor(Date.now() / 1000),
                         timestamp: Timestamp.now(),
-                        username: sender?.information?.name,
                         useremail: sender?.information?.email,
-                        useravatar: sender?.information?.avatar,
                         chat: inputValue,
                     },
                 ],
@@ -104,9 +102,7 @@ function Inbox() {
                         {
                             timestampSecond: Math.floor(Date.now() / 1000),
                             timestamp: Timestamp.now(),
-                            username: sender?.information?.name,
                             useremail: sender?.information?.email,
-                            useravatar: sender?.information?.avatar,
                             chat: inputValue,
                         },
                     ],
@@ -194,14 +190,15 @@ function Inbox() {
                         {emailInPathName &&
                             chatings.map((chat, index) => {
                                 const time = new Date(chat?.timestampSecond * 1000);
+                                const thisuser = getUserByEmail(chat?.useremail);
 
                                 return (
                                     <Message
                                         key={index}
                                         message={chat?.chat}
                                         isMyMessage={chat?.useremail === user?.email}
-                                        name={chat?.username}
-                                        img={chat?.useravatar}
+                                        name={thisuser?.information?.name}
+                                        img={thisuser?.information?.avatar}
                                         time={time.toLocaleString()}
                                     />
                                 );

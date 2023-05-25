@@ -68,9 +68,11 @@
     .wrapper {
         .container {
             .message-wrapper {
-                max-width: 50vw;
+                width: 180px;
+                max-width: 180vw;
 
                 P {
+                    width: 180px;
                     max-width: 180px;
                 }
             }

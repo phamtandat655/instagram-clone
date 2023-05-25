@@ -88,6 +88,7 @@
     padding: 10px 20px;
 
     max-height: calc(100% - 60px - 90px - 50px);
+    max-width: 420px;
     overflow-y: scroll;
 }
 .cmt-wrapper::-webkit-scrollbar {
@@ -299,6 +300,7 @@
         display: flex;
         align-items: center;
     }
+
     .cmt-wrapper {
         position: absolute;
         top: calc(60px + 350px + 60px + 80px);
@@ -307,6 +309,13 @@
         height: auto;
         padding: 10px 20px;
 
+        overflow: hidden;
+
+        max-width: 300px;
         max-height: calc(100% - 60px - 90px - 50px);
+    }
+    .upload-cmt-wrapper {
+        border: 1px solid rgb(var(--ig-separator));
+        margin-top: 5px;
     }
 }

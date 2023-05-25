@@ -207,9 +207,7 @@ function CreatePost({ page, setPage, pathname }) {
                                 timestampSecond: Math.floor(Date.now() / 1000),
                                 timestamp: serverTimestamp(),
                                 url: arrUrls,
-                                username: name,
                                 useremail: user?.email,
-                                useravatar: avatar,
                             });
                             handleClose();
                         }

@@ -4,12 +4,16 @@ import Account from '../Account/Account';
 import { PlayStoryIcon, PauseStoryIcon, ThreeDotsStoryIcon } from '../../assets/Icons/Icons';
 import { useState } from 'react';
 import SwipperStory from '../SwipperStory/SwipperStory';
+import { UseFireBase } from '../../Context/FireBaseContext';
 
 const cx = classNames.bind(styles);
 
 function ShowStory({ showStory, setShowStory, usersStory }) {
     // const [inputValue, setInputValue] = useState('');
     const [pause, setPause] = useState(false);
+    const { getUserByEmail } = UseFireBase();
+
+    const thisUser = getUserByEmail(usersStory[0].useremail);
 
     return (
         <div className={cx('wrapper', { hide: !showStory })} onClick={(e) => setShowStory(false)}>
@@ -29,9 +33,9 @@ function ShowStory({ showStory, setShowStory, usersStory }) {
                 <div className={cx('showstory-top')}>
                     <div className={cx('showstory-top-info')}>
                         <Account
-                            name={usersStory[0].username || ''}
+                            name={thisUser?.information?.name || ''}
                             img={
-                                usersStory[0].useravatar ||
+                                thisUser?.information?.avatar ||
                                 'http://phunuvietnam.mediacdn.vn/media/news/33abffcedac43a654ac7f501856bf700/anh-profile-tiet-lo-g-ve-ban-1.jpg'
                             }
                             // img="https://media-cdn-v2.laodong.vn/Storage/NewsPortal/2022/1/18/996173/Style_61E4d4fee07cd.jpg"

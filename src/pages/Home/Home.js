@@ -24,7 +24,7 @@ import ShowStory from '../../components/ShowStory/ShowStory';
 const cx = classNames.bind(styles);
 
 function Home() {
-    const { posts, stories } = UseFireBase();
+    const { posts, stories, getUserByEmail } = UseFireBase();
     const nav = useNavigate();
     const [followings, setFollowings] = useState([]);
     const [indexPostObserved, setIndexPostObserved] = useState(8);
@@ -112,6 +112,9 @@ function Home() {
     }, [users, followings, user?.email]);
 
     let count = 1;
+    function isEmpty(obj) {
+        return Object.keys(obj).length === 0;
+    }
 
     return (
         <div className={cx('wrapper')}>
@@ -134,12 +137,14 @@ function Home() {
                         className={cx('story-container')}
                     >
                         {userUploadStory.map((userUpload, index) => {
+                            const thisUser = getUserByEmail(userUpload?.useremail);
+
                             return (
                                 <SwiperSlide key={index}>
                                     <Story
-                                        name={userUpload?.username}
-                                        email={userUpload?.useremail}
-                                        img={userUpload.useravatar}
+                                        name={thisUser?.information?.name || ''}
+                                        email={userUpload?.useremail || ''}
+                                        img={thisUser?.information?.avatar || ''}
                                         setShowStory={setShowStory}
                                         setUserEmailStory={setUserEmailStory}
                                     />
@@ -183,21 +188,21 @@ function Home() {
                     )}
                 </div>
             </div>
-            <div className={cx('recommend')}>
-                <div className={cx('recommend--header-wrapper')}>
-                    <span className={cx('recommend--header')}>Gợi ý cho bạn</span>
-                    <span
-                        className={cx('recommend--see-all')}
-                        onClick={(e) => {
-                            nav('/recommendUsers');
-                        }}
-                    >
-                        Xem tất cả
-                    </span>
-                </div>
-                <div className={cx('recommend--users')}>
-                    {recommendUsers &&
-                        recommendUsers.map((u, index) => {
+            {recommendUsers && !isEmpty(recommendUsers) && (
+                <div className={cx('recommend')}>
+                    <div className={cx('recommend--header-wrapper')}>
+                        <span className={cx('recommend--header')}>Gợi ý cho bạn</span>
+                        <span
+                            className={cx('recommend--see-all')}
+                            onClick={(e) => {
+                                nav('/recommendUsers');
+                            }}
+                        >
+                            Xem tất cả
+                        </span>
+                    </div>
+                    <div className={cx('recommend--users')}>
+                        {recommendUsers.map((u, index) => {
                             if (count > 5) {
                                 return <div key={index} className={cx('hide')}></div>;
                             } else {
@@ -221,8 +226,9 @@ function Home() {
                                 );
                             }
                         })}
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }
